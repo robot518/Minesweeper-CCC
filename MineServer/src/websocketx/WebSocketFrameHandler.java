@@ -24,8 +24,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
  * Echoes uppercase content of text frames.
  */
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-//    private String sCode2SessionUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code";
-//    private String appId = "wx4e23a5ec42c5a796";
     private static float iCount = 0;
 
     @Override
