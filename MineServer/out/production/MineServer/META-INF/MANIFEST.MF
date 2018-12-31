@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: netty-all-4.1.31.Final.jar
+Main-Class: websocketx.WebSocketServer
+
