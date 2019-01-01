@@ -8,9 +8,9 @@ var bInter = false;
 var bError = false;
 var creatWS = function (argument) {
     ws = null;
-    ws = new WebSocket("ws://" + GLB.ip + ":8080/websocket"); //本地
+    ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
     // ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx|ios
-    //ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //安卓ssl连不上
+    // ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //安卓ssl连不上
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
@@ -21,16 +21,6 @@ var creatWS = function (argument) {
         bInter = true;
      }
     };
-    // ws.onmessage = function (event) {
-    //     var data = event.data;
-    //     console.log("response text msg: " + data);
-    //     if (WS.obj){
-    //         if (data.substring(0, 4) == "step")
-    //             WS.obj.onPlayback(data.substring(4));
-    //         else
-    //             WS.obj.onMsg(data);
-    //     }
-    // };
     ws.onmessage = function (event) {
         var data = event.data;
         console.log("response text msg: " + data);
@@ -53,18 +43,6 @@ var creatWS = function (argument) {
         creatWS();
     };
 }
-// WS.sendMsg = function (msg, obj) {
-//     if (ws.readyState === WebSocket.OPEN) {
-//         // console.log("msg = ", msg);
-//         ws.send(msg);
-//         if (msg == "getScore" || msg.substring(1) == "getStep"){
-//             WS.obj = obj;
-//         }
-//     }
-//     else {
-//         console.log("WebSocket instance wasn't ready...");
-//     }
-// };
 WS.sendMsg = function (cmd, msg, obj) {
     if (cmd == null)
         return;

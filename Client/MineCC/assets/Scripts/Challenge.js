@@ -104,6 +104,7 @@ cc.Class({
             //challenge-self
             node.on("click", function (event) {
                 if (GLB.sName == ""){
+                    GLB.bShowRegister = true;
                     cc.director.loadScene("Login");
                     if (this.bannerAd != null)
                         this.bannerAd.hide();
@@ -131,7 +132,6 @@ cc.Class({
                     return;
                 GLB.iDiff = parseInt(name);
                 WS.sendMsg(GLB.GET_STEP, name+GLB.sName, this);
-                // WS.sendMsg(GLB.iDiff + GLB.GET_STEP, this);
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
@@ -150,6 +150,14 @@ cc.Class({
             cc.find("labType/more", node).on("click", function (event) {
                 var name = event.node.parent.parent.name;
                 this.scv.active = true;
+                var content = cc.find("content", this.scv).children;
+                var iL = content.length;
+                for (var i = 0; i < iL; i++) {
+                    content[i].active = false;
+                };
+                this.labTips.active = true;
+                var tTitle = ["初级", "中级", "高级"];
+                cc.find("labTitle", this.scv).getComponent(cc.Label).string = tTitle[name];
                 WS.sendMsg(GLB.GET_RANK, name, this);
             }, this);
         };
@@ -183,10 +191,11 @@ cc.Class({
     },
 
     initShow(){
+        this.scv.active = false;
         var str = this.sShowStr;
-        // this.labName1.string = str;
-        // this.labName2.string = str;
-        // this.labName3.string = str;
+        this.labName1.string = str;
+        this.labName2.string = str;
+        this.labName3.string = str;
         this.labScore1.string = str;
         this.labScore2.string = str;
         this.labScore3.string = str;
@@ -226,6 +235,7 @@ cc.Class({
                 if (subData[1] != null)
                     GLB.tScore[i] = subData[1]/100;
                 GLB.tName[i] = subData[3];
+                this["labName" + (i+1).toString()].string = GLB.sName;
                 this["labRank" + (i+1).toString()].string = this.getNewStr(subData[0]);
                 this["labScore" + (i+1).toString()].string = this.getNewStr(subData[1], 1);
                 this["labRank" + (i+1).toString() + "No1"].string = this.getNewStr(subData[2]);
@@ -241,26 +251,32 @@ cc.Class({
                 this.bannerAd.hide();
             cc.director.loadScene("Main");
         }else if(cmd == GLB.GET_RANK){
-            var content = cc.find("content", this.scv).children;
-            var iL = content.length;
-            for (var i = 0; i < iL; i++) {
-                content[i].active = false;
-            };
             var iCount = args.length;
             if (iCount == 0 || msg == ""){
-                this.labTips.active = true;
                 return;
             }
             if (iCount > 10)
                 iCount = 10;
+            var content = cc.find("content", this.scv).children;
             for (var i = 0; i < iCount; i++) {
                 var item = content[i];
                 item.active = true;
                 var data = args[i];
                 var iComma = data.indexOf(",");
-                cc.find("rank", item).getComponent(cc.Label).string = (i+1).toString();
-                cc.find("name", item).getComponent(cc.Label).string = data.substring(0, iComma);
-                cc.find("cost", item).getComponent(cc.Label).string = parseInt(data.substring(iComma+1))/100 + "s";
+                var sName = data.substring(0, iComma);
+                var labRank = cc.find("rank", item).getComponent(cc.Label);
+                labRank.string = (i+1).toString();
+                var labName = cc.find("name", item).getComponent(cc.Label);
+                labName.string = sName;
+                var labCost = cc.find("cost", item).getComponent(cc.Label);
+                labCost.string = parseInt(data.substring(iComma+1))/100 + "s";
+                var color = cc.Color.WHITE;
+                if (sName == GLB.sName){
+                    color = cc.Color.RED;
+                }
+                labRank.node.color = color;
+                labName.node.color = color;
+                labCost.node.color = color;
             };
             this.labTips.active = false;
         }

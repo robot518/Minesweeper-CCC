@@ -324,7 +324,8 @@ cc.Class({
             var sub = cc.find("btns/sub", this.node);
             cc.find("rank", sub).active = false;
             cc.find("stat", sub).active = false;
-            cc.find("share", sub).active = false;
+            if (!window.wx)
+                cc.find("share", sub).active = false;
         }
 
         if (GLB.iType == 1 || GLB.iType == 2){

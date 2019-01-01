@@ -37,7 +37,6 @@ cc.Class({
         this.initEvent();
         this.initShow();
         this.initWXEvent();
-        // var code = "021RlHvP0y7lA42vYfvP0uTHvP0RlHvY";
     },
 
     initCanvas(){
@@ -81,7 +80,7 @@ cc.Class({
             //     }
             //   }
             // })
-            console.log("GLB.wxUserInfo = ", GLB.wxUserInfo);
+            // console.log("GLB.wxUserInfo = ", GLB.wxUserInfo);
             if (GLB.wxUserInfo.nickName != null){
                 temp.active = false;
                 return;
@@ -90,9 +89,9 @@ cc.Class({
                 success: function (res) {
                     GLB.wxUserInfo = res.userInfo;
                     temp.active = false;
-                    GLB.sName = res.userInfo.nickName;
+                    // GLB.sName = res.userInfo.nickName;
                     // WS.sendMsg(GLB.LOGIN, GLB.sName + "|" + this.editPass.string, this);
-                    console.log("res2 = ", res);
+                    // console.log("res2 = ", res);
                 },
                 fail: function (argument) {
                     wx.getSystemInfo({
@@ -123,10 +122,10 @@ cc.Class({
                                 }, 1000);
                                 if (res.userInfo){
                                     GLB.wxUserInfo = res.userInfo;
-                                    GLB.sName = res.userInfo.nickName;
+                                    // GLB.sName = res.userInfo.nickName;
                                     // WS.sendMsg(GLB.LOGIN, GLB.sName + "|" + this.editPass.string, this);
                                 }
-                                console.log("res1 = ", res);
+                                // console.log("res1 = ", res);
                                 GLB.getUserInfoBtn.hide();
                                 temp.active = false;
                             });
@@ -197,20 +196,17 @@ cc.Class({
         cc.find("btnLogin", this.ndRegister).on("click", function (argument) {
             if (this.getBEmpty() == true)
                 return;
-            // this.ndRegister.active = false;
-            // GLB.bLogin = true;
             WS.sendMsg(GLB.LOGIN, this.editName.string + "|" + this.editPass.string, this);
         }, this);
         cc.find("btnRegister", this.ndRegister).on("click", function (argument) {
             if (this.getBEmpty() == true)
                 return;
-            // this.ndRegister.active = false;
-            // GLB.bLogin = true;
             WS.sendMsg(GLB.REGISTER, this.editName.string + "|" + this.editPass.string, this);
         }, this);
         cc.find("btnTourist", this.ndRegister).on("click", function (argument) {
             this.ndRegister.active = false;
             this.initGLBData();
+            GLB.bLogin = false;
         }, this);
         if (window.wx){
             if (this.btn == null){
@@ -253,15 +249,14 @@ cc.Class({
     },
 
     initShow(){
-        if (window.wx){
-            cc.find("btns/switch", this.node).active = false;
-            this.ndRegister.active = false;
-        }else{
-            if (GLB.bLogin == false)
-                this.ndRegister.active = true;
-            else if (GLB.bLogin == true)
-                this.ndRegister.active = false;
-        }
+        // if (window.wx){
+        //     cc.find("btns/switch", this.node).active = false;
+        //     // this.ndRegister.active = false;
+        // }else{
+        this.ndRegister.active = GLB.bShowRegister;
+        if (GLB.bShowRegister == true)
+            GLB.bShowRegister = false;
+        // }
         if (GLB.iLang == "zh")
             this.onZhShow();
         else if (GLB.iLang == "en")
@@ -272,13 +267,13 @@ cc.Class({
         if (msg == "200"){ //成功
             this.ndRegister.active = false;
             this.initGLBData();
+            GLB.bLogin = true;
         } else
             this.playTips(msg);
     },
 
     initGLBData(){
         GLB.sName = this.editName.string;
-        GLB.bLogin = true;
         GLB.tScore = [];
         GLB.tName = [];
     },

@@ -1,7 +1,7 @@
 /* 存放全局变量 */
 var _GLBConfig = {
-    // ip: "websocket.windgzs.cn",
-    ip: "127.0.0.1",
+    ip: "websocket.windgzs.cn",
+    // ip: "127.0.0.1",
     wxUserInfo: [],
     getUserInfoBtn: null,
     isClickCd: null,
@@ -15,6 +15,7 @@ var _GLBConfig = {
     iLang: "zh", //zh中文，en英文
     // iLang: "en",
     sName: "",
+    bShowRegister: false,
     
     //event
     REGISTER: "register",
