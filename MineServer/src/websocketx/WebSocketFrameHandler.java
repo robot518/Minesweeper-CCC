@@ -30,7 +30,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
         iCount++;
-        System.out.println("channelActive"+iCount);
+//        System.out.println("channelActive"+iCount);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         ctx.fireChannelInactive();
         iCount--;
 //        Redis.getInstance().close();
-        System.out.println("channelInactive"+iCount);
+//        System.out.println("channelInactive"+iCount);
     }
 
     @Override
