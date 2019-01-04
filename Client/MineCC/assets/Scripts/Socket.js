@@ -5,16 +5,18 @@ var WS = {
     obj: null,
 };
 var bInter = false;
+// var iError = 0;
 var bError = false;
 var creatWS = function (argument) {
     ws = null;
     // ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
-    ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx|ios
-    // ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //安卓ssl连不上
+    // ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx|ios
+    ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //安卓ssl连不上
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
      if (bInter == false){
+        WS.sendMsg(GLB.GETVERSION);
         window.setInterval(function (argument) {
              WS.sendMsg("");
          }, 30000);
@@ -24,21 +26,32 @@ var creatWS = function (argument) {
     ws.onmessage = function (event) {
         var data = event.data;
         console.log("response text msg: " + data);
-        if (WS.obj == null)
-            return;
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
         var cmd = data.substring(0, i1);
         var sResponse = data.substring(i1+1);
+        if (cmd == GLB.GETVERSION)
+            var iVersion = parseInt(sResponse);
+            console.log("iVersion = ", iVersion);
+            if (iVersion - GLB.iVersion > 0){
+                GLB.bHotUpdate = true;
+        }
+        if (WS.obj == null)
+            return;
         WS.obj.onResponse(cmd, sResponse);
     };
     ws.onerror = function (event) {
      console.log("Send Text fired an error.");
+     // iError = 0;
      bError = true;
     };
     ws.onclose = function (event) {
      console.log("WebSocket instance closed.");
+     // if (iError <= 60){
+     //    iError++;
+     //    creatWS();
+     // }
      if (bError == false)
         creatWS();
     };

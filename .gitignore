@@ -4,3 +4,5 @@
 [Ll]ocal/
 *.DS_Store
 *.meta
+*.keystore
+*.jar

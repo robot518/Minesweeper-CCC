@@ -16,8 +16,11 @@ var _GLBConfig = {
     // iLang: "en",
     sName: "",
     bShowRegister: false,
+    iVersion: 19, //匹配版本信息进行热更新
+    bHotUpdate: false,
     
     //event
+    GETVERSION: "getVersion",
     REGISTER: "register",
     LOGIN: "login",
     GET_SCORE: "getScore",

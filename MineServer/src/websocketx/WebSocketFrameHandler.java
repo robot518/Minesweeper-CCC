@@ -61,8 +61,11 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             if (i1 != -1)
                 sName = request.substring(iColon + 1, i1);
             switch (cmd) {
+                case "getVersion":
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getVersion()));
+                    break;
                 case "getConnetedData":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame("getConnetedData" + "=" + iCount));
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + iCount));
                     break;
                 case "wxLogin":
                     break;

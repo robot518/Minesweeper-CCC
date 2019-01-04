@@ -159,6 +159,23 @@ public class Redis {
         }
     }
 
+    public String getVersion(){
+        Jedis jedis = null;
+        try {
+            jedis = getPool().getResource();
+            String str = jedis.get("version");
+            if (str == null) {
+                str = "0";
+                jedis.set("version", str);
+            }
+            return str;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public void close(){
         getPool().close();
     }

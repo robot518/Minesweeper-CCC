@@ -22,6 +22,7 @@ cc.Class({
         labT2Info: cc.Label,
         labT3Info: cc.Label,
         labT4Info: cc.Label,
+        labVersion: cc.Label,
         editName: cc.EditBox,
         editPass: cc.EditBox,
     },
@@ -254,6 +255,7 @@ cc.Class({
         //     // this.ndRegister.active = false;
         // }else{
         this.ndRegister.active = GLB.bShowRegister;
+        this.labVersion.string = GLB.iVersion;
         if (GLB.bShowRegister == true)
             GLB.bShowRegister = false;
         // }
@@ -261,6 +263,11 @@ cc.Class({
             this.onZhShow();
         else if (GLB.iLang == "en")
             this.onEnShow();
+
+        //检查热更新
+        cc.log("GLB.bHotUpdate = ", GLB.bHotUpdate);
+        if (cc.sys.isNative && cc.sys.isMobile && GLB.bHotUpdate == true)
+            this.getComponent("HotUpdate").show();
     },
 
     onResponse(cmd, msg){
