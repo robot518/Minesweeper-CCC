@@ -44,8 +44,8 @@
       <file leaf-file-name="Redis.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/websocketx/Redis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="155" column="32" selection-start-line="155" selection-start-column="32" selection-end-line="155" selection-end-column="32" />
+            <state relative-caret-position="59">
+              <caret line="161" column="5" lean-forward="true" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -105,8 +105,8 @@
         <option value="$PROJECT_DIR$/src/websocketx/RedisClient.java" />
         <option value="$PROJECT_DIR$/src/websocketx/RedisClientHandler.java" />
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketServer.java" />
-        <option value="$PROJECT_DIR$/src/websocketx/Redis.java" />
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" />
+        <option value="$PROJECT_DIR$/src/websocketx/Redis.java" />
       </list>
     </option>
   </component>
@@ -129,6 +129,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -140,6 +143,12 @@
               <item name="MineServer" type="b2602c69:ProjectViewProjectNode" />
               <item name="MineServer" type="462c0819:PsiDirectoryNode" />
               <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MineServer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MineServer" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="MineServer" type="b2602c69:ProjectViewProjectNode" />
@@ -173,9 +182,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -327,11 +333,12 @@
       <workItem from="1546352223431" duration="635000" />
       <workItem from="1546410951878" duration="8026000" />
       <workItem from="1546624019592" duration="119000" />
+      <workItem from="1546624188671" duration="7143000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="198314000" />
+    <option name="totallyTimeSpent" value="205457000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -344,6 +351,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="837" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32928476" />
@@ -354,19 +362,19 @@
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50214595" side_tool="true" weight="0.32567567" />
       <window_info anchor="right" id="Maven Projects" order="7" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49785408" weight="0.32567567" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49785408" visible="true" weight="0.32567567" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32928476" />
       <window_info id="Capture Tool" order="6" />
       <window_info id="Designer" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.34620887" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.35121602" />
       <window_info anchor="right" id="Database" order="6" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="4" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3972973" />
       <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3972973" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -617,8 +625,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/websocketx/Redis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="155" column="32" selection-start-line="155" selection-start-column="32" selection-end-line="155" selection-end-column="32" />
+        <state relative-caret-position="59">
+          <caret line="161" column="5" lean-forward="true" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

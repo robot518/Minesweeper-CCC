@@ -38,6 +38,23 @@ cc.Class({
         this.initEvent();
         this.initShow();
         this.initWXEvent();
+        var msgBox = cc.find("msgBox");
+        GLB.msgBox = msgBox;
+        cc.game.addPersistRootNode(msgBox);
+        cc.find("btn", msgBox).on("click", function (argument) {
+            if (GLB.isClickCd)
+                return;
+            GLB.isClickCd = true;
+            setTimeout(function() {
+                GLB.isClickCd = false;
+            }, 1000);
+            msgBox.active = false;
+            if (WS.ws.readyState !== WebSocket.OPEN)
+                WS.reconnect();
+        }, cc.game);
+        msgBox.on("click", function (argument) {
+            msgBox.active = false;
+        }, cc.game);
     },
 
     initCanvas(){
@@ -171,17 +188,30 @@ cc.Class({
                 children[1].getComponent(cc.Toggle).isChecked = true;
             }
         }, this);
+        cc.find("reconnect", btns).on("click", function (argument) {
+            GLB.msgBox.active = true;
+        }, this);
         cc.find("switch", btns).on("click", function (argument) {
-            // if (!window.wx)
-            //     return;
-            // wx.shareAppMessage({
-            //     title: "吃老子一个雷！",
-            //     imageUrl: canvas.toTempFilePathSync({
-            //         destWidth: 500,
-            //         destHeight: 400
-            //     })
-            // });
             this.ndRegister.active = true;
+        }, this);
+        cc.find("snake", btns).on("click", function (argument) {
+            if (window.wx){
+                wx.navigateToMiniProgram({
+                  appId: 'wx938546d6526f42dc',
+                  path: '',
+                  extraData: {
+                    foo: 'Minesweeper'
+                  },
+                  envVersion: 'develop',
+                  success(res) {
+                    // 打开成功
+                    console.log("success: ", res);
+                  },
+                  fail(res){
+                    console.log("fail: ", res);
+                  },
+                })
+            }
         }, this);
         var children = this.ndSet.children;
         //上中文下英文
@@ -250,10 +280,8 @@ cc.Class({
     },
 
     initShow(){
-        // if (window.wx){
-        //     cc.find("btns/switch", this.node).active = false;
-        //     // this.ndRegister.active = false;
-        // }else{
+        if (!window.wx)
+            cc.find("btns/snake", this.node).active = false;
         this.ndRegister.active = GLB.bShowRegister;
         this.labVersion.string = GLB.iVersion;
         if (GLB.bShowRegister == true)
@@ -266,8 +294,10 @@ cc.Class({
 
         //检查热更新
         cc.log("GLB.bHotUpdate = ", GLB.bHotUpdate);
-        if (cc.sys.isNative && cc.sys.isMobile && GLB.bHotUpdate == true)
+        if (cc.sys.isNative && cc.sys.isMobile && GLB.bHotUpdate == true && !window.wx)
             this.getComponent("HotUpdate").show();
+        // if (GLB.bHotUpdate == true)
+        //     this.getComponent("HotUpdate").show();
     },
 
     onResponse(cmd, msg){
@@ -293,6 +323,10 @@ cc.Class({
     },
 
     getBEmpty(){
+        if (WS.ws.readyState !== WebSocket.OPEN){
+            GLB.msgBox.active = true;
+            return true;
+        }
         var sName = this.editName.string;
         var sPass = this.editPass.string;
         if (sName == ""){

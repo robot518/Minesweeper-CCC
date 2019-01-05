@@ -49,8 +49,7 @@ cc.Class({
         this.initCanvas();
         this.initEvent();
         this.initShow();
-        if (GLB.sName != "")
-            WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
+        WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
     },
 
     initCanvas(){
@@ -88,30 +87,24 @@ cc.Class({
             if (this.bannerAd != null)
                 this.bannerAd.hide();
         }, this);
-        cc.find("scv/left", this.node).on("click", function (argument) {
-            // this.scv.active = false;
-            // if (this.bannerAd != null)
-            //     this.bannerAd.hide();
-        }, this);
-        cc.find("scv/right", this.node).on("click", function (argument) {
-            // this.scv.active = false;
-            // if (this.bannerAd != null)
-            //     this.bannerAd.hide();
-        }, this);
+        // cc.find("scv/left", this.node).on("click", function (argument) {
+        // }, this);
+        // cc.find("scv/right", this.node).on("click", function (argument) {
+        // }, this);
         for (var i = 0; i < 3; i++) {
             var node = cc.find("go/item" + (i+1).toString(), this.node);
             node.setName(i.toString());
             //challenge-self
             node.on("click", function (event) {
+                if (WS.ws.readyState !== WebSocket.OPEN){
+                    GLB.msgBox.active = true;
+                    return;
+                }
                 if (GLB.sName == ""){
                     GLB.bShowRegister = true;
                     cc.director.loadScene("Login");
                     if (this.bannerAd != null)
                         this.bannerAd.hide();
-                    return;
-                }
-                if (WS.ws.readyState !== WebSocket.OPEN){
-                    this.playTips();
                     return;
                 }
                 var name = event.node.name;
@@ -123,23 +116,23 @@ cc.Class({
             }, this);
             //play-self
             cc.find("play", node).on("click", function (event) {
-                var name = event.node.parent.name;
                 if (WS.ws.readyState !== WebSocket.OPEN){
-                    this.playTips();
+                    GLB.msgBox.active = true;
                     return;
                 }
                 if (GLB.sName == "")
                     return;
+                var name = event.node.parent.name;
                 GLB.iDiff = parseInt(name);
                 WS.sendMsg(GLB.GET_STEP, name+GLB.sName, this);
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
-                var name = event.node.parent.parent.name;
                 if (WS.ws.readyState !== WebSocket.OPEN){
-                    this.playTips();
+                    GLB.msgBox.active = true;
                     return;
                 }
+                var name = event.node.parent.parent.name;
                 GLB.iDiff = parseInt(name);
                 var sName = GLB.tName[GLB.iDiff];
                 if (sName == null)
@@ -148,6 +141,10 @@ cc.Class({
             }, this);
             //more
             cc.find("labType/more", node).on("click", function (event) {
+                if (WS.ws.readyState !== WebSocket.OPEN){
+                    GLB.msgBox.active = true;
+                    return;
+                }
                 var name = event.node.parent.parent.name;
                 this.scv.active = true;
                 var content = cc.find("content", this.scv).children;
@@ -235,7 +232,7 @@ cc.Class({
                 if (subData[1] != null)
                     GLB.tScore[i] = subData[1]/100;
                 GLB.tName[i] = subData[3];
-                this["labName" + (i+1).toString()].string = GLB.sName;
+                this["labName" + (i+1).toString()].string = this.getNewStr(GLB.sName);
                 this["labRank" + (i+1).toString()].string = this.getNewStr(subData[0]);
                 this["labScore" + (i+1).toString()].string = this.getNewStr(subData[1], 1);
                 this["labRank" + (i+1).toString() + "No1"].string = this.getNewStr(subData[2]);

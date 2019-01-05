@@ -187,7 +187,7 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
         // Hot update is only available in Native build
-        if (!cc.sys.isNative) {
+        if (!cc.sys.isNative || window.wx) {
             return;
         }
         this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset');
@@ -245,7 +245,7 @@ cc.Class({
         });
 
         // this.panel.info.string = 'Hot update is ready, please check or directly update.';
-        this.panel.info.string = "请点击检查更新"
+        this.panel.info.string = "请点击检查更新";
 
         if (cc.sys.os === cc.sys.OS_ANDROID) {
             // Some Android device may slow down the download process when concurrent tasks is too much.

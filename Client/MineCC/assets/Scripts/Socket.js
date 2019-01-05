@@ -10,11 +10,13 @@ var bError = false;
 var creatWS = function (argument) {
     ws = null;
     // ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
-    // ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx|ios
-    ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //安卓ssl连不上
+    // ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx
+    ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //ios+anroid其中安卓ssl连不上
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
+     if (GLB.msgBox)
+        GLB.msgBox.active = false;
      if (bInter == false){
         WS.sendMsg(GLB.GETVERSION);
         window.setInterval(function (argument) {
@@ -25,29 +27,32 @@ var creatWS = function (argument) {
     };
     ws.onmessage = function (event) {
         var data = event.data;
-        console.log("response text msg: " + data);
+        // console.log("response text msg: " + data);
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
         var cmd = data.substring(0, i1);
         var sResponse = data.substring(i1+1);
-        if (cmd == GLB.GETVERSION)
+        if (cmd == GLB.GETVERSION){
             var iVersion = parseInt(sResponse);
             console.log("iVersion = ", iVersion);
             if (iVersion - GLB.iVersion > 0){
                 GLB.bHotUpdate = true;
+            }
         }
         if (WS.obj == null)
             return;
         WS.obj.onResponse(cmd, sResponse);
     };
     ws.onerror = function (event) {
-     console.log("Send Text fired an error.");
+     console.log("Send Text fired an error.", event);
      // iError = 0;
      bError = true;
     };
-    ws.onclose = function (event) {
-     console.log("WebSocket instance closed.");
+    ws.onclose = function (e) {
+        if (e.code.toString() != "1001" && GLB.msgBox)
+            GLB.msgBox.active = true;
+     console.log("WebSocket instance closed.", e.code + ' ' + e.reason + ' ' + e.wasClean);
      // if (iError <= 60){
      //    iError++;
      //    creatWS();
@@ -66,7 +71,7 @@ WS.sendMsg = function (cmd, msg, obj) {
             return;
         }
         var str = cmd + ":" + msg.toString();
-        console.log("sendMsg = ", str);
+        // console.log("sendMsg = ", str);
         ws.send(str);
         if (obj != null){
             WS.obj = obj;
@@ -125,6 +130,10 @@ WS.getStrPBStepInfo = function (tPB) {
 };
 WS.close = function (argument) {
     ws.close();
+};
+WS.reconnect = function (argument) {
+    bError = false;
+    creatWS();
 };
 creatWS();
 module.exports = WS;

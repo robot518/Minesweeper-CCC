@@ -6,3 +6,4 @@
 *.meta
 *.keystore
 *.jar
+*.manifest

@@ -104,10 +104,10 @@ public class Redis {
             for (int i = 0; i < 3; i++){
                 String sKeyTemp = sKeyScore+i;
                 Long iRank = jedis.zrank(sKeyTemp, sName);
+                int iRecommend = 0;
                 if (iRank != null) {
                     Double iScore = jedis.zscore(sKeyTemp, sName);
                     str += (iRank+1) + "," + iScore + ",";
-                    int iRecommend = 0;
                     if (iRank == 0)
                         iRecommend = 1;
                     else if (iRank <= 10)
@@ -124,10 +124,12 @@ public class Redis {
                         Long iCount = jedis.zcard(sKeyTemp);
                         iRecommend = iCount >= 200 ? 200 : (int) (iCount - 0);
                     }
-                    Set<Tuple> st = jedis.zrangeWithScores(sKeyTemp, iRecommend, iRecommend);
-                    str += (iRecommend+1) + ",";
-                    str += st.toString().replace("], [", ",").replace("[", "").replace("]", "");
+                }else{
+                    str += ",,";
                 }
+                Set<Tuple> st = jedis.zrangeWithScores(sKeyTemp, iRecommend, iRecommend);
+                str += (iRecommend+1) + ",";
+                str += st.toString().replace("], [", ",").replace("[", "").replace("]", "");
                 if (i != 3)
                     str += "|";
             }

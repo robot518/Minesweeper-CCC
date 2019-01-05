@@ -182,7 +182,7 @@ cc.Class({
         var self = this;
         this._layerPoint.scheduleOnce(function (argument) {
             self._layerPoint.setTileGIDAt(4, iR, iL);
-        }, delt.iPBTime);
+        }, 0.2);
     },
 
     onFlagEvent(){

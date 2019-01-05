@@ -72,7 +72,12 @@ cc.Class({
         this._updateSubDomainCanvas();
         if (this.bPlayTime == true){
             this._iTime+=dt;
-            this.labTime.string = this._iTime.toFixed(2).toString();
+            this.labTime.string = this.getITime().toString();
+            if (this.bPlayback == true && this._iTime >= this.iPlaybackTime){
+                this.showPlayback(this.iPBidx);
+                this.iPBidx++;
+                this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
+            }
         }
     },
 
@@ -108,13 +113,17 @@ cc.Class({
         this.midPreOff = cc.v2(250, 130);
         this.bigPreOff = cc.v2(250, 620);
         this.bScale = false;
-        this._iLife = 1;
+        this._iLife = 1; 
+        this._iTime = 0;
 
         if (GLB.iType == 1 || GLB.iType == 2){
             this._iDiff = GLB.iDiff;
-            if (GLB.iType == 2){
+            if (GLB.iType == 2){ //playback
                 this.tPBBtns = [];
                 this.tPBFlags = [];
+                this.bPlayback = true;
+                this.iPBidx = 2;
+                this.iPlaybackTime = this.getPlaybackTime(this.iPBidx); //playbackData中一步的时间
             }
         }
     },
@@ -126,7 +135,7 @@ cc.Class({
             this.goResult.active = false;
             if (GLB.iType == 0) return;
             var score = GLB.tScore[this._iDiff];
-            if (score == null || this._iTime < score){
+            if (score == "" || score == null || this._iTime < score){
                 var strStepInfo = WS.getStrPBStepInfo(this._tileMap.getTPB());
                 if (strStepInfo == "")
                     return;
@@ -155,86 +164,64 @@ cc.Class({
             self.onType();
         }, this);
         var playback = cc.find("playback", btns);
-        var speedup = cc.find("speedup", playback);
         var ndStop = cc.find("stop", playback);
         var ndPlay = cc.find("play", playback);
-        speedup.on("click", function (argument) {
-            if (this.iPBTime <= 0.5)
-                return;
-            this.iPBTime -= 0.5;
-            if (this.iPBTime < 0.5){
-                this.iPBTime = 0.5;
-            }
-            this.labPBTime.string = this.iPBTime.toString();
-            if (ndStop.active == true){
-                this.labTime.unschedule(this.coPlayback)
-                this.labTime.schedule(this.coPlayback, this.iPBTime);
-            }
-        }, this);
         cc.find("undo", playback).on("click", function (argument) {
-            if (this.iPBidx <= 0)
+            if (this.iPBidx <= 2)
                 return;
             this.iPBidx--;
-            if (this.iPBidx < 0)
-                this.iPBidx = 0;
             if (ndStop.active == true){
-                this.labTime.unschedule(this.coPlayback);
+                this.bPlayTime = false;
                 ndPlay.active = true;
                 ndStop.active = false;
             }
             if (this.tPBBtns.length == 1)
                 return;
             this.tPBBtns.pop();
-            this.tPBFlags.pop();
+            var tFlag = this.tPBFlags.pop();
             this._tBtns = this.tPBBtns[this.tPBBtns.length - 1].slice(0);
             this._tFlag = this.tPBFlags[this.tPBFlags.length - 1].slice(0);
             this._tileMap.showBtns(this._tBtns);
             this._tileMap.showFlags(this._tFlag);
-            var sData = GLB.tPlaybackData[self.iPBidx+2];
+            var sData = GLB.tPlaybackData[self.iPBidx];
+            var iDot = sData.indexOf(".");
+            var idx = sData.substring(1, iDot);
+            this.iPlaybackTime = sData.substring(iDot+1); //时间重置1
             if (sData[0] == 1)
-                this.setMineCount (1);
-            sData = GLB.tPlaybackData[self.iPBidx+1];
-            this.labTime.string = this.iPBidx == 0 ? "0.00" : sData.substring(sData.indexOf(".")+1).toString();
+                this.setMineCount (2*tFlag[idx]-1);
+            sData = GLB.tPlaybackData[self.iPBidx-1];
+            this._iTime = this.iPBidx == 2 ? 0 : parseFloat(sData.substring(sData.indexOf(".")+1));
+            this.labTime.string = this.iPBidx == 2 ? "0.00" : this._iTime.toString();
         }, this);
         ndStop.on("click", function (argument) {
-            self.labTime.unschedule(self.coPlayback);
+            this.bPlayTime = false;
             ndPlay.active = true;
             ndStop.active = false;
         }, this);
         ndPlay.on("click", function (argument) {
-            this.labTime.schedule(this.coPlayback, this.iPBTime);
             ndStop.active = true;
             ndPlay.active = false;
+            if (this.iPBidx < GLB.tPlaybackData.length-2){
+                this.bPlayTime = true;
+            };
         }, this);
         cc.find("redo", playback).on("click", function (argument) {
-            if (this.iPBidx >= GLB.tPlaybackData.length-2)
+            if (this.iPBidx > GLB.tPlaybackData.length-1)
                 return;
-            this.iPBidx++;
-            if (this.iPBidx > GLB.tPlaybackData.length-2)
-                this.iPBidx = GLB.tPlaybackData.length-2;
             if (ndStop.active == true){
-                this.labTime.unschedule(this.coPlayback);
+                this.bPlayTime = false;
                 ndPlay.active = true;
                 ndStop.active = false;
             }
-            var sData = GLB.tPlaybackData[self.iPBidx+1];
-            var iNum = sData.indexOf(".");
-            self.labTime.string = sData.substring(iNum+1).toString();
-            self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iNum));
+            var sData = GLB.tPlaybackData[self.iPBidx];
+            var iDot = sData.indexOf(".");
+            this._iTime = parseFloat(sData.substring(iDot+1)); //时间重置2
+            self.labTime.string = this._iTime.toString();
+            self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iDot));
             self.tPBBtns.push(self._tBtns.slice(0));
             self.tPBFlags.push(self._tFlag.slice(0));
-        }, this);
-        cc.find("speedcut", playback).on("click", function (argument) {
-            if (this.iPBTime >= 2.5)
-                return;
-            this.iPBTime += 0.5;
-            if (this.iPBTime > 2.5)
-                this.iPBTime = 2.5;
-            this.labPBTime.string = this.iPBTime.toString();
-            if (ndStop.active == true){
-                this.labTime.unschedule(this.coPlayback)
-                this.labTime.schedule(this.coPlayback, this.iPBTime);
-            }
+            this.iPBidx++;
+            this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
         }, this);
         cc.find("sub/rank", btns).on("click", function (argument) {
             self.playSound ("click");
@@ -444,32 +431,54 @@ cc.Class({
             var self = this;
             self.onScale();
             this.labTime.scheduleOnce(function (argument) {
-                self.onPlayback();
+                // self.onPlayback();
+                cc.find("btns/playback", self.node).active = true;
             }, 0.5);
         } else
             this.initGridShow();
     },
 
+    getPlaybackTime(idx){
+        var sData = GLB.tPlaybackData[idx];
+        if (sData == null)
+            return;
+        return sData.substring(sData.indexOf(".")+1);
+    },
+
+    showPlayback(idx){
+        var sData = GLB.tPlaybackData[idx];
+        if (sData == null)
+            return;
+        var iNum = sData.indexOf(".");
+        this.labTime.string = sData.substring(iNum+1).toString();
+        this._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iNum));
+        this.tPBBtns.push(this._tBtns.slice(0));
+        this.tPBFlags.push(this._tFlag.slice(0));
+        if (idx >= GLB.tPlaybackData.length-1){
+            this.bPlayTime = false;
+        };
+    },
+
     onPlayback(){
-        cc.find("btns/playback", this.node).active = true;
-        this.labPBTime.node.parent.active = true;
-        var self = this;
-        this.iPBidx = 0;
-        var iL = GLB.tPlaybackData.length-2;
-        this.iPBTime = 1.5;
-        this.coPlayback = function(){
-            self.iPBidx++;
-            var sData = GLB.tPlaybackData[self.iPBidx+1];
-            var iNum = sData.indexOf(".");
-            self.labTime.string = sData.substring(iNum+1).toString();
-            self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iNum));
-            self.tPBBtns.push(self._tBtns.slice(0));
-            self.tPBFlags.push(self._tFlag.slice(0));
-            if (self.iPBidx >= iL){
-                self.labTime.unschedule(self.coPlayback);
-            };
-        }
-        this.labTime.schedule(this.coPlayback, this.iPBTime);
+        // cc.find("btns/playback", this.node).active = true;
+        // this.labPBTime.node.parent.active = true;
+        // var self = this;
+        // this.iPBidx = 0;
+        // var iL = GLB.tPlaybackData.length-2;
+        // this.iPBTime = 1.5;
+        // this.coPlayback = function(){
+        //     self.iPBidx++;
+        //     var sData = GLB.tPlaybackData[self.iPBidx+1];
+        //     var iNum = sData.indexOf(".");
+        //     self.labTime.string = sData.substring(iNum+1).toString();
+        //     self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iNum));
+        //     self.tPBBtns.push(self._tBtns.slice(0));
+        //     self.tPBFlags.push(self._tFlag.slice(0));
+        //     if (self.iPBidx >= iL){
+        //         self.labTime.unschedule(self.coPlayback);
+        //     };
+        // }
+        // this.labTime.schedule(this.coPlayback, this.iPBTime);
     },
 
     reset(){

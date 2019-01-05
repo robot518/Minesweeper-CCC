@@ -4,7 +4,7 @@ var _GLBConfig = {
     // ip: "127.0.0.1",
     wxUserInfo: [],
     getUserInfoBtn: null,
-    isClickCd: null,
+    isClickCd: false,
     bInit: false,
     bLogin: false,
     iType: 0, //0经典，1挑战，2回放
@@ -18,6 +18,7 @@ var _GLBConfig = {
     bShowRegister: false,
     iVersion: 19, //匹配版本信息进行热更新
     bHotUpdate: false,
+    msgBox: null, //断线重连
     
     //event
     GETVERSION: "getVersion",
