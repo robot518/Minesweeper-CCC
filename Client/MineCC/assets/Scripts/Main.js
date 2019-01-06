@@ -314,16 +314,14 @@ cc.Class({
             if (!window.wx)
                 cc.find("share", sub).active = false;
         }
-
-        if (GLB.iType == 1 || GLB.iType == 2){
-            var btns = cc.find("btns", this.node);
-            var normal = cc.find("normal", btns);
-            cc.find("start", normal).active = false;
+        var normal = cc.find("btns/normal", this.node);
+        if (GLB.iType == 1)
             cc.find("diff", normal).active = false;
-            if (GLB.iType == 2){
-                cc.find("type", normal).active = false;
-                cc.find("scale", normal).active = false;
-            }
+        else if (GLB.iType == 2){
+            cc.find("diff", normal).active = false;
+            cc.find("start", normal).active = false;
+            cc.find("type", normal).active = false;
+            cc.find("scale", normal).active = false;
         }
         if (GLB.iLang == "zh")
             this.onZhShow();
@@ -431,11 +429,11 @@ cc.Class({
             var self = this;
             self.onScale();
             this.labTime.scheduleOnce(function (argument) {
-                // self.onPlayback();
                 cc.find("btns/playback", self.node).active = true;
             }, 0.5);
-        } else
+        } else{
             this.initGridShow();
+        }
     },
 
     getPlaybackTime(idx){
@@ -457,28 +455,6 @@ cc.Class({
         if (idx >= GLB.tPlaybackData.length-1){
             this.bPlayTime = false;
         };
-    },
-
-    onPlayback(){
-        // cc.find("btns/playback", this.node).active = true;
-        // this.labPBTime.node.parent.active = true;
-        // var self = this;
-        // this.iPBidx = 0;
-        // var iL = GLB.tPlaybackData.length-2;
-        // this.iPBTime = 1.5;
-        // this.coPlayback = function(){
-        //     self.iPBidx++;
-        //     var sData = GLB.tPlaybackData[self.iPBidx+1];
-        //     var iNum = sData.indexOf(".");
-        //     self.labTime.string = sData.substring(iNum+1).toString();
-        //     self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iNum));
-        //     self.tPBBtns.push(self._tBtns.slice(0));
-        //     self.tPBFlags.push(self._tFlag.slice(0));
-        //     if (self.iPBidx >= iL){
-        //         self.labTime.unschedule(self.coPlayback);
-        //     };
-        // }
-        // this.labTime.schedule(this.coPlayback, this.iPBTime);
     },
 
     reset(){

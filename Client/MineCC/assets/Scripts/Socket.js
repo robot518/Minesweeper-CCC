@@ -34,7 +34,7 @@ var creatWS = function (argument) {
         var cmd = data.substring(0, i1);
         var sResponse = data.substring(i1+1);
         if (cmd == GLB.GETVERSION){
-            var iVersion = parseInt(sResponse);
+            var iVersion = parseFloat(sResponse);
             console.log("iVersion = ", iVersion);
             if (iVersion - GLB.iVersion > 0){
                 GLB.bHotUpdate = true;

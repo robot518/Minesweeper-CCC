@@ -54,9 +54,6 @@ cc.Class({
         this._layerPoint = this._tiledMap.getLayer("point");
 
         this._bTouch = false;
-
-        if (GLB.iType == 1)
-            this.tPB = [];
     },
 
     //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-greenflag 15-point
@@ -74,6 +71,8 @@ cc.Class({
             this._layerLab.setTileGIDAt(4, iR, iL);
             this._layerPoint.setTileGIDAt(4, iR, iL);
         };
+        if (GLB.iType == 1)
+            this.tPB = [];
     },
 
     //tilemap中左下为(0, 0)
