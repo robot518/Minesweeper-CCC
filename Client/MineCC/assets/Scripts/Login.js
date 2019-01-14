@@ -282,6 +282,8 @@ cc.Class({
     initShow(){
         if (!window.wx)
             cc.find("btns/snake", this.node).active = false;
+        else
+            cc.find("btns/snake", this.node).active = true;
         this.ndRegister.active = GLB.bShowRegister;
         this.labVersion.string = GLB.iVersion;
         if (GLB.bShowRegister == true)

@@ -27,7 +27,7 @@ var creatWS = function (argument) {
     };
     ws.onmessage = function (event) {
         var data = event.data;
-        // console.log("response text msg: " + data);
+        console.log("response text msg: " + data);
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
@@ -52,13 +52,13 @@ var creatWS = function (argument) {
     ws.onclose = function (e) {
         if (e.code.toString() != "1001" && GLB.msgBox)
             GLB.msgBox.active = true;
-     console.log("WebSocket instance closed.", e.code + ' ' + e.reason + ' ' + e.wasClean);
-     // if (iError <= 60){
-     //    iError++;
-     //    creatWS();
-     // }
-     if (bError == false)
-        creatWS();
+         console.log("WebSocket instance closed.", e.code + ' ' + e.reason + ' ' + e.wasClean);
+         // if (iError <= 60){
+         //    iError++;
+         //    creatWS();
+         // }
+         if (bError == false)
+            creatWS();
     };
 }
 WS.sendMsg = function (cmd, msg, obj) {

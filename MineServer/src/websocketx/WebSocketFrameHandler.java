@@ -20,25 +20,39 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Echoes uppercase content of text frames.
  */
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static float iCount = 0;
+    long startTime = -1;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelActive();
+//        ctx.fireChannelActive();
         iCount++;
-//        System.out.println("channelActive"+iCount);
+        if (startTime < 0) {
+            startTime = System.currentTimeMillis();
+        }
+        String sDate = new SimpleDateFormat("MM-dd").format(new Date());
+        Redis.getInstance().setRecord(sDate, getStrAddress(ctx), 0);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelInactive();
+//        ctx.fireChannelInactive();
         iCount--;
-//        Redis.getInstance().close();
-//        System.out.println("channelInactive"+iCount);
+        Long iDate = (System.currentTimeMillis() - startTime) / 1000;
+        String sDate = new SimpleDateFormat("MM-dd").format(new Date());
+        Redis.getInstance().setRecord(sDate, getStrAddress(ctx), iDate);
+    }
+
+    String getStrAddress(ChannelHandlerContext ctx){
+        String sAddress = ctx.channel().remoteAddress().toString();
+        return sAddress.substring(1, sAddress.indexOf(":"));
     }
 
     @Override
@@ -61,6 +75,15 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             if (i1 != -1)
                 sName = request.substring(iColon + 1, i1);
             switch (cmd) {
+                case "Records":
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Records(request.substring(iColon+1))));
+                    break;
+                case "Users":
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Users()));
+                    break;
+                case "ActiveUsers":
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().ActiveUsers()));
+                    break;
                 case "getVersion":
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getVersion()));
                     break;

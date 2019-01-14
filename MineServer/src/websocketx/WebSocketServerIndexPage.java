@@ -63,10 +63,9 @@ public final class WebSocketServerIndexPage {
                         '}' + NEWLINE +
                         "</script>" + NEWLINE +
                         "<form onsubmit=\"return false;\">" + NEWLINE +
-                        "<input type=\"text\" name=\"message\" value=\"getConnetedData:\"/>" +
-                        "<input type=\"button\" value=\"Get connected Data\"" + NEWLINE +
+                        "<input type=\"text\" name=\"message\" value=\"Records:\"/>" +
+                        "<input type=\"button\" value=\"Get Data\"" + NEWLINE +
                         "       onclick=\"send(this.form.message.value)\" />" + NEWLINE +
-//                        "       onclick=\"send(\"getConnetedData:\")\" />" + NEWLINE +
                         "<h3>Output</h3>" + NEWLINE +
                         "<textarea id=\"responseText\" style=\"width:500px;height:300px;\"></textarea>" + NEWLINE +
                         "</form>" + NEWLINE +

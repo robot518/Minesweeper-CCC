@@ -2,6 +2,8 @@ package websocketx;
 
 import redis.clients.jedis.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 public class Redis {
@@ -9,6 +11,8 @@ public class Redis {
     private static Redis redis;
     private String sKeyScore = "score";
     private String sKeyStep = "step";
+    private String sKeyRecord="record";
+    String sKeyRegister = "register";
 
     public static Redis getInstance(){
         if (redis == null){
@@ -180,5 +184,72 @@ public class Redis {
 
     public void close(){
         getPool().close();
+    }
+
+    public String Users(){
+        Jedis jedis = null;
+        try {
+            String str = "";
+            jedis = getPool().getResource();
+            Set<String> setKeys = jedis.keys("*");
+            str+=setKeys.size()+setKeys.toString()+"\n";
+            for (int i=0; i<3; i++){
+                String strKey = sKeyStep+i;
+                Set<String> setScore0 = jedis.hkeys(strKey);
+                str+=strKey+"="+jedis.hlen(strKey)+setScore0.toString()+"\n";
+            }
+            return str;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String ActiveUsers(){
+        return "";
+    }
+
+    public String Records(String sDate){
+        Jedis jedis = null;
+        try {
+            String sKey = sKeyRecord+sDate;
+            jedis = getPool().getResource();
+            return jedis.hlen(sKey)+"|"+jedis.hget(sKeyRegister, sDate)+":"+jedis.hgetAll(sKey).toString();
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public void setRecord(String sDate, String sAddress, long lTime){
+        Jedis jedis = null;
+        try {
+            String sKey = sKeyRecord+sDate;
+            jedis = getPool().getResource();
+            String sTime = jedis.hget(sKey, sAddress);
+            if (sTime == null){
+                jedis.hset(sKey, sAddress, "0");
+            }else{
+                jedis.hset(sKey, sAddress, (lTime+Long.parseLong(sTime))+"");
+            }
+
+            String sTime2 = jedis.hget(sKeyRecord, sAddress);
+            if (sTime2 == null){
+                jedis.hset(sKeyRecord, sAddress, "0");
+                String sNew = jedis.hget(sKeyRegister, sDate);
+                if (sNew == null)
+                    jedis.hset(sKeyRegister, sDate, "0");
+                else
+                    jedis.hset(sKeyRegister, sDate, (Long.parseLong(sNew)+1)+"");
+            }else{
+                jedis.hset(sKeyRecord, sAddress, (lTime+Long.parseLong(sTime2))+"");
+            }
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
     }
 }
