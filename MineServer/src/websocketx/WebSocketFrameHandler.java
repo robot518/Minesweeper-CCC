@@ -38,7 +38,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             startTime = System.currentTimeMillis();
         }
         String sDate = new SimpleDateFormat("MM-dd").format(new Date());
-        Redis.getInstance().setRecord(sDate, getStrAddress(ctx), 0);
+        Redis.getInstance().setRecord(sDate, getStrAddress(ctx), -1);
     }
 
     @Override

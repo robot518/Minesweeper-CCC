@@ -13,6 +13,7 @@ public class Redis {
     private String sKeyStep = "step";
     private String sKeyRecord="record";
     String sKeyRegister = "register";
+    String sKeyActive = "active";
 
     public static Redis getInstance(){
         if (redis == null){
@@ -215,7 +216,7 @@ public class Redis {
         try {
             String sKey = sKeyRecord+sDate;
             jedis = getPool().getResource();
-            return jedis.hlen(sKey)+"|"+jedis.hget(sKeyRegister, sDate)+":"+jedis.hgetAll(sKey).toString();
+            return jedis.hlen(sKey)+"|"+jedis.hget(sKeyRegister, sDate)+":"+jedis.hgetAll(sKey).toString()+"\t"+jedis.hlen(sKeyActive)+":"+jedis.hgetAll(sKeyActive).toString();
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -228,6 +229,11 @@ public class Redis {
         try {
             String sKey = sKeyRecord+sDate;
             jedis = getPool().getResource();
+            if (lTime < 0) {
+                lTime = 0;
+                jedis.hset(sKeyActive, sAddress, (new SimpleDateFormat("dd-HH:mm:ss").format(new Date())).toString());
+            }else
+                jedis.hdel(sKeyActive, sAddress);
             String sTime = jedis.hget(sKey, sAddress);
             if (sTime == null){
                 jedis.hset(sKey, sAddress, "0");
