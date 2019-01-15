@@ -227,7 +227,7 @@ public class Redis {
                 long lOnlineTime = Long.parseLong(jedis.hget(sKeyOnlineTime, "2019"));
                 str += "\t人均停留时长:"+lOnlineTime/lActive;
             }
-            str += "\n在线用户:" + jedis.zrangeWithScores(sKeyOnline, -1, 0);
+            str += "\n在线用户:" + jedis.zrangeWithScores(sKeyOnline, 0, -1);
             return str;
         } finally {
             if (jedis != null) {

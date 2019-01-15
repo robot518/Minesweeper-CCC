@@ -80,7 +80,7 @@ public final class WebSocketServerIndexPage {
                         "<input type=\"button\" value=\"Get Data\"" + NEWLINE +
                         "       onclick=\"send(this.form.message.value)\" />" + NEWLINE +
                         "<h3>Output</h3>" + NEWLINE +
-                        "<textarea id=\"responseText\" style=\"width:500px;height:300px;\"></textarea>" + NEWLINE +
+                        "<textarea id=\"responseText\" style=\"width:600px;height:300px;\"></textarea>" + NEWLINE +
                         "</form>" + NEWLINE +
                         "</body>" + NEWLINE +
                         "</html>" + NEWLINE, CharsetUtil.US_ASCII);
