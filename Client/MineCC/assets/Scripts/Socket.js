@@ -27,7 +27,7 @@ var creatWS = function (argument) {
     };
     ws.onmessage = function (event) {
         var data = event.data;
-        console.log("response text msg: " + data);
+        // console.log("response text msg: " + data);
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;

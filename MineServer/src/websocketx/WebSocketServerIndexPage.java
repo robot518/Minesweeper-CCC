@@ -19,6 +19,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 
+//import java.util.Date;
+
 /**
  * Generates the demo HTML page which is served at http://localhost:8080/
  */
@@ -44,6 +46,7 @@ public final class WebSocketServerIndexPage {
                         "  socket.onopen = function(event) {" + NEWLINE +
                         "    var ta = document.getElementById('responseText');" + NEWLINE +
                         "    ta.value = \"Web Socket opened!\";" + NEWLINE +
+                        "   send(\"Records:\"+getTime());"+ NEWLINE +
                         "  };" + NEWLINE +
                         "  socket.onclose = function(event) {" + NEWLINE +
                         "    var ta = document.getElementById('responseText');" + NEWLINE +
@@ -53,6 +56,16 @@ public final class WebSocketServerIndexPage {
                         "  alert(\"Your browser does not support Web Socket.\");" + NEWLINE +
                         '}' + NEWLINE +
                         NEWLINE +
+                        "function getTime() {" + NEWLINE +
+                        "    var date = new Date();" + NEWLINE +
+                        "    var iMonth = date.getMonth()+1;" + NEWLINE +
+                        "    if (iMonth < 10)" + NEWLINE +
+                        "       iMonth=\"0\"+iMonth" + NEWLINE +
+                        "    var iDate = date.getDate();" + NEWLINE +
+                        "    if (iDate < 10)" + NEWLINE +
+                        "       iDate=\"0\"+iDate" + NEWLINE +
+                        "    return iMonth+\"\"+iDate" + NEWLINE +
+                        '}' + NEWLINE +
                         "function send(message) {" + NEWLINE +
                         "  if (!window.WebSocket) { return; }" + NEWLINE +
                         "  if (socket.readyState == WebSocket.OPEN) {" + NEWLINE +

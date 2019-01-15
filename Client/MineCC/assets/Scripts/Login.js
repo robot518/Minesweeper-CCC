@@ -34,6 +34,8 @@ cc.Class({
     },
 
     start () {
+        var time = new Date();
+        cc.log((time.getMonth()+1)+""+time.getDate());
         this.initCanvas();
         this.initEvent();
         this.initShow();

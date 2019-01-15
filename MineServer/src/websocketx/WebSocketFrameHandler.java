@@ -27,7 +27,7 @@ import java.util.Date;
  * Echoes uppercase content of text frames.
  */
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static float iCount = 0;
+    private static long iCount = 0;
     long startTime = -1;
 
     @Override
@@ -37,7 +37,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         if (startTime < 0) {
             startTime = System.currentTimeMillis();
         }
-        String sDate = new SimpleDateFormat("MM-dd").format(new Date());
+        String sDate = new SimpleDateFormat("MMdd").format(new Date());
         Redis.getInstance().setRecord(sDate, getStrAddress(ctx), -1);
     }
 
@@ -46,7 +46,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 //        ctx.fireChannelInactive();
         iCount--;
         Long iDate = (System.currentTimeMillis() - startTime) / 1000;
-        String sDate = new SimpleDateFormat("MM-dd").format(new Date());
+        String sDate = new SimpleDateFormat("MMdd").format(new Date());
         Redis.getInstance().setRecord(sDate, getStrAddress(ctx), iDate);
     }
 
@@ -62,7 +62,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             String request = ((TextWebSocketFrame) frame).text();
             if (request.length() == 0)
                 return;
-            System.out.println(request);
+            System.out.println(ctx.channel().remoteAddress()+"\t"+request);
             int iColon = request.indexOf(":");
             if (iColon == -1)
                 return;
@@ -76,19 +76,13 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                 sName = request.substring(iColon + 1, i1);
             switch (cmd) {
                 case "Records":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Records(request.substring(iColon+1))));
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Records(request.substring(iColon+1), iCount)));
                     break;
                 case "Users":
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Users()));
                     break;
-                case "ActiveUsers":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().ActiveUsers()));
-                    break;
                 case "getVersion":
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getVersion()));
-                    break;
-                case "getConnetedData":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + iCount));
                     break;
                 case "wxLogin":
                     break;

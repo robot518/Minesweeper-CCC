@@ -8,12 +8,14 @@ import java.util.Set;
 
 public class Redis {
     private JedisPool pool;
-    private static Redis redis;
-    private String sKeyScore = "score";
-    private String sKeyStep = "step";
-    private String sKeyRecord="record";
-    String sKeyRegister = "register";
-    String sKeyActive = "active";
+    static Redis redis;
+    String sKeyScore = "score";
+    String sKeyStep = "step";
+    String sKeyOnline="key-online";
+    String sKeyRegister = "key-register";
+    String sKeyActive = "key-active";
+    String sKeyVisit = "key-visit";
+    String sKeyOnlineTime = "key-onlineTime";
 
     public static Redis getInstance(){
         if (redis == null){
@@ -207,16 +209,26 @@ public class Redis {
         }
     }
 
-    public String ActiveUsers(){
-        return "";
-    }
-
-    public String Records(String sDate){
+    public String Records(String sDate, long iCount){
         Jedis jedis = null;
         try {
-            String sKey = sKeyRecord+sDate;
             jedis = getPool().getResource();
-            return jedis.hlen(sKey)+"|"+jedis.hget(sKeyRegister, sDate)+":"+jedis.hgetAll(sKey).toString()+"\t"+jedis.hlen(sKeyActive)+":"+jedis.hgetAll(sKeyActive).toString();
+            long lActive = jedis.scard(sKeyActive+sDate);
+            String str = "\n活跃用户:"+lActive+"\t注册用户:"+jedis.hget(sKeyRegister, sDate)+"\t在线用户:"+jedis.zcard(sKeyOnline)+"\t连接数:"+iCount;
+            if (sDate.length() != 0){
+                String sVisit = jedis.hget(sKeyVisit, sDate);
+                if (sVisit != null){
+                    long lVisit = Long.parseLong(sVisit);
+                    long lOnlineTime = Long.parseLong(jedis.hget(sKeyOnlineTime, sDate));
+                    str += "\t访问次数:"+sVisit+"\t人均访问次数:"+lVisit/lActive+"\t人均停留时长:"+lOnlineTime/lActive;
+                    str += "\n实时访问次数:" + jedis.hgetAll(sKeyVisit+sDate);
+                }
+            }else{
+                long lOnlineTime = Long.parseLong(jedis.hget(sKeyOnlineTime, "2019"));
+                str += "\t人均停留时长:"+lOnlineTime/lActive;
+            }
+            str += "\n在线用户:" + jedis.zrangeWithScores(sKeyOnline, -1, 0);
+            return str;
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -227,31 +239,26 @@ public class Redis {
     public void setRecord(String sDate, String sAddress, long lTime){
         Jedis jedis = null;
         try {
-            String sKey = sKeyRecord+sDate;
             jedis = getPool().getResource();
             if (lTime < 0) {
                 lTime = 0;
-                jedis.hset(sKeyActive, sAddress, (new SimpleDateFormat("dd-HH:mm:ss").format(new Date())).toString());
+                jedis.hincrBy(sKeyVisit, sDate,1); //单日访问次数
+                String sTime = new SimpleDateFormat("HHmm").format(new Date());
+                String sHour = sTime.substring(0, 2);
+                jedis.hincrBy(sKeyVisit+sDate, sHour,1); //单日实时访问次数
+                jedis.zadd(sKeyOnline, Integer.parseInt(sTime), sAddress); //用户在线
             }else
-                jedis.hdel(sKeyActive, sAddress);
-            String sTime = jedis.hget(sKey, sAddress);
-            if (sTime == null){
-                jedis.hset(sKey, sAddress, "0");
-            }else{
-                jedis.hset(sKey, sAddress, (lTime+Long.parseLong(sTime))+"");
-            }
+                jedis.zrem(sKeyOnline, sAddress); //用户下线
 
-            String sTime2 = jedis.hget(sKeyRecord, sAddress);
-            if (sTime2 == null){
-                jedis.hset(sKeyRecord, sAddress, "0");
-                String sNew = jedis.hget(sKeyRegister, sDate);
-                if (sNew == null)
-                    jedis.hset(sKeyRegister, sDate, "0");
-                else
-                    jedis.hset(sKeyRegister, sDate, (Long.parseLong(sNew)+1)+"");
-            }else{
-                jedis.hset(sKeyRecord, sAddress, (lTime+Long.parseLong(sTime2))+"");
+            String sKey = sKeyActive+sDate;
+            jedis.sadd(sKey, sAddress); //单日在线数
+            jedis.hincrBy(sKeyOnlineTime, sDate, lTime); //单日在线时长
+
+            long lAdd = jedis.sadd(sKeyActive, sAddress); //总在线用户数
+            if (lAdd == 1){ //新增
+                jedis.hincrBy(sKeyRegister, sDate,1); //单日注册用户
             }
+            jedis.hincrBy(sKeyOnlineTime, "2019", lTime); //2019总在线时长
         } finally {
             if (jedis != null) {
                 jedis.close();
