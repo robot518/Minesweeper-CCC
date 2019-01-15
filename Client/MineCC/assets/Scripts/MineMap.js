@@ -190,14 +190,22 @@ cc.Class({
         if (iFlag == 4 && delt.getMineCount () == 0)
             return;
         delt.playSound("check");
+        var tile = this._layerFlag.getTiledTileAt(this.iR, this.iL, true);
+        var tileNode = tile.node;
         if (iFlag == 4){
             this._layerFlag.setTileGIDAt(3, this.iR, this.iL);
             delt._tFlag[this.idx] = 1;
             delt.setMineCount (-1);
+            tileNode.scale = 5;
+            tileNode.runAction(cc.scaleTo(0.1, 1, 1));
         } else if (iFlag == 3){
-            this._layerFlag.setTileGIDAt(4, this.iR, this.iL);
-            delt._tFlag[this.idx] = 0;
-            delt.setMineCount (1);
+            var self = this;
+            tileNode.runAction(cc.sequence(cc.scaleTo(0.1, 5), cc.callFunc(function (argument) {
+                tileNode.scale = 1;
+                self._layerFlag.setTileGIDAt(4, self.iR, self.iL);
+                delt._tFlag[self.idx] = 0;
+                delt.setMineCount (1);
+            })));
         }
         if (GLB.iType == 1){
             var str = "1" + this.idx.toString() + "." + delt.getITime();

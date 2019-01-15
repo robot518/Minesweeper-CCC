@@ -34,12 +34,10 @@ cc.Class({
     },
 
     start () {
-        var time = new Date();
-        cc.log((time.getMonth()+1)+""+time.getDate());
         this.initCanvas();
         this.initEvent();
         this.initShow();
-        this.initWXEvent();
+        // this.initWXEvent();
         var msgBox = cc.find("msgBox");
         GLB.msgBox = msgBox;
         cc.game.addPersistRootNode(msgBox);

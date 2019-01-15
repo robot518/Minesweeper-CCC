@@ -110,8 +110,8 @@ cc.Class({
         this._iShowX = 9;
         this._iShowY = 12;
         this.bPlayTime = false;
-        this.midPreOff = cc.v2(250, 130);
-        this.bigPreOff = cc.v2(250, 620);
+        this.midPreOff = cc.v2(-50, 300);
+        this.bigPreOff = cc.v2(-50, 1790);
         this.bScale = false;
         this._iLife = 1; 
         this._iTime = 0;
@@ -458,6 +458,9 @@ cc.Class({
     },
 
     reset(){
+        if (GLB.iType == 0 && this.coPlayTime){
+            this.labTime.unschedule(this.coPlayTime);
+        }
         this._iLife = 1;
         this.display.node.active = false;
         this.togs.active = false;
@@ -559,8 +562,30 @@ cc.Class({
         this._tileMap.showLabs(this._tNum);
     },
 
+    playTime(){
+        var self = this;
+        this.coPlayTime = function (argument) {
+            self.labTime.string = self.getStrTime(++self._iTime);
+        }
+        this.labTime.schedule(this.coPlayTime, 1);
+    },
+
+    getStrTime(iTime){
+        var iM = Math.floor(iTime/60);
+        var iS = iTime%60;
+        if (iM < 10)
+            iM = "0"+iM;
+        if (iS < 10)
+            iS = "0"+iS;
+        return iM+":"+iS;
+    },
+
     initGridShow(){
-        if (this.bPlayTime == false)
+        if (GLB.iType == 0){
+            this.bPlayTime = false;
+            this.labTime.string="00:00";
+            this.playTime();
+        } else if (this.bPlayTime == false)
             this.bPlayTime = true;
         var tNum = [];
         for (var i = 0; i < this._iTotal; i++) {
@@ -694,10 +719,8 @@ cc.Class({
             }
         }
         if (bWin == true) {
-            this._bGameOver = true;
             this.playSound ("win");
             this.onEnd ();
-            this.bPlayTime = false;
             if (window.wx && this._iDiff == 0){
                 var openDataContext = wx.getOpenDataContext();
                 openDataContext.postMessage({
@@ -720,7 +743,10 @@ cc.Class({
         };
         this._tileMap.showBtns(this._tBtns);
         this._bGameOver = false;
-        this.bPlayTime = true;
+        if (GLB.iType == 0)
+            this.labTime.schedule(this.coPlayTime, 1);
+        else
+            this.bPlayTime = true;
         this.goRivive.active = false;
         if (this.bannerAd != null)
             this.bannerAd.hide();
@@ -831,7 +857,10 @@ cc.Class({
         };
         this._tileMap.showBtns(this._tBtns);
         this._bGameOver = true;
-        this.bPlayTime = false;
+        if (GLB.iType == 0)
+            this.labTime.unschedule(this.coPlayTime);
+        else
+            this.bPlayTime = false;
     },
 
     onClickMode(){

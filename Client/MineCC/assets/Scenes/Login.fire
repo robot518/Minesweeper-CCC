@@ -6622,9 +6622,7 @@
     "panel": {
       "__id__": 134
     },
-    "manifestUrl": {
-      "__uuid__": "56098227-121f-4591-ace5-45a42a06625e"
-    },
+    "manifestUrl": null,
     "updateUI": {
       "__id__": 136
     },

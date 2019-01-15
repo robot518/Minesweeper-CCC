@@ -1,4 +1,12 @@
 {
+  "android-instant": {
+    "REMOTE_SERVER_ROOT": "",
+    "host": "",
+    "pathPattern": "",
+    "recordPath": "",
+    "scheme": "https",
+    "skipRecord": false
+  },
   "appKey": "",
   "appSecret": "",
   "encryptJs": true,
@@ -25,7 +33,7 @@
     "REMOTE_SERVER_ROOT": "",
     "orientation": "portrait"
   },
-  "startScene": "eb69f9dc-e989-4459-a4f6-57547ac8512a",
+  "startScene": "91a9c2e4-577e-40f9-8273-d3d62b2527f4",
   "title": "mine",
   "webOrientation": "auto",
   "wechatgame": {
@@ -36,13 +44,5 @@
     "subContext": "wechatgame-subcontext"
   },
   "xxteaKey": "490131b8-e198-40",
-  "zipCompressJs": true,
-  "android-instant": {
-    "REMOTE_SERVER_ROOT": "",
-    "pathPattern": "",
-    "scheme": "https",
-    "host": "",
-    "skipRecord": false,
-    "recordPath": ""
-  }
+  "zipCompressJs": true
 }

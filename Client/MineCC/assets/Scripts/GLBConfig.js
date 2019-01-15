@@ -16,7 +16,7 @@ var _GLBConfig = {
     // iLang: "en",
     sName: "",
     bShowRegister: false,
-    iVersion: 20.0, //匹配版本信息进行热更新
+    iVersion: 20.1, //匹配版本信息进行热更新
     bHotUpdate: false,
     msgBox: null, //断线重连
     
