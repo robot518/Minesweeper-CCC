@@ -214,7 +214,7 @@ public class Redis {
         try {
             jedis = getPool().getResource();
             long lActive = jedis.scard(sKeyActive+sDate);
-            String str = "\n活跃用户:"+lActive+"\t注册用户:"+jedis.hget(sKeyRegister, sDate)+"\t在线用户:"+jedis.zcard(sKeyOnline)+"\t连接数:"+iCount;
+            String str = sDate+"\n活跃用户:"+lActive+"\t注册用户:"+jedis.hget(sKeyRegister, sDate)+"\t在线用户:"+jedis.zcard(sKeyOnline)+"\t连接数:"+iCount;
             if (sDate.length() != 0){
                 String sVisit = jedis.hget(sKeyVisit, sDate);
                 if (sVisit != null){
