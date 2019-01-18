@@ -13,7 +13,6 @@ var _GLBConfig = {
 
     sName: "",
     iVersion: 21.0, //匹配版本信息进行热更新
-    bHotUpdate: false,
     msgBox: null, //断线重连
     
     //event
