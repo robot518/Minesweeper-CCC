@@ -55,6 +55,10 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         return sAddress.substring(1, sAddress.indexOf(":"));
     }
 
+    String getStrDate(){
+        return new SimpleDateFormat("MM:dd:ss").format(new Date());
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
         if (frame instanceof TextWebSocketFrame) {
@@ -62,7 +66,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             String request = ((TextWebSocketFrame) frame).text();
             if (request.length() == 0)
                 return;
-            System.out.println(ctx.channel().remoteAddress()+"\t"+request);
+            System.out.println(getStrDate()+ctx.channel().remoteAddress()+"\t"+request);
             int iColon = request.indexOf(":");
             if (iColon == -1)
                 return;

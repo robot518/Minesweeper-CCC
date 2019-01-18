@@ -16,22 +16,9 @@ cc.Class({
         goResult: cc.Node,
         labTime: cc.Label,
         labLeftMine: cc.Label,
-        labMineTips: cc.Label,
-        labPBTime: cc.Label,
+        labVersion: cc.Label,
         labType: cc.Label,
 
-        labStart: cc.Label,
-        labScale: cc.Label,
-        labDiff: cc.Label,
-        labJunior: cc.Label,
-        labMiddle: cc.Label,
-        labSenior: cc.Label,
-        labInterval: cc.Label,
-        labCurCost: cc.Label,
-        labCost: cc.Label,
-        labSure: cc.Label,
-
-        display: cc.Sprite,
         bombClip: cc.AudioSource,
         checkClip: cc.AudioSource,
         clickClip: cc.AudioSource,
@@ -51,7 +38,7 @@ cc.Class({
         var self = this;
         this.labTime.scheduleOnce(function (argument) {
             self.onStart();
-        }, 0.01);
+        }, 0.01)
     },
 
     initCanvas(){
@@ -69,7 +56,6 @@ cc.Class({
     },
 
     update (dt) {
-        this._updateSubDomainCanvas();
         if (this.bPlayTime == true){
             this._iTime+=dt;
             this.labTime.string = this.getITime().toString();
@@ -79,18 +65,6 @@ cc.Class({
                 this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
             }
         }
-    },
-
-    // 刷新开放数据域的纹理
-    _updateSubDomainCanvas () {
-        if (!this.tex || !window.wx) {
-            return;
-        }
-        var openDataContext = wx.getOpenDataContext();
-        var sharedCanvas = openDataContext.canvas;
-        this.tex.initWithElement(sharedCanvas);
-        this.tex.handleLoadedTexture();
-        this.display.spriteFrame = new cc.SpriteFrame(this.tex);
     },
 
     initParas(){
@@ -132,6 +106,7 @@ cc.Class({
         var self=this;
         var btns = cc.find("btns", this.node);
         cc.find("sure", this.goResult).on("click", function (argument) {
+            self.playSound ("click");
             this.goResult.active = false;
             if (GLB.iType == 0) return;
             var score = GLB.tScore[this._iDiff];
@@ -146,13 +121,33 @@ cc.Class({
                 WS.sendMsg(GLB.SET_STEP, str);
             }
         }, this);
-        cc.find("goTop/back", this.node).on("click", function (argument) {
-            var str = GLB.iType == 0 ? "Login" : "Challenge";
-            cc.director.loadScene(str);
+        cc.find("challenge", this.goResult).on("click", function (argument) {
+            self.playSound ("click");
+            if (GLB.iType == 0)
+                cc.director.loadScene("Challenge");
+            else if(window.wx){
+                wx.navigateToMiniProgram({
+                  appId: 'wx938546d6526f42dc',
+                  path: '',
+                  extraData: {
+                    foo: 'Minesweeper'
+                  },
+                  envVersion: 'develop',
+                  success(res) {
+                    // 打开成功
+                    console.log("success: ", res);
+                  },
+                  fail(res){
+                    console.log("fail: ", res);
+                  },
+                })
+            }else
+                this.playTips("微信小游戏中可跳转");
+
         }, this);
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
-            self.onStart();
+            this.onStart();
         }, this);
         cc.find("scale", normal).on("click", function (argument) {
             this.onScale();
@@ -223,26 +218,9 @@ cc.Class({
             this.iPBidx++;
             this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
         }, this);
-        cc.find("sub/rank", btns).on("click", function (argument) {
+        cc.find("sub/back", btns).on("click", function (argument) {
             self.playSound ("click");
-            self.display.node.active = !self.display.node.active;
-            if (self.display.node.active == true){
-                var openDataContext = wx.getOpenDataContext();
-                openDataContext.postMessage({
-                    iType: 2,
-                    cost: self._iTime.toFixed(2),
-                });
-            };
-        }, this);
-        cc.find("sub/stat", btns).on("click", function (argument) {
-            self.playSound ("click");
-            self.display.node.active = !self.display.node.active;
-            if (self.display.node.active == true){
-                var openDataContext = wx.getOpenDataContext();
-                openDataContext.postMessage({
-                    iType: 3,
-                });
-            };
+            cc.director.loadScene("Challenge");
         }, this);
         cc.find("sub/share", btns).on("click", function (argument) {
             self.playSound ("click");
@@ -267,8 +245,6 @@ cc.Class({
             this.goRivive.active = false;
             if (this.bannerAd != null)
                 this.bannerAd.hide();
-            if (this._iDiff != 0)
-                this.sendDataToWX();
         }, this);
         cc.find("goRivive/rivive", this.node).on("click", function (argument) {
             if (self.videoAd != null){
@@ -282,13 +258,9 @@ cc.Class({
 
         if (!window.wx)
             return;
-        var openDataContext = wx.getOpenDataContext();
-        openDataContext.postMessage({
-            iType: -1,
-        });
         this.videoAd = wx.createRewardedVideoAd({
             adUnitId: 'adunit-bfb85c76177f19b6'
-        })
+        });
         this.videoAd.onClose(res => {
             if (res && res.isEnded || res === undefined){
                 self._iLife--;
@@ -296,24 +268,21 @@ cc.Class({
             }else{
 
             }
-        })
+        });
+        if (this.videoAd == null) return;
         this.videoAd.onError(err => {
           console.log(err)
-        })
+        });
     },
 
     initShow(){
+        this.labVersion.string = GLB.iVersion;
         this.goResult.active = false;
         this.goRivive.active = false;
         this.midScv.active = false;
         this.bigScv.active = false;
-        if (!window.wx || GLB.iType == 2 || GLB.iType == 1){
-            var sub = cc.find("btns/sub", this.node);
-            cc.find("rank", sub).active = false;
-            cc.find("stat", sub).active = false;
-            if (!window.wx)
-                cc.find("share", sub).active = false;
-        }
+        if (!window.wx)
+            cc.find("btns/sub/share", this.node).active = false;
         var normal = cc.find("btns/normal", this.node);
         if (GLB.iType == 1)
             cc.find("diff", normal).active = false;
@@ -322,54 +291,23 @@ cc.Class({
             cc.find("start", normal).active = false;
             cc.find("type", normal).active = false;
             cc.find("scale", normal).active = false;
+        }else if (GLB.iType == 0){
+            cc.find("btns/sub/back", this.node).active = false;
         }
-        if (GLB.iLang == "zh")
-            this.onZhShow();
-        else if (GLB.iLang == "en")
-            this.onEnShow();
-    },
 
-    onZhShow(){
-        this.labJunior.string = "初级";
-        this.labMiddle.string = "中级";
-        this.labSenior.string = "高级";
-        this.labStart.string = "开始";
-        this.labScale.string = "缩放";
-        this.labDiff.string = "难度";
-        this.labType.string = this._iMode == 0 ? "翻开" : "插旗";
-        this.labInterval.string = "播放间隔：";
-        this.labCurCost.string = "当前纪录:";
-        this.labCost.string = "用时:";
-        this.labSure.string = "确定";
-    },
-
-    onEnShow(){
-        this.labJunior.string = "Junior";
-        this.labMiddle.string = "Middle";
-        this.labSenior.string = "Senior";
-        this.labStart.string = "Start";
-        this.labScale.string = "Scale";
-        this.labDiff.string = "Diff";
-        this.labType.string = this._iMode == 0 ? "Open" : "Flag";
-        this.labInterval.string = "Play interval: ";
-        this.labCurCost.string = "Record:";
-        this.labCost.string = "Cost:";
-        this.labSure.string = "Confirm";
     },
 
     showResult(){
         this.goResult.active = true;
-        var sTitle = "挑战成功";
-        if (GLB.iLang == "en")
-            sTitle = "Succeed";
+        var sTitle = "成功";
         var score = GLB.tScore[this._iDiff];
         if (score && this._iTime >= score){
-            sTitle = "挑战失败";
-            if (GLB.iLang == "en")
-                sTitle = "Lose";
+            sTitle = "失败";
         }
         if (score == null)
             score = "无";
+        if (GLB.iType == 1 && this._iDiff == 0)
+            cc.find("challenge", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -377,9 +315,7 @@ cc.Class({
 
     showWinResult(){
         this.goResult.active = true;
-        var sTitle = "挑战成功";
-        if (GLB.iLang == "en")
-            sTitle = "Succeed";
+        var sTitle = "成功";
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -387,10 +323,6 @@ cc.Class({
 
     onType(){
         this.onClickMode();
-        // var scv = this._iDiff == 1 ? this.midScv : this.bigScv;
-        // scv = scv.getComponent(cc.ScrollView);
-        // var offPos = scv.getScrollOffset();
-        // cc.log("offPos = ", offPos.x, offPos.y);
     },
 
     onScale(){
@@ -462,7 +394,6 @@ cc.Class({
             this.labTime.unschedule(this.coPlayTime);
         }
         this._iLife = 1;
-        this.display.node.active = false;
         this.togs.active = false;
         this._bGameOver=false;
         this._iTime=0;
@@ -501,7 +432,6 @@ cc.Class({
             this.bigScv.active = true;
         }
         this._iTotal = this._iRow * this._iLine;
-        this.labMineTips.string = "[" + this._iMineCount + "_" + this._iRow + "*" + this._iLine + "]";
         this.showMineCount(this._iMineCount);
         this._tileMap.initShow();
     },
@@ -721,13 +651,6 @@ cc.Class({
         if (bWin == true) {
             this.playSound ("win");
             this.onEnd ();
-            if (window.wx && this._iDiff == 0){
-                var openDataContext = wx.getOpenDataContext();
-                openDataContext.postMessage({
-                    iType: 1,
-                    cost: this._iTime.toFixed(2),
-                });
-            }
         }
     },
 
@@ -750,24 +673,6 @@ cc.Class({
         this.goRivive.active = false;
         if (this.bannerAd != null)
             this.bannerAd.hide();
-    },
-
-    sendDataToWX(){
-        if (window.wx){
-            var idx = -1;
-            if (this._iDiff == 1)
-                idx = 4;
-            else if (this._iDiff == 2)
-                idx = 6;
-            if (idx != -1){
-                var self = this;
-                var openDataContext = wx.getOpenDataContext();
-                openDataContext.postMessage({
-                    iType: idx,
-                    cost: self._iTime.toFixed(2),
-                });
-            }
-        }
     },
 
     playSound(sName){
@@ -799,8 +704,6 @@ cc.Class({
                   }
                 })
             }
-            if (this._iLife == 0 && this._iDiff != 0)
-                this.sendDataToWX();
         }
         if (sName == "win"){
             if (GLB.iType == 1)
@@ -813,14 +716,6 @@ cc.Class({
                     idx = 5;
                 else if (this._iDiff == 2)
                     idx = 7;
-                if (idx != -1){
-                    var self = this;
-                    var openDataContext = wx.getOpenDataContext();
-                    openDataContext.postMessage({
-                        iType: idx,
-                        cost: self._iTime.toFixed(2),
-                    });
-                }
             }
         }
         if (this.bSound == false)
@@ -865,10 +760,7 @@ cc.Class({
 
     onClickMode(){
         this._iMode = 1 - this._iMode;
-        if (GLB.iLang == "zh")
-            this.labType.string = this._iMode == 0 ? "翻开" : "插旗";
-        else if (GLB.iLang == "en")
-            this.labType.string = this._iMode == 0 ? "Open" : "Flag";
+        this.labType.string = this._iMode == 0 ? "翻开" : "插旗";
         this.labType.node.color = this._iMode == 0 ? cc.Color.BLACK : new cc.Color(160, 50, 40);
     },
 

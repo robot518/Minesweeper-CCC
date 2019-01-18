@@ -1,4 +1,3 @@
-var Login = require("Login");
 var GLB = require('GLBConfig');
 var WS = require("Socket");
 
@@ -9,7 +8,10 @@ cc.Class({
         zhe: cc.Node,
         tips: cc.Node,
         scv: cc.Node,
-        labTips: cc.Node,
+
+        ndRegister: cc.Node,
+
+        ndTips: cc.Node,
         labName1: cc.Label,
         labName2: cc.Label,
         labName3: cc.Label,
@@ -20,10 +22,6 @@ cc.Class({
         labRank2: cc.Label,
         labRank3: cc.Label,
 
-        labJunior: cc.Label,
-        labMiddle: cc.Label,
-        labSenior: cc.Label,
-
         labName1No1: cc.Label,
         labName2No1: cc.Label,
         labName3No1: cc.Label,
@@ -33,6 +31,9 @@ cc.Class({
         labRank1No1: cc.Label,
         labRank2No1: cc.Label,
         labRank3No1: cc.Label,
+
+        editName: cc.EditBox,
+        editPass: cc.EditBox,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -42,13 +43,28 @@ cc.Class({
     },
 
     start () {
-        if (GLB.iLang == "zh")
-            this.sShowStr = "无";
-        else if (GLB.iLang = "en")
-            this.sShowStr = "nil";
         this.initCanvas();
         this.initEvent();
         this.initShow();
+        if (GLB.msgBox == null){
+            var msgBox = cc.find("msgBox");
+            GLB.msgBox = msgBox;
+            cc.game.addPersistRootNode(msgBox);
+            cc.find("btn", msgBox).on("click", function (argument) {
+                if (GLB.isClickCd)
+                    return;
+                GLB.isClickCd = true;
+                setTimeout(function() {
+                    GLB.isClickCd = false;
+                }, 1000);
+                msgBox.active = false;
+                if (WS.ws.readyState !== WebSocket.OPEN)
+                    WS.reconnect();
+            }, cc.game);
+            msgBox.on("click", function (argument) {
+                msgBox.active = false;
+            }, cc.game);
+        }
         WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
     },
 
@@ -69,28 +85,20 @@ cc.Class({
     // update (dt) {},
 
     initEvent(){
-        // for (var i = 0; i < 5; i++) {
-        //     var iRandom = (Math.floor(Math.random() * 60));
-        //     var sName = "哈"+iRandom;
-        //     var str = 0 + "|" + sName + "|" + iRandom + "|"
-        //     + "" + "|" + "" + "|" + "";
-        //     WS.sendMsg(GLB.SET_STEP, str);
-        // };
         var btns = cc.find("btns", this.node);
         cc.find("back", btns).on("click", function (argument) {
-            cc.director.loadScene("Login");
-            if (this.bannerAd != null)
-                this.bannerAd.hide();
+            GLB.iType = 0;
+            cc.director.loadScene("Main");
+        }, this);
+        cc.find("switch", btns).on("click", function (argument) {
+            this.ndRegister.active = true;
+        }, this);
+        cc.find("reconnect", btns).on("click", function (argument) {
+            GLB.msgBox.active = true;
         }, this);
         cc.find("scv/backScv", this.node).on("click", function (argument) {
             this.scv.active = false;
-            if (this.bannerAd != null)
-                this.bannerAd.hide();
         }, this);
-        // cc.find("scv/left", this.node).on("click", function (argument) {
-        // }, this);
-        // cc.find("scv/right", this.node).on("click", function (argument) {
-        // }, this);
         for (var i = 0; i < 3; i++) {
             var node = cc.find("go/item" + (i+1).toString(), this.node);
             node.setName(i.toString());
@@ -101,18 +109,13 @@ cc.Class({
                     return;
                 }
                 if (GLB.sName == ""){
-                    GLB.bShowRegister = true;
-                    cc.director.loadScene("Login");
-                    if (this.bannerAd != null)
-                        this.bannerAd.hide();
+                    this.ndRegister.active = true;
                     return;
                 }
                 var name = event.node.name;
                 GLB.iType = 1;
                 GLB.iDiff = parseInt(name);
                 cc.director.loadScene("Main");
-                if (this.bannerAd != null)
-                    this.bannerAd.hide();
             }, this);
             //play-self
             cc.find("play", node).on("click", function (event) {
@@ -152,44 +155,38 @@ cc.Class({
                 for (var i = 0; i < iL; i++) {
                     content[i].active = false;
                 };
-                this.labTips.active = true;
+                this.ndTips.active = true;
                 var tTitle = ["初级", "中级", "高级"];
                 cc.find("labTitle", this.scv).getComponent(cc.Label).string = tTitle[name];
                 WS.sendMsg(GLB.GET_RANK, name, this);
             }, this);
         };
 
-        if (window.wx){
-            if (this.bannerAd != null)
-                this.bannerAd.destory();
-            var systemInfo = wx.getSystemInfoSync();
-            this.bannerAd = wx.createBannerAd({
-                adUnitId: 'adunit-b277badf437cdf40',
-                style: {
-                    left: 0,
-                    top: systemInfo.windowHeight - 144,
-                    width: 720,
-                }
-            });
-            var self = this;
-            this.bannerAd.onResize(res => {
-                if (self.bannerAd)
-                    self.bannerAd.style.top = systemInfo.windowHeight - self.bannerAd.style.realHeight
-            })
-            this.bannerAd.show();
-            this.bannerAd.onError(err => {
-              console.log(err);
-              //无合适广告
-              if (err.errCode == 1004){
-
-              }
-            })
-        }
+        //login
+        cc.find("btnLogin", this.ndRegister).on("click", function (argument) {
+            if (this.getBEmpty() == true)
+                return;
+            WS.sendMsg(GLB.LOGIN, this.editName.string + "|" + this.editPass.string, this);
+        }, this);
+        cc.find("btnRegister", this.ndRegister).on("click", function (argument) {
+            if (this.getBEmpty() == true)
+                return;
+            WS.sendMsg(GLB.REGISTER, this.editName.string + "|" + this.editPass.string, this);
+        }, this);
+        cc.find("btnTourist", this.ndRegister).on("click", function (argument) {
+            this.ndRegister.active = false;
+            this.initGLBData();
+            GLB.sName = "";
+            WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
+        }, this);
+        this.ndRegister.on("click", function (argument) {
+            this.ndRegister.active = false;
+        }, this);
     },
 
     initShow(){
         this.scv.active = false;
-        var str = this.sShowStr;
+        var str = "无";
         this.labName1.string = str;
         this.labName2.string = str;
         this.labName3.string = str;
@@ -205,27 +202,18 @@ cc.Class({
         this.labScore2No1.string = str;
         this.labName3No1.string = str;
         this.labScore3No1.string = str;
-        if (GLB.iLang == "zh")
-            this.onZhShow();
-        else if (GLB.iLang == "en")
-            this.onEnShow();
-    },
-
-    onZhShow(){
-        this.labJunior.string = "初级";
-        this.labMiddle.string = "中级";
-        this.labSenior.string = "高级";
-    },
-
-    onEnShow(){
-        this.labJunior.string = "Junior";
-        this.labMiddle.string = "Middle";
-        this.labSenior.string = "Senior";
     },
 
     onResponse(cmd, msg){
         var args = msg.split("|");
-        if (cmd == GLB.GET_SCORE){
+        if (cmd == GLB.REGISTER || cmd == GLB.LOGIN){
+            if (msg == "200"){ //成功
+                this.ndRegister.active = false;
+                this.initGLBData();
+                WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
+            } else
+                this.playTips(msg);
+        }else if (cmd == GLB.GET_SCORE){
             for (var i = 0; i < 3; i++) {
                 var cData = args[i] || "";
                 var subData = cData.split(",");
@@ -244,8 +232,6 @@ cc.Class({
                 return;
             GLB.tPlaybackData = args;
             GLB.iType = 2;
-            if (this.bannerAd != null)
-                this.bannerAd.hide();
             cc.director.loadScene("Main");
         }else if(cmd == GLB.GET_RANK){
             var iCount = args.length;
@@ -275,29 +261,47 @@ cc.Class({
                 labName.node.color = color;
                 labCost.node.color = color;
             };
-            this.labTips.active = false;
+            this.ndTips.active = false;
         }
     },
 
     getNewStr(str, idx){
         if (str == null || str == "无" || str == "")
-            return this.sShowStr;
+            return "无";
         if (idx == 1)
             return parseInt(str)/100 + "s";
         else
             return str;
     },
 
-    playTips(){
-        var str = "";
-        if (GLB.iLang == "zh")
-            str = "请检查网络!";
-        else if (GLB.iLang = "en")
-            str = "Please check the network!";
-        if (this.tips == null) return;
+    initGLBData(){
+        GLB.sName = this.editName.string;
+        GLB.tScore = [];
+        GLB.tName = [];
+    },
+
+    playTips(str){
         var lab = this.tips.children[0];
         lab.getComponent(cc.Label).string = str;
         this.tips.opacity = 255;
         this.tips.runAction(cc.fadeOut(2));
+    },
+
+    getBEmpty(){
+        if (WS.ws.readyState !== WebSocket.OPEN){
+            GLB.msgBox.active = true;
+            return true;
+        }
+        var sName = this.editName.string;
+        var sPass = this.editPass.string;
+        if (sName == ""){
+            this.playTips("名字不能为空");
+            return true;
+        }
+        if (sPass == ""){
+            this.playTips("密码不能为空");
+            return true;
+        }
+        return false;
     },
 });

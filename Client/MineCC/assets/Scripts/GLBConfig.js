@@ -5,18 +5,14 @@ var _GLBConfig = {
     wxUserInfo: [],
     getUserInfoBtn: null,
     isClickCd: false,
-    bInit: false,
-    bLogin: false,
     iType: 0, //0经典，1挑战，2回放
     iDiff: 0,
     tScore: [],
     tName: [],
     tPlaybackData: null,
-    iLang: "zh", //zh中文，en英文
-    // iLang: "en",
+
     sName: "",
-    bShowRegister: false,
-    iVersion: 20.1, //匹配版本信息进行热更新
+    iVersion: 21.0, //匹配版本信息进行热更新
     bHotUpdate: false,
     msgBox: null, //断线重连
     

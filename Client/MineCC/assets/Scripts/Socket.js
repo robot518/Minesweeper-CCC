@@ -4,14 +4,13 @@ var WS = {
     ws: ws,
     obj: null,
 };
-var bInter = false;
-// var iError = 0;
+var bInter = false; //判断是否已经开始心跳包
 var bError = false;
 var creatWS = function (argument) {
     ws = null;
     // ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
-    // ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx
-    ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //ios+anroid其中安卓ssl连不上
+    ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx
+    // ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //ios+anroid其中安卓ssl连不上
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
@@ -46,17 +45,12 @@ var creatWS = function (argument) {
     };
     ws.onerror = function (event) {
      console.log("Send Text fired an error.", event);
-     // iError = 0;
      bError = true;
     };
     ws.onclose = function (e) {
         if (e.code.toString() != "1001" && GLB.msgBox)
             GLB.msgBox.active = true;
          console.log("WebSocket instance closed.", e.code + ' ' + e.reason + ' ' + e.wasClean);
-         // if (iError <= 60){
-         //    iError++;
-         //    creatWS();
-         // }
          if (bError == false)
             creatWS();
     };
