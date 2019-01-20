@@ -5,7 +5,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        zhe: cc.Node,
         tips: cc.Node,
         scv: cc.Node,
 
@@ -31,6 +30,8 @@ cc.Class({
         labRank1No1: cc.Label,
         labRank2No1: cc.Label,
         labRank3No1: cc.Label,
+
+        labWorldMine: cc.Label,
 
         editName: cc.EditBox,
         editPass: cc.EditBox,
@@ -85,6 +86,9 @@ cc.Class({
     // update (dt) {},
 
     initEvent(){
+        cc.find("scv/backScv", this.node).on("click", function (argument) {
+            this.scv.active = false;
+        }, this);
         var btns = cc.find("btns", this.node);
         cc.find("back", btns).on("click", function (argument) {
             GLB.iType = 0;
@@ -96,8 +100,19 @@ cc.Class({
         cc.find("reconnect", btns).on("click", function (argument) {
             GLB.msgBox.active = true;
         }, this);
-        cc.find("scv/backScv", this.node).on("click", function (argument) {
-            this.scv.active = false;
+        cc.find("world", btns).on("click", function (argument) {
+            if (WS.ws.readyState !== WebSocket.OPEN){
+                GLB.msgBox.active = true;
+                return;
+            }
+            if (GLB.iWorldMine > 0){
+                if (GLB.sName != "")
+                    WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
+                // GLB.iDiff = 0;
+                // WS.sendMsg(GLB.GET_WORLD_STEP, 0+"1", this);
+            }else{
+                this.playTips("完成中级挑战可进入");
+            }
         }, this);
         for (var i = 0; i < 3; i++) {
             var node = cc.find("go/item" + (i+1).toString(), this.node);
@@ -202,6 +217,8 @@ cc.Class({
         this.labScore2No1.string = str;
         this.labName3No1.string = str;
         this.labScore3No1.string = str;
+
+        this.labWorldMine.string = GLB.iWorldMine;
     },
 
     onResponse(cmd, msg){
@@ -232,6 +249,12 @@ cc.Class({
                 return;
             GLB.tPlaybackData = args;
             GLB.iType = 2;
+            cc.director.loadScene("Main");
+        }else if(cmd == GLB.GET_WORLD){
+            if (msg == "null")
+                return;
+            GLB.tPlaybackData = args;
+            GLB.iType = 3;
             cc.director.loadScene("Main");
         }else if(cmd == GLB.GET_RANK){
             var iCount = args.length;

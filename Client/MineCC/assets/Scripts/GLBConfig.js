@@ -5,15 +5,14 @@ var _GLBConfig = {
     wxUserInfo: [],
     getUserInfoBtn: null,
     isClickCd: false,
-    iType: 0, //0经典，1挑战，2回放
+    iType: 0, //0经典，1挑战，2回放，3雷之大陆
     iDiff: 0,
     tScore: [],
     tName: [],
     tPlaybackData: null,
-
     sName: "",
-    iVersion: 21.0, //匹配版本信息进行热更新
     msgBox: null, //断线重连
+    iWorldMine: 0, //mineworld入场券
     
     //event
     GETVERSION: "getVersion",
@@ -24,5 +23,8 @@ var _GLBConfig = {
     GET_RANK: "getRank",
     SET_STEP: "setStep",
     WXLOGIN: "wxLogin",
+    GET_WORLD_STEP: "getWorldStep",
+    GET_WORLD_MINE: "getWorldMine",
+    SET_WORLD_MINE: "setWorldMine",
 };
 module.exports = _GLBConfig;

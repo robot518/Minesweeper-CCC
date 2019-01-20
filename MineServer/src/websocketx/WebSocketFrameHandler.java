@@ -68,7 +68,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             public void run() {
                 // task to run goes here
                 int iTime = hHeartTime.get(addr);
-                if (iTime < -2){
+                if (iTime < -5){
                     hHeartTime.remove(addr);
                     ChannelHandlerContext ctx = hCtx.remove(addr);
                     ctx.close();
@@ -87,7 +87,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     }
 
     String getStrDate(){
-        return new SimpleDateFormat("MM:dd:ss").format(new Date());
+        return new SimpleDateFormat("HH:mm:ss").format(new Date());
     }
 
     @Override
@@ -118,9 +118,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                 case "Users":
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Users()));
                     break;
-                case "getVersion":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getVersion()));
-                    break;
                 case "wxLogin":
                     break;
                 case "register":
@@ -142,6 +139,25 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                 case "getScore":
                     sName = request.substring(iColon + 1);
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getStrScore(sName)));
+                    break;
+                case "setWorldMine":
+                    String sNum = request.substring(i1);
+                    Redis.getInstance().setWorldMine(sName, sNum);
+                    break;
+                case "getWorldMine":
+                    sName = request.substring(iColon + 1);
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getWolrdMine(sName)));
+                    break;
+                case "getWorldStep":
+                    if (request.substring(iColon + 1).length() == 1)
+                        return;
+                    sIdx = request.substring(iColon + 1, iColon + 2);
+                    String sRank = request.substring(iColon + 2);
+                    if (sRank == "")
+                        return;
+                    String sWorld = Redis.getInstance().getWorld(sIdx, sRank);
+                    if (sWorld != null)
+                        ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + sWorld));
                     break;
                 case "getStep":
                     if (request.substring(iColon + 1).length() == 1)

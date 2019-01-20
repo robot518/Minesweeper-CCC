@@ -8,12 +8,12 @@ var bInter = false; //判断是否已经开始心跳包
 var bError = false;
 var creatWS = function (argument) {
     ws = null;
-    if (window.wx || cc.sys.os === cc.sys.OS_IOS)
-        ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx/ios
-    else if (cc.sys.os === cc.sys.OS_ANDROID)
+    // if (window.wx || cc.sys.os === cc.sys.OS_IOS)
+    //     ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx/ios
+    // else if (cc.sys.os === cc.sys.OS_ANDROID)
         ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
-    else
-        ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
+    // else
+    //     ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
@@ -28,12 +28,14 @@ var creatWS = function (argument) {
     };
     ws.onmessage = function (event) {
         var data = event.data;
-        // console.log("response text msg: " + data);
+        console.log("response text msg: " + data);
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
         var cmd = data.substring(0, i1);
         var sResponse = data.substring(i1+1);
+        if (cmd == GLB.GET_WORLD_MINE)
+            GLB.iWorldMine = parseInt(sResponse);
         if (WS.obj == null)
             return;
         WS.obj.onResponse(cmd, sResponse);

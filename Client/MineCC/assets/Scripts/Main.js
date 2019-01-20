@@ -5,6 +5,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        ndBg: cc.Node,
         tips: cc.Node,
         mineMap: cc.Node,
         midMineMap: cc.Node,
@@ -16,8 +17,8 @@ cc.Class({
         goResult: cc.Node,
         labTime: cc.Label,
         labLeftMine: cc.Label,
-        labVersion: cc.Label,
         labType: cc.Label,
+        labTimeWorld: cc.Label,
 
         bombClip: cc.AudioSource,
         checkClip: cc.AudioSource,
@@ -36,9 +37,24 @@ cc.Class({
         this.initEvent();
         this.initShow();
         var self = this;
-        this.labTime.scheduleOnce(function (argument) {
-            self.onStart();
-        }, 0.01)
+        if (GLB.iType == 3){
+            var iNum = 3;
+            var showLab = cc.callFunc(function (argument) {
+                self.labTimeWorld.node.opacity = 255;
+                self.labTimeWorld.string = iNum--;
+            });
+            var start = cc.callFunc(function (argument) {
+                self.labTime.scheduleOnce(function (argument) {
+                    self.onStart();
+                }, 0.01)
+            });
+            var seq = cc.sequence(cc.repeat(cc.sequence(showLab, cc.fadeOut(1)), 3), start);
+            this.labTimeWorld.node.runAction(seq);
+        }else{
+            this.labTime.scheduleOnce(function (argument) {
+                self.onStart();
+            }, 0.01)
+        }
     },
 
     initCanvas(){
@@ -90,9 +106,9 @@ cc.Class({
         this._iLife = 1; 
         this._iTime = 0;
 
-        if (GLB.iType == 1 || GLB.iType == 2){
+        if (GLB.iType == 1 || GLB.iType == 2 || GLB.iType == 3){
             this._iDiff = GLB.iDiff;
-            if (GLB.iType == 2){ //playback
+            if (GLB.iType == 2 || GLB.iType == 3){ //playback/world
                 this.tPBBtns = [];
                 this.tPBFlags = [];
                 this.bPlayback = true;
@@ -123,27 +139,7 @@ cc.Class({
         }, this);
         cc.find("challenge", this.goResult).on("click", function (argument) {
             self.playSound ("click");
-            if (GLB.iType == 0)
-                cc.director.loadScene("Challenge");
-            else if(window.wx){
-                wx.navigateToMiniProgram({
-                  appId: 'wx938546d6526f42dc',
-                  path: '',
-                  extraData: {
-                    foo: 'Minesweeper'
-                  },
-                  envVersion: 'develop',
-                  success(res) {
-                    // 打开成功
-                    console.log("success: ", res);
-                  },
-                  fail(res){
-                    console.log("fail: ", res);
-                  },
-                })
-            }else
-                this.playTips("微信小游戏中可跳转");
-
+            cc.director.loadScene("Challenge");
         }, this);
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
@@ -276,7 +272,6 @@ cc.Class({
     },
 
     initShow(){
-        this.labVersion.string = GLB.iVersion;
         this.goResult.active = false;
         this.goRivive.active = false;
         this.midScv.active = false;
@@ -292,9 +287,23 @@ cc.Class({
             cc.find("type", normal).active = false;
             cc.find("scale", normal).active = false;
         }else if (GLB.iType == 0){
-            cc.find("btns/sub/back", this.node).active = false;
+            // cc.find("btns/sub/back", this.node).active = false;
+        }else if (GLB.iType == 3){
+            cc.find("diff", normal).active = false;
+            cc.find("start", normal).active = false;
+            cc.find("type", normal).active = false;
+            // cc.find("scale", normal).active = false;
         }
+        this.showBg();
+    },
 
+    showBg(){
+        if (GLB.iType == 0)
+            this.ndBg.color = new cc.Color(122, 122, 122);
+        else if (GLB.iType == 1 || GLB.iType == 2)
+            this.ndBg.color = new cc.Color(68, 107, 107);
+        else if (GLB.iType == 3)
+            this.ndBg.color = cc.Color.RED;
     },
 
     showResult(){
@@ -303,11 +312,14 @@ cc.Class({
         var score = GLB.tScore[this._iDiff];
         if (score && this._iTime >= score){
             sTitle = "失败";
+        }else if (this._iDiff != 0){
+            var iMine = this._iDiff == 1 ? 1 : 3;
+            GLB.iMine+=iMine;
+            WS.sendMsg(SET_WORLD_MINE, GLB.sName, iMine);
         }
         if (score == null)
             score = "无";
-        if (GLB.iType == 1 && this._iDiff == 0)
-            cc.find("challenge", this.goResult).active = false;
+        cc.find("challenge", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -352,17 +364,21 @@ cc.Class({
 
     onStart(){
         this.reset();
-        this.initMines();
+        this.initMines(); //2/3有特殊处理
         this.initLabs();
-        if (GLB.iType == 2){
+        if (GLB.iType == 2 || GLB.iType == 3){
             this.initStartShow(parseInt(GLB.tPlaybackData[1]));
             this.tPBBtns.push(this._tBtns.slice(0));
             this.tPBFlags.push(this._tFlag.slice(0));
             var self = this;
             self.onScale();
-            this.labTime.scheduleOnce(function (argument) {
-                cc.find("btns/playback", self.node).active = true;
-            }, 0.5);
+            if (GLB.iType == 2){
+                this.labTime.scheduleOnce(function (argument) {
+                    cc.find("btns/playback", self.node).active = true;
+                }, 0.5);
+            }else if(GLB.iType == 3){
+                this.bPlayTime = true;
+            }
         } else{
             this.initGridShow();
         }
@@ -451,7 +467,7 @@ cc.Class({
             this._tBtns[i] = 1;
             // this._tBtns[i] = 0;
         };
-        if (GLB.iType == 2){
+        if (GLB.iType == 2 || GLB.iType == 3){
             tMineNum = WS.getTPBMineNum();
         }else{
             for (var i = 0; i < this._iMineCount; i++) {

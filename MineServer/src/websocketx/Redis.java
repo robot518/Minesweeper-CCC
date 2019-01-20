@@ -16,6 +16,7 @@ public class Redis {
     String sKeyActive = "key-active";
     String sKeyVisit = "key-visit";
     String sKeyOnlineTime = "key-onlineTime";
+    String sKeyWorldMine = "key-worldMine";
 
     public static Redis getInstance(){
         if (redis == null){
@@ -52,6 +53,20 @@ public class Redis {
         try {
             jedis = getPool().getResource();
             return jedis.get(sName);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String getWorld(String sIdx, String sRank){
+        Jedis jedis = null;
+        try {
+            jedis = getPool().getResource();
+            long lRank = Long.parseLong(sRank);
+            String sName = jedis.zrange(sKeyScore+sIdx, lRank, lRank).iterator().next();
+            return jedis.hget(sKeyStep+sIdx, sName);
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -168,27 +183,6 @@ public class Redis {
         }
     }
 
-    public String getVersion(){
-        Jedis jedis = null;
-        try {
-            jedis = getPool().getResource();
-            String str = jedis.get("version");
-            if (str == null) {
-                str = "0";
-                jedis.set("version", str);
-            }
-            return str;
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
-        }
-    }
-
-    public void close(){
-        getPool().close();
-    }
-
     public String Users(){
         Jedis jedis = null;
         try {
@@ -259,6 +253,30 @@ public class Redis {
                 jedis.hincrBy(sKeyRegister, sDate,1); //单日注册用户
             }
             jedis.hincrBy(sKeyOnlineTime, "2019", lTime); //2019总在线时长
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String getWolrdMine(String sName){
+        Jedis jedis = null;
+        try {
+            jedis = getPool().getResource();
+            return jedis.hget(sKeyWorldMine, sName);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public void setWorldMine(String sName, String sNum){
+        Jedis jedis = null;
+        try {
+            jedis = getPool().getResource();
+            jedis.hincrBy(sKeyWorldMine, sName, Long.parseLong(sNum));
         } finally {
             if (jedis != null) {
                 jedis.close();
