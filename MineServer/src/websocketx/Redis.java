@@ -64,7 +64,9 @@ public class Redis {
         Jedis jedis = null;
         try {
             jedis = getPool().getResource();
-            long lRank = Long.parseLong(sRank);
+            long lRank = -1-Long.parseLong(sRank);
+            if ((-lRank + 1) > jedis.zcard(sKeyScore+sIdx)) //超出边界
+                return "";
             String sName = jedis.zrange(sKeyScore+sIdx, lRank, lRank).iterator().next();
             return jedis.hget(sKeyStep+sIdx, sName);
         } finally {

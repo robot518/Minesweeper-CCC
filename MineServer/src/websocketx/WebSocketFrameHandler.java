@@ -155,9 +155,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     String sRank = request.substring(iColon + 2);
                     if (sRank == "")
                         return;
-                    String sWorld = Redis.getInstance().getWorld(sIdx, sRank);
-                    if (sWorld != null)
-                        ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + sWorld));
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getWorld(sIdx, sRank)));
                     break;
                 case "getStep":
                     if (request.substring(iColon + 1).length() == 1)

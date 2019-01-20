@@ -12,7 +12,7 @@ var _GLBConfig = {
     tPlaybackData: null,
     sName: "",
     msgBox: null, //断线重连
-    iWorldMine: 0, //mineworld入场券
+    iWorldMine: 1, //mineworld入场券
     
     //event
     GETVERSION: "getVersion",

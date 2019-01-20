@@ -62,7 +62,7 @@ WS.sendMsg = function (cmd, msg, obj) {
             return;
         }
         var str = cmd + ":" + msg.toString();
-        // console.log("sendMsg = ", str);
+        console.log("sendMsg = ", str);
         ws.send(str);
         if (obj != null){
             WS.obj = obj;

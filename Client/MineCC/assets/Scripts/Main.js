@@ -377,7 +377,7 @@ cc.Class({
                     cc.find("btns/playback", self.node).active = true;
                 }, 0.5);
             }else if(GLB.iType == 3){
-                this.bPlayTime = true;
+                // this.bPlayTime = true;
             }
         } else{
             this.initGridShow();

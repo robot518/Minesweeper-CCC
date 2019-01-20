@@ -108,8 +108,7 @@ cc.Class({
             if (GLB.iWorldMine > 0){
                 if (GLB.sName != "")
                     WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
-                // GLB.iDiff = 0;
-                // WS.sendMsg(GLB.GET_WORLD_STEP, 0+"1", this);
+                cc.director.loadScene("World");
             }else{
                 this.playTips("完成中级挑战可进入");
             }
@@ -249,12 +248,6 @@ cc.Class({
                 return;
             GLB.tPlaybackData = args;
             GLB.iType = 2;
-            cc.director.loadScene("Main");
-        }else if(cmd == GLB.GET_WORLD){
-            if (msg == "null")
-                return;
-            GLB.tPlaybackData = args;
-            GLB.iType = 3;
             cc.director.loadScene("Main");
         }else if(cmd == GLB.GET_RANK){
             var iCount = args.length;
