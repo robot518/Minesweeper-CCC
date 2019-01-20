@@ -32,12 +32,10 @@ var creatWS = function (argument) {
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
-        var cmd = data.substring(0, i1);
-        var sResponse = data.substring(i1+1);
-        if (cmd == GLB.GET_WORLD_MINE)
-            GLB.iWorldMine = parseInt(sResponse);
         if (WS.obj == null)
             return;
+        var cmd = data.substring(0, i1);
+        var sResponse = data.substring(i1+1);
         WS.obj.onResponse(cmd, sResponse);
     };
     ws.onerror = function (event) {

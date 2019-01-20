@@ -191,6 +191,7 @@ cc.Class({
             this.ndRegister.active = false;
             this.initGLBData();
             GLB.sName = "";
+            GLB.iWorldMine = 0;
             WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
         }, this);
         this.ndRegister.on("click", function (argument) {
@@ -227,6 +228,7 @@ cc.Class({
                 this.ndRegister.active = false;
                 this.initGLBData();
                 WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
+                WS.sendMsg(GLB.GET_WORLD_MINE, GLB.sName, this);
             } else
                 this.playTips(msg);
         }else if (cmd == GLB.GET_SCORE){
@@ -278,6 +280,11 @@ cc.Class({
                 labCost.node.color = color;
             };
             this.ndTips.active = false;
+        }else if(cmd == GLB.GET_WORLD_MINE){
+            if (msg == "null")
+                msg = 0;
+            GLB.iWorldMine = msg;
+            this.labWorldMine.string = msg;
         }
     },
 
