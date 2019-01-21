@@ -57,6 +57,25 @@ cc.Class({
         }
     },
 
+    newStart(){
+        this.initCanvas();
+        this.initParas();
+        this.initShow();
+        var self = this;
+        var iNum = 3;
+        var showLab = cc.callFunc(function (argument) {
+            self.labTimeWorld.node.opacity = 255;
+            self.labTimeWorld.string = iNum--;
+        });
+        var start = cc.callFunc(function (argument) {
+            self.labTime.scheduleOnce(function (argument) {
+                self.onStart();
+            }, 0.01)
+        });
+        var seq = cc.sequence(cc.repeat(cc.sequence(showLab, cc.fadeOut(1)), 3), start);
+        this.labTimeWorld.node.runAction(seq);
+    },
+
     initCanvas(){
         var canvas = this.node.getComponent(cc.Canvas);
         var size = canvas.designResolution;
@@ -295,7 +314,7 @@ cc.Class({
             }
             GLB.tPlaybackData = args;
             GLB.iType = 3;
-            this.start();
+            this.newStart();
         }
     },
 

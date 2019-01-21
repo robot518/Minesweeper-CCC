@@ -49,7 +49,8 @@ cc.Class({
                 }
                 var name = event.node.name;
                 GLB.iDiff = parseInt(name);
-                WS.sendMsg(GLB.GET_WORLD_STEP, name+"0", this);
+                GLB.iWorldLv = 0;
+                WS.sendMsg(GLB.GET_WORLD_STEP, name+""+GLB.iWorldLv, this);
             }, this);
         }
     },

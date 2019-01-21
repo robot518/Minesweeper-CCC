@@ -83,6 +83,7 @@ cc.Class({
         if (GLB.iType == 1)
             this.tPB = [];
         bMove = true;
+        this.node.active = true;
     },
 
     //tilemap中左下为(0, 0), tile坐标左上为0,0
@@ -239,7 +240,7 @@ cc.Class({
                 delt.showGrids(idx);
                 this.showBtns(delt._tBtns);
                 delt.showWin();
-                if (this.checkPlayerSurvive() == false){
+                if (GLB.iType == 3 && this.checkPlayerSurvive() == false){
                     delt.playSound("lose");
                     bMove = false;
                     bLose = true;
@@ -265,7 +266,7 @@ cc.Class({
             }
         } else if (iType == 2){
             delt.onClickNum(idx);
-            if (this.checkPlayerSurvive() == false){
+            if (GLB.iType == 3 && this.checkPlayerSurvive() == false){
                 delt.playSound("lose");
                 bMove = false;
                 bLose = true;
@@ -278,7 +279,7 @@ cc.Class({
                 GLB.iType = 0;
                 self._mouse.active = false;
                 self._player.active = false;
-                delt.start();
+                delt.newStart();
             }, 1);
         }else if(bWin == true){
             this._layerFlag.scheduleOnce(function (argument) {
