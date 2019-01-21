@@ -106,8 +106,10 @@ cc.Class({
                 return;
             }
             if (GLB.iWorldMine > 0){
-                if (GLB.sName != "")
+                if (GLB.sName != ""){
                     WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
+                }
+                GLB.iWorldMine--;
                 cc.director.loadScene("World");
             }else{
                 this.playTips("完成中级挑战可进入");

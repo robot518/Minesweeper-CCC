@@ -36,7 +36,7 @@ cc.Class({
     initEvent(){
         cc.find("back", this.node).on("click", function (argument) {
             GLB.iType = 0;
-            cc.director.loadScene("Main");
+            cc.director.loadScene("Challenge");
         }, this);
         var items = cc.find("items", this.node);
         for (var i = 0; i < 3; i++) {

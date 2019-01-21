@@ -124,22 +124,15 @@ cc.Class({
         cc.find("sure", this.goResult).on("click", function (argument) {
             self.playSound ("click");
             this.goResult.active = false;
-            if (GLB.iType == 0) return;
-            var score = GLB.tScore[this._iDiff];
-            if (score == "" || score == null || this._iTime < score){
-                var strStepInfo = WS.getStrPBStepInfo(this._tileMap.getTPB());
-                if (strStepInfo == "")
-                    return;
-                //因为redis zadd精度问题这里时间*100
-                var iTime = this._iTime.toFixed(2);
-                var str = this._iDiff.toString() + "|" + GLB.sName + "|" + (iTime*100) + "|"
-                + this.sPBMineNum + "|" + this.iPBNum + "|" + strStepInfo;
-                WS.sendMsg(GLB.SET_STEP, str);
-            }
         }, this);
         cc.find("challenge", this.goResult).on("click", function (argument) {
             self.playSound ("click");
-            cc.director.loadScene("Challenge");
+            if (GLB.iType == 0)
+                cc.director.loadScene("Challenge");
+            else if (GLB.iType == 1){
+                WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
+                cc.director.loadScene("World");
+            }
         }, this);
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
@@ -312,14 +305,29 @@ cc.Class({
         var score = GLB.tScore[this._iDiff];
         if (score && this._iTime >= score){
             sTitle = "失败";
-        }else if (this._iDiff != 0){
+        }else {
+            var strStepInfo = WS.getStrPBStepInfo(this._tileMap.getTPB());
+            if (strStepInfo != ""){
+                //因为redis zadd精度问题这里时间*100
+                var iTime = this._iTime.toFixed(2);
+                var str = this._iDiff.toString() + "|" + GLB.sName + "|" + (iTime*100) + "|"
+                + this.sPBMineNum + "|" + this.iPBNum + "|" + strStepInfo;
+                WS.sendMsg(GLB.SET_STEP, str);
+            }
+        }
+        var ndWorldMine = cc.find("labWorldMine", this.goResult);
+        if (this._iDiff != 0){
+            ndWorldMine.active = true;
             var iMine = this._iDiff == 1 ? 1 : 3;
             GLB.iMine+=iMine;
-            WS.sendMsg(SET_WORLD_MINE, GLB.sName, iMine);
+            WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, iMine);
+            ndWorldMine.getComponent(cc.Label).string = "+" + iMine;
+        }else{
+            ndWorldMine.active = false;
+            cc.find("challenge", this.goResult).active = false;
         }
         if (score == null)
             score = "无";
-        cc.find("challenge", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -328,6 +336,7 @@ cc.Class({
     showWinResult(){
         this.goResult.active = true;
         var sTitle = "成功";
+        cc.find("labWorldMine", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
