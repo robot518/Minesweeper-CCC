@@ -13,6 +13,7 @@ var _GLBConfig = {
     sName: "",
     msgBox: null, //断线重连
     iWorldMine: 1, //mineworld入场券
+    iWorldLv: 0, //挑战第几关
     
     //event
     GETVERSION: "getVersion",

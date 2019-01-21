@@ -1,4 +1,8 @@
 var GLB = require('GLBConfig');
+var WS = require("Socket");
+var _dx = 70;
+var _iM = 20;
+var bMove = true;
 
 cc.Class({
     extends: cc.Component,
@@ -34,6 +38,7 @@ cc.Class({
     },
 
     initParas(){
+        this._bTouch = false;
         this._iTime = -1;
         if (this._iDiff == 0) {
             this._iRow = this._iLine = 9;
@@ -43,20 +48,25 @@ cc.Class({
             this._iRow = 16;
             this._iLine = 30;
         }
-        this._dx = 70;
-        this._iM = 20;
         this._iTotal = this._iRow*this._iLine;
         this._tiledMap = this.node.getComponent('cc.TiledMap');
         this._layerLab = this._tiledMap.getLayer("lab");
         this._layerMine = this._tiledMap.getLayer("mine");
         this._layerBtn = this._tiledMap.getLayer("btn");
         this._layerFlag = this._tiledMap.getLayer("flag");
-        this._layerPoint = this._tiledMap.getLayer("point");
 
-        this._bTouch = false;
+        this._mouse = this.node.getChildByName('mouse');
+        this._player = this.node.getChildByName('player');
+        this._mouse.active = false;
+        if (this._player != null){
+            if (GLB.iType == 3)
+                this._player.active = true;
+            else 
+                this._player.active = false;
+        }
     },
 
-    //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-greenflag 15-point
+    //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-greenflag
     initShow(){
         this._layerLab.node.active = true;
         this._layerMine.node.active = true;
@@ -69,45 +79,101 @@ cc.Class({
             this._layerFlag.setTileGIDAt(4, iR, iL);
             this._layerMine.setTileGIDAt(4, iR, iL);
             this._layerLab.setTileGIDAt(4, iR, iL);
-            this._layerPoint.setTileGIDAt(4, iR, iL);
         };
         if (GLB.iType == 1)
             this.tPB = [];
+        bMove = true;
     },
 
-    //tilemap中左下为(0, 0)
+    //tilemap中左下为(0, 0), tile坐标左上为0,0
     //正常坐标转换成tilemap坐标
     initEvent(){
         this.node.on("touchstart", function (event) {
-            if (this._bTouch == true || GLB.iType == 2)
-                return;
+            if (this._bTouch == true || GLB.iType == 2 || this.getBMove() == false)  return;
             this._bTouch = true;
             var touchPos = event.touch.getLocation();
             var nPos = this.node.convertToNodeSpace(touchPos);
             this._prePos = touchPos;
-            this.iR = Math.floor (nPos.x / this._dx);
-            this.iL = this._iLine - 1 - Math.floor (nPos.y / this._dx);
+            this.iR = Math.floor (nPos.x / _dx);
+            this.iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = this.iR + this.iL * this._iRow;
-            if (this._delt.getBGameOver() == false && this._layerBtn.getTileGIDAt(this.iR, this.iL) == 1)
-                this._iTime = 0;
+            if (GLB.iType != 3){
+                if (this._delt.getBGameOver() == false && this._layerBtn.getTileGIDAt(this.iR, this.iL) == 1)
+                    this._iTime = 0;
+            }
         }, this)
         this.node.on("touchmove", function (event) {
-            if (this._bTouch == false || GLB.iType == 2) return;
+            if (this._bTouch == false || GLB.iType == 2 || this.getBMove() == false)  return;
             var nPos = event.touch.getLocation();
-            if (Math.abs(nPos.x - this._prePos.x) > this._iM || Math.abs(nPos.y - this._prePos.y) > this._iM)
-                this._iTime = -1;
+            if (GLB.iType != 3){
+                if (Math.abs(nPos.x - this._prePos.x) > _iM || Math.abs(nPos.y - this._prePos.y) > _iM)
+                    this._iTime = -1;
+            }
         }, this)
         this.node.on("touchend", function (event) {
-            if (this._bTouch == false || GLB.iType == 2) return;
+            if (this._bTouch == false || GLB.iType == 2 || this.getBMove() == false)  return;
             var nPos = event.touch.getLocation();
-            if (Math.abs(nPos.x - this._prePos.x) > this._iM || Math.abs(nPos.y - this._prePos.y) > this._iM){
+            if (Math.abs(nPos.x - this._prePos.x) > _iM || Math.abs(nPos.y - this._prePos.y) > _iM){
                 this._prePos = null;
             } else{
-                this.onClick();
+                if (GLB.iType == 3){
+                    if (this._layerFlag.getTileGIDAt(this.iR, this.iL) != 3 && this.getPlayerIdx() != this.idx
+                    && this._layerBtn.getTileGIDAt(this.iR, this.iL) == 1){ //插旗的格子无法到达，不能不移动，格子需未翻开
+                        this._delt.playSound("check");
+                        this.setPlayerPos(this.iR, this.iL);
+                        bMove = false;
+                        var self = this;
+                        this._layerFlag.scheduleOnce(function (argument) {
+                            bMove = true;
+                            self._delt.onRedo();
+                        }, 1);
+                    }
+                }else
+                    this.onClick();
             }
             this._bTouch = false;
             this._iTime = -1;
         }, this)
+    },
+
+    getBMove(){
+        if (GLB.iType == 3 && bMove == false)
+            return false;
+        return true;
+    },
+
+    setPlayerPos(iR, iL){
+        var pos = cc.v2(iR*_dx, (this._iLine-iL-1)*_dx);
+        this._player.setPosition(pos);
+        if (this._layerBtn.getTileGIDAt(iR, iL) == 1) //有格子
+            this._player.zIndex = 1;
+        else
+            this._player.zIndex = 0;
+    },
+
+    getPlayerIdx(){
+        var pos = this._player.getPosition();
+        var iR = pos.x/_dx;
+        var iL = this._iLine - (pos.y/_dx+1);
+        return iR + iL * this._iRow;
+    },
+
+    checkPlayerSurvive(){
+        var pos = this._player.getPosition();
+        var iR = pos.x/_dx;
+        var iL = this._iLine - (pos.y/_dx+1);
+        if (this._layerBtn.getTileGIDAt(iR, iL) == 1) //有格子
+            return true;
+        return false;
+    },
+
+    setMousePos(iR, iL){
+        var pos = cc.v2(iR*_dx, (this._iLine-iL-1)*_dx);
+        this._mouse.setPosition(pos);
+    },
+
+    hideMouse(){
+        this._mouse.active = false;
     },
 
     onClick(){
@@ -152,24 +218,46 @@ cc.Class({
     },
 
     //iType 0正常翻，1插旗，2点数字
+    //world 0/2点到雷胜利, 1点到雷死亡
     onPlaybackEvent(iType, idx){
         var delt = this._delt;
         var iR = idx % this._iRow;
         var iL = Math.floor (idx / this._iRow);
-        this._layerPoint.setTileGIDAt(15, iR, iL);
+        if (this._mouse.active == false)
+            this._mouse.active = true;
+        this.setMousePos(iR, iL);
+        var bWin = false;
+        var bLose = false;
         if (iType == 0){
-            delt.playSound("check");
-            delt.setTSearch();
-            delt.showGrids(idx);
-            this.showBtns(delt._tBtns);
-            delt.showWin();
+            if (GLB.iType == 3 && this.getPlayerIdx() == idx){
+                delt.playSound("bomb");
+                bMove = false;
+                bWin = true;
+            }else{
+                delt.playSound("check");
+                delt.setTSearch();
+                delt.showGrids(idx);
+                this.showBtns(delt._tBtns);
+                delt.showWin();
+                if (this.checkPlayerSurvive() == false){
+                    delt.playSound("lose");
+                    bMove = false;
+                    bLose = true;
+                }
+            }
         } else if (iType == 1){
             delt.playSound("check");
             var iFlag = this._layerFlag.getTileGIDAt(iR, iL);
             if (iFlag == 4){
-                this._layerFlag.setTileGIDAt(3, iR, iL);
-                delt._tFlag[idx] = 1;
-                delt.setMineCount (-1);
+                if (GLB.iType == 3 && this.getPlayerIdx() == idx){
+                    delt.playSound("bomb");
+                    bMove = false;
+                    bWin = true;
+                }else{
+                    this._layerFlag.setTileGIDAt(3, iR, iL);
+                    delt._tFlag[idx] = 1;
+                    delt.setMineCount (-1);
+                }
             }else if(iFlag == 3){
                 this._layerFlag.setTileGIDAt(4, iR, iL);
                 delt._tFlag[idx] = 0;
@@ -177,11 +265,28 @@ cc.Class({
             }
         } else if (iType == 2){
             delt.onClickNum(idx);
+            if (this.checkPlayerSurvive() == false){
+                delt.playSound("lose");
+                bMove = false;
+                bLose = true;
+            }
         }
         var self = this;
-        this._layerPoint.scheduleOnce(function (argument) {
-            self._layerPoint.setTileGIDAt(4, iR, iL);
-        }, 0.2);
+        //胜负弹出提示界面
+        if (bLose == true){
+            this._layerFlag.scheduleOnce(function (argument) {
+                GLB.iType = 0;
+                self._mouse.active = false;
+                self._player.active = false;
+                delt.start();
+            }, 1);
+        }else if(bWin == true){
+            this._layerFlag.scheduleOnce(function (argument) {
+                WS.sendMsg(GLB.GET_WORLD_STEP, delt._iDiff+""+(++GLB.iWorldLv), delt);
+                self.node.active = false;
+                self._mouse.active = false;
+            }, 1);
+        }
     },
 
     onFlagEvent(){

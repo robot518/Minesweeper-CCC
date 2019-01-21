@@ -174,8 +174,14 @@ cc.Class({
             if (sData[0] == 1)
                 this.setMineCount (2*tFlag[idx]-1);
             sData = GLB.tPlaybackData[self.iPBidx-1];
-            this._iTime = this.iPBidx == 2 ? 0 : parseFloat(sData.substring(sData.indexOf(".")+1));
+            iDot = sData.indexOf(".");
+            this._iTime = this.iPBidx == 2 ? 0 : parseFloat(sData.substring(iDot+1));
             this.labTime.string = this.iPBidx == 2 ? "0.00" : this._iTime.toString();
+            if (iDot != -1){
+                idx = sData.substring(1, iDot);
+                this._tileMap.setMousePos(idx % this._iRow, Math.floor (idx / this._iRow));
+            }else
+                this._tileMap.hideMouse();
         }, this);
         ndStop.on("click", function (argument) {
             this.bPlayTime = false;
@@ -190,22 +196,7 @@ cc.Class({
             };
         }, this);
         cc.find("redo", playback).on("click", function (argument) {
-            if (this.iPBidx > GLB.tPlaybackData.length-1)
-                return;
-            if (ndStop.active == true){
-                this.bPlayTime = false;
-                ndPlay.active = true;
-                ndStop.active = false;
-            }
-            var sData = GLB.tPlaybackData[self.iPBidx];
-            var iDot = sData.indexOf(".");
-            this._iTime = parseFloat(sData.substring(iDot+1)); //时间重置2
-            self.labTime.string = this._iTime.toString();
-            self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iDot));
-            self.tPBBtns.push(self._tBtns.slice(0));
-            self.tPBFlags.push(self._tFlag.slice(0));
-            this.iPBidx++;
-            this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
+            this.onRedo(ndStop, ndPlay);
         }, this);
         cc.find("sub/back", btns).on("click", function (argument) {
             self.playSound ("click");
@@ -285,9 +276,27 @@ cc.Class({
             cc.find("diff", normal).active = false;
             cc.find("start", normal).active = false;
             cc.find("type", normal).active = false;
+            this.labTime.node.active = false;
             // cc.find("scale", normal).active = false;
         }
         this.showBg();
+        if (GLB.iType == 3)
+            cc.find("btns/sub/back", this.node).active = false;
+    },
+
+    onResponse(cmd, msg){
+        var args = msg.split("|");
+        if (cmd == GLB.GET_WORLD_STEP){
+            if (msg == "null")
+                return;
+            else if (msg == ""){ //胜利结束了
+                // dosth
+                return;
+            }
+            GLB.tPlaybackData = args;
+            GLB.iType = 3;
+            this.start();
+        }
     },
 
     showBg(){
@@ -297,6 +306,26 @@ cc.Class({
             this.ndBg.color = new cc.Color(68, 107, 107);
         else if (GLB.iType == 3)
             this.ndBg.color = cc.Color.RED;
+    },
+
+    onRedo(ndStop, ndPlay){
+        var self = this;
+        if (this.iPBidx > GLB.tPlaybackData.length-1)
+            return;
+        if (GLB.iType == 2 && ndStop.active == true){
+            this.bPlayTime = false;
+            ndPlay.active = true;
+            ndStop.active = false;
+        }
+        var sData = GLB.tPlaybackData[self.iPBidx];
+        var iDot = sData.indexOf(".");
+        this._iTime = parseFloat(sData.substring(iDot+1)); //时间重置2
+        self.labTime.string = this._iTime.toString();
+        self._tileMap.onPlaybackEvent(sData[0], sData.substring(1, iDot));
+        self.tPBBtns.push(self._tBtns.slice(0));
+        self.tPBFlags.push(self._tFlag.slice(0));
+        this.iPBidx++;
+        this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
     },
 
     showResult(){
