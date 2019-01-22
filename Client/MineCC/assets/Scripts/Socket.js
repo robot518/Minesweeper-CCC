@@ -8,12 +8,12 @@ var bInter = false; //判断是否已经开始心跳包
 var bError = false;
 var creatWS = function (argument) {
     ws = null;
-    // if (window.wx || cc.sys.os === cc.sys.OS_IOS)
-    //     ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx/ios
-    // else if (cc.sys.os === cc.sys.OS_ANDROID)
+    if (window.wx || cc.sys.os === cc.sys.OS_IOS)
+        ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx/ios
+    else if (cc.sys.os === cc.sys.OS_ANDROID)
         ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
-    // else
-    //     ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
+    else
+        ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");
@@ -28,7 +28,7 @@ var creatWS = function (argument) {
     };
     ws.onmessage = function (event) {
         var data = event.data;
-        console.log("response text msg: " + data);
+        // console.log("response text msg: " + data);
         var i1 = data.indexOf(":");
         if (i1 == -1)
             return;
@@ -43,7 +43,7 @@ var creatWS = function (argument) {
      bError = true;
     };
     ws.onclose = function (e) {
-        if (e.code.toString() != "1001" && GLB.msgBox)
+        if (e.code && e.code.toString() != "1001" && GLB.msgBox)
             GLB.msgBox.active = true;
          console.log("WebSocket instance closed.", e.code + ' ' + e.reason + ' ' + e.wasClean);
          if (bError == false)
@@ -60,7 +60,7 @@ WS.sendMsg = function (cmd, msg, obj) {
             return;
         }
         var str = cmd + ":" + msg.toString();
-        console.log("sendMsg = ", str);
+        // console.log("sendMsg = ", str);
         ws.send(str);
         if (obj != null){
             WS.obj = obj;

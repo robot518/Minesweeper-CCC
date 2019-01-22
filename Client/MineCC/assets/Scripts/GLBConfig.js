@@ -5,14 +5,14 @@ var _GLBConfig = {
     wxUserInfo: [],
     getUserInfoBtn: null,
     isClickCd: false,
-    iType: 0, //0经典，1挑战，2回放，3雷之大陆
+    iType: 0, //0经典，1挑战，2回放，3雷之大陆，4变成地雷
     iDiff: 0,
     tScore: [],
     tName: [],
     tPlaybackData: null,
     sName: "",
     msgBox: null, //断线重连
-    iWorldMine: 1, //mineworld入场券
+    iWorldMine: 0, //mineworld入场券
     iWorldLv: 0, //挑战第几关
     
     //event

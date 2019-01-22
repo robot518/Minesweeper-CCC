@@ -1,10 +1,13 @@
 var GLB = require('GLBConfig');
 var WS = require("Socket");
+var bInitEvent = false;
 
 cc.Class({
     extends: cc.Component,
 
     properties: {
+        goWorldResult: cc.Node,
+        tipsBox: cc.Node,
         ndBg: cc.Node,
         tips: cc.Node,
         mineMap: cc.Node,
@@ -19,6 +22,7 @@ cc.Class({
         labLeftMine: cc.Label,
         labType: cc.Label,
         labTimeWorld: cc.Label,
+        labLv: cc.Label,
 
         bombClip: cc.AudioSource,
         checkClip: cc.AudioSource,
@@ -34,7 +38,11 @@ cc.Class({
     start () {
         this.initCanvas();
         this.initParas();
-        this.initEvent();
+        if (bInitEvent == false){
+            bInitEvent = true;
+            this.initEvent();
+        }
+        this.initWXVideo();
         this.initShow();
         var self = this;
         if (GLB.iType == 3){
@@ -57,23 +65,8 @@ cc.Class({
         }
     },
 
-    newStart(){
-        this.initCanvas();
-        this.initParas();
-        this.initShow();
-        var self = this;
-        var iNum = 3;
-        var showLab = cc.callFunc(function (argument) {
-            self.labTimeWorld.node.opacity = 255;
-            self.labTimeWorld.string = iNum--;
-        });
-        var start = cc.callFunc(function (argument) {
-            self.labTime.scheduleOnce(function (argument) {
-                self.onStart();
-            }, 0.01)
-        });
-        var seq = cc.sequence(cc.repeat(cc.sequence(showLab, cc.fadeOut(1)), 3), start);
-        this.labTimeWorld.node.runAction(seq);
+    onDestroy(){
+        bInitEvent = false;
     },
 
     initCanvas(){
@@ -124,6 +117,7 @@ cc.Class({
         this.bScale = false;
         this._iLife = 1; 
         this._iTime = 0;
+        this.bWorldWin = false;
 
         if (GLB.iType == 1 || GLB.iType == 2 || GLB.iType == 3){
             this._iDiff = GLB.iDiff;
@@ -148,10 +142,6 @@ cc.Class({
             self.playSound ("click");
             if (GLB.iType == 0)
                 cc.director.loadScene("Challenge");
-            else if (GLB.iType == 1){
-                WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
-                cc.director.loadScene("World");
-            }
         }, this);
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
@@ -166,6 +156,20 @@ cc.Class({
         cc.find("type", normal).on("click", function (argument) {
             self.onType();
         }, this);
+        var overall = cc.find("overall", normal);
+        overall.on("click", function (argument) {
+            if (!this._tileMap) return;
+            var ndBtn = this._tileMap.node.getChildByName("btn");
+            if (ndBtn.opacity == 255)
+                ndBtn.opacity = 188;
+            else
+                ndBtn.opacity = 255;
+            if (ndBtn.opacity == 255)
+                overall.color = cc.Color.WHITE;
+            else
+                overall.color = cc.Color.GRAY;
+        }, this);
+        //end normal
         var playback = cc.find("playback", btns);
         var ndStop = cc.find("stop", playback);
         var ndPlay = cc.find("play", playback);
@@ -255,23 +259,99 @@ cc.Class({
             }
         }, self);
 
+        // tipsbox
+        cc.find("back", this.tipsBox).on("click", function (argument) {
+            GLB.iType = 0;
+            this.start();
+            this.tipsBox.active = false;
+        }, this);
+        cc.find("beMine", this.tipsBox).on("click", function (argument) {
+            if (GLB.iWorldMine > 0){
+                if (GLB.sName != ""){
+                    WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName+"|"+-1);
+                }
+                GLB.iWorldMine--;
+                cc.director.loadScene("World");
+            }else{
+                this.playTips("变身卡不足，完成中高级挑战可获得");
+            }
+        }, this);
+        cc.find("video", this.tipsBox).on("click", function (argument) {
+            if (self.videoAd2 != null){
+                self.videoAd2.show()
+                .catch(err => {
+                    self.videoAd2.load()
+                    .then(() => self.videoAd2.show())
+                })
+            }
+        }, this);
+
+        //goWorldResult
+        cc.find("back", this.goWorldResult).on("click", function (argument) {
+            cc.director.loadScene("World");
+        }, this);
+        cc.find("continue", this.goWorldResult).on("click", function (argument) {
+            if (this.bWorldWin == true)
+                return;
+            this.goWorldResult.active = false;
+            WS.sendMsg(GLB.GET_WORLD_STEP, this._iDiff+""+(++GLB.iWorldLv), this);
+            this.showLv();
+            this._tileMap.node.active = false;
+            this._tileMap._mouse.active = false;
+        }, this);
+        cc.find("spBack", this.goWorldResult).on("click", function (argument) {
+            this.goWorldResult.active = false;
+            GLB.iType = 0;
+            this._tileMap._mouse.active = false;
+            this._tileMap._player.active = false;
+            this._tileMap.node.getChildByName("btn").opacity = 255;
+            this.start();
+        }, this);
+    },
+
+    initWXVideo(){
         if (!window.wx)
             return;
-        this.videoAd = wx.createRewardedVideoAd({
-            adUnitId: 'adunit-bfb85c76177f19b6'
-        });
-        this.videoAd.onClose(res => {
-            if (res && res.isEnded || res === undefined){
-                self._iLife--;
-                self.onRivive();
-            }else{
+        var self = this;
+        if (GLB.iType == 4){
+            this.videoAd2 = wx.createRewardedVideoAd({
+                adUnitId: 'adunit-a7fcb876faba0c89'
+            });
+            this.videoAd2.onClose(res => {
+                if (res && res.isEnded || res === undefined){
+                    cc.director.loadScene("World");
+                }else{
 
-            }
-        });
-        if (this.videoAd == null) return;
-        this.videoAd.onError(err => {
-          console.log(err)
-        });
+                }
+            });
+            this.videoAd2.onError(err => {
+              console.log(err)
+            });
+        }else if(GLB.iType == 0 || GLB.iType == 1){
+            this.videoAd = wx.createRewardedVideoAd({
+                adUnitId: 'adunit-bfb85c76177f19b6'
+            });
+            this.videoAd.onClose(res => {
+                if (res && res.isEnded || res === undefined){
+                    self._iLife--;
+                    self.onRivive();
+                }else{
+
+                }
+            });
+            this.videoAd.onError(err => {
+              console.log(err)
+            });
+        }
+    },
+
+    showWorldResult(bWin){
+        var str = bWin == true ? "成功" : "失败";
+        this.goWorldResult.active = true;
+        cc.find("labResult", this.goWorldResult).getComponent(cc.Label).string = str;
+        cc.find("back", this.goWorldResult).active = bWin;
+        cc.find("continue", this.goWorldResult).active = bWin;
+        cc.find("spBack", this.goWorldResult).active = !bWin;
     },
 
     initShow(){
@@ -282,25 +362,51 @@ cc.Class({
         if (!window.wx)
             cc.find("btns/sub/share", this.node).active = false;
         var normal = cc.find("btns/normal", this.node);
-        if (GLB.iType == 1)
-            cc.find("diff", normal).active = false;
-        else if (GLB.iType == 2){
-            cc.find("diff", normal).active = false;
-            cc.find("start", normal).active = false;
-            cc.find("type", normal).active = false;
+        var back = cc.find("btns/sub/back", this.node);
+        var overall = cc.find("overall", normal);
+        var diff = cc.find("diff", normal);
+        var start = cc.find("start", normal);
+        var type = cc.find("type", normal);
+        overall.active = false;
+        this.labLv.node.active = false;
+        if (GLB.iType == 0){
+            this.ndBg.color = new cc.Color(122, 122, 122);
+            normal.active = true;
+            diff.active = true;
+            start.active = true;
+            type.active = true;
+            this.labTime.node.active = true;
+            // back.active = true;
+            back.active = false;
+        }else if (GLB.iType == 1){
+            this.ndBg.color = new cc.Color(68, 107, 107);
+            diff.active = false;
+        }else if (GLB.iType == 2){
+            this.ndBg.color = new cc.Color(68, 107, 107);
+            diff.active = false;
+            start.active = false;
+            type.active = false;
             cc.find("scale", normal).active = false;
-        }else if (GLB.iType == 0){
-            // cc.find("btns/sub/back", this.node).active = false;
         }else if (GLB.iType == 3){
-            cc.find("diff", normal).active = false;
-            cc.find("start", normal).active = false;
-            cc.find("type", normal).active = false;
+            this.ndBg.color = cc.Color.RED;
+            diff.active = false;
+            start.active = false;
+            type.active = false;
+            // overall.active = true;
             this.labTime.node.active = false;
-            // cc.find("scale", normal).active = false;
-        }
-        this.showBg();
-        if (GLB.iType == 3)
             cc.find("btns/sub/back", this.node).active = false;
+            this.labLv.node.active = true;
+            this.showLv();
+        }else if (GLB.iType == 4){
+            this.ndBg.color = cc.Color.RED;
+            normal.active = false;
+            back.active = false;
+            var video = cc.find("video", this.tipsBox);
+            if (window.wx)
+                video.active = true;
+            else
+                video.active = false;
+        }
     },
 
     onResponse(cmd, msg){
@@ -309,22 +415,15 @@ cc.Class({
             if (msg == "null")
                 return;
             else if (msg == ""){ //胜利结束了
-                // dosth
+                this.playTips("已通关");
+                this.goWorldResult.active = true;
+                this.bWorldWin = true;
                 return;
             }
             GLB.tPlaybackData = args;
             GLB.iType = 3;
-            this.newStart();
+            this.start();
         }
-    },
-
-    showBg(){
-        if (GLB.iType == 0)
-            this.ndBg.color = new cc.Color(122, 122, 122);
-        else if (GLB.iType == 1 || GLB.iType == 2)
-            this.ndBg.color = new cc.Color(68, 107, 107);
-        else if (GLB.iType == 3)
-            this.ndBg.color = cc.Color.RED;
     },
 
     onRedo(ndStop, ndPlay){
@@ -368,14 +467,14 @@ cc.Class({
             ndWorldMine.active = true;
             var iMine = this._iDiff == 1 ? 1 : 3;
             GLB.iMine+=iMine;
-            WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, iMine);
+            WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName+"|"+iMine);
             ndWorldMine.getComponent(cc.Label).string = "+" + iMine;
         }else{
             ndWorldMine.active = false;
-            cc.find("challenge", this.goResult).active = false;
         }
         if (score == null)
             score = "无";
+        cc.find("challenge", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -421,8 +520,9 @@ cc.Class({
 
     onStart(){
         this.reset();
-        this.initMines(); //2/3有特殊处理
-        this.initLabs();
+        this.initMines(); //2/3/4有特殊处理
+        if (GLB.iType != 4)
+            this.initLabs();
         if (GLB.iType == 2 || GLB.iType == 3){
             this.initStartShow(parseInt(GLB.tPlaybackData[1]));
             this.tPBBtns.push(this._tBtns.slice(0));
@@ -433,10 +533,18 @@ cc.Class({
                 this.labTime.scheduleOnce(function (argument) {
                     cc.find("btns/playback", self.node).active = true;
                 }, 0.5);
-            }else if(GLB.iType == 3){
-                // this.bPlayTime = true;
             }
-        } else{
+        }else if (GLB.iType == 4){
+            this.bPlayTime = false;
+            this.labTime.string="00:00";
+            this.playTime();
+        }else {
+            if (GLB.iType == 0){
+                this.bPlayTime = false;
+                this.labTime.string="00:00";
+                this.playTime();
+            }else if (this.bPlayTime == false)
+                this.bPlayTime = true;
             this.initGridShow();
         }
     },
@@ -505,6 +613,9 @@ cc.Class({
             this.bigScv.active = true;
         }
         this._iTotal = this._iRow * this._iLine;
+        if (GLB.iType == 4){
+            this._iMineCount = this._iRow*this._iLine;
+        }   
         this.showMineCount(this._iMineCount);
         this._tileMap.initShow();
     },
@@ -524,7 +635,11 @@ cc.Class({
             this._tBtns[i] = 1;
             // this._tBtns[i] = 0;
         };
-        if (GLB.iType == 2 || GLB.iType == 3){
+        if (GLB.iType == 4){
+            for (var i = 0; i < this._iTotal; i++) {
+                tMineNum[i] = 1;
+            };
+        }else if (GLB.iType == 2 || GLB.iType == 3){
             tMineNum = WS.getTPBMineNum();
         }else{
             for (var i = 0; i < this._iMineCount; i++) {
@@ -584,12 +699,6 @@ cc.Class({
     },
 
     initGridShow(){
-        if (GLB.iType == 0){
-            this.bPlayTime = false;
-            this.labTime.string="00:00";
-            this.playTime();
-        } else if (this.bPlayTime == false)
-            this.bPlayTime = true;
         var tNum = [];
         for (var i = 0; i < this._iTotal; i++) {
             tNum.push(i);
@@ -749,7 +858,7 @@ cc.Class({
     },
 
     playSound(sName){
-        if (window.wx && (sName == "bomb" || sName == "lose")){
+        if (window.wx && (sName == "bomb" || sName == "lose") && GLB.iType != 4 && GLB.iType != 3){
             if (this._iLife > 0){
                 this.goRivive.active = true;
                 if (this.bannerAd != null)
@@ -825,10 +934,34 @@ cc.Class({
         };
         this._tileMap.showBtns(this._tBtns);
         this._bGameOver = true;
-        if (GLB.iType == 0)
+        if (GLB.iType == 0 || GLB.iType == 4){
             this.labTime.unschedule(this.coPlayTime);
-        else
+            if (GLB.iType == 4){
+                var self = this;
+                var showRedMine = cc.callFunc(function (argument) {
+                    self._tileMap.showAllRedMine();
+                });
+                var showNormalMine = cc.callFunc(function (argument) {
+                    self._tileMap.showAllNormalMine();
+                });
+                var endCb = cc.callFunc(function (argument) {
+                    if (GLB.iType == 4){
+                        self.tipsBox.active = true;
+                    }
+                })
+                var repeat = cc.repeat(cc.sequence(cc.delayTime(1), showRedMine, cc.delayTime(1), showNormalMine), 3);
+                var seq = cc.sequence(repeat, endCb);
+                this.labLeftMine.node.runAction(seq);
+            }
+        }else{
+            if (GLB.iType == 3){
+                var self = this;
+                this.labLeftMine.scheduleOnce(function (argument) {
+                    self.showWorldResult(true);
+                }, 1.5);
+            }
             this.bPlayTime = false;
+        }
     },
 
     onClickMode(){
@@ -843,5 +976,9 @@ cc.Class({
 
     getITime(){
         return this._iTime.toFixed(2);
+    },
+
+    showLv(){
+        this.labLv.string = GLB.iWorldLv+1;
     },
 });

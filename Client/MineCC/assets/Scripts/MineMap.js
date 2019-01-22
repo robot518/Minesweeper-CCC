@@ -98,7 +98,7 @@ cc.Class({
             this.iR = Math.floor (nPos.x / _dx);
             this.iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = this.iR + this.iL * this._iRow;
-            if (GLB.iType != 3){
+            if (GLB.iType != 3 && GLB.iType != 4){
                 if (this._delt.getBGameOver() == false && this._layerBtn.getTileGIDAt(this.iR, this.iL) == 1)
                     this._iTime = 0;
             }
@@ -106,7 +106,7 @@ cc.Class({
         this.node.on("touchmove", function (event) {
             if (this._bTouch == false || GLB.iType == 2 || this.getBMove() == false)  return;
             var nPos = event.touch.getLocation();
-            if (GLB.iType != 3){
+            if (GLB.iType != 3 && GLB.iType != 4){
                 if (Math.abs(nPos.x - this._prePos.x) > _iM || Math.abs(nPos.y - this._prePos.y) > _iM)
                     this._iTime = -1;
             }
@@ -250,14 +250,13 @@ cc.Class({
             delt.playSound("check");
             var iFlag = this._layerFlag.getTileGIDAt(iR, iL);
             if (iFlag == 4){
+                this._layerFlag.setTileGIDAt(3, iR, iL);
+                delt._tFlag[idx] = 1;
+                delt.setMineCount (-1);
                 if (GLB.iType == 3 && this.getPlayerIdx() == idx){
-                    delt.playSound("bomb");
+                    delt.playSound("lose");
                     bMove = false;
-                    bWin = true;
-                }else{
-                    this._layerFlag.setTileGIDAt(3, iR, iL);
-                    delt._tFlag[idx] = 1;
-                    delt.setMineCount (-1);
+                    bLose = true;
                 }
             }else if(iFlag == 3){
                 this._layerFlag.setTileGIDAt(4, iR, iL);
@@ -272,21 +271,10 @@ cc.Class({
                 bLose = true;
             }
         }
-        var self = this;
-        //胜负弹出提示界面
-        if (bLose == true){
+        if (bWin || bLose){
             this._layerFlag.scheduleOnce(function (argument) {
-                GLB.iType = 0;
-                self._mouse.active = false;
-                self._player.active = false;
-                delt.newStart();
-            }, 1);
-        }else if(bWin == true){
-            this._layerFlag.scheduleOnce(function (argument) {
-                WS.sendMsg(GLB.GET_WORLD_STEP, delt._iDiff+""+(++GLB.iWorldLv), delt);
-                self.node.active = false;
-                self._mouse.active = false;
-            }, 1);
+                delt.showWorldResult(bWin);
+            }, 1.5);
         }
     },
 
@@ -317,6 +305,22 @@ cc.Class({
             var str = "1" + this.idx.toString() + "." + delt.getITime();
             this.tPB.push(str);
         }
+    },
+
+    showAllRedMine(){
+        for (var i = 0; i < this._iLine; i++) {
+            for (var j = 0; j < this._iRow; j++) {
+                this._layerMine.setTileGIDAt(13, j, i);
+            };
+        };
+    },
+
+    showAllNormalMine(){
+        for (var i = 0; i < this._iLine; i++) {
+            for (var j = 0; j < this._iRow; j++) {
+                this._layerMine.setTileGIDAt(2, j, i);
+            };
+        };
     },
 
     showRedMine(idx){

@@ -5,7 +5,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        
+        tips: cc.Node,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -34,9 +34,25 @@ cc.Class({
     },
 
     initEvent(){
-        cc.find("back", this.node).on("click", function (argument) {
-            GLB.iType = 0;
-            cc.director.loadScene("Challenge");
+        cc.find("snake", this.node).on("click", function (argument) {
+            if (window.wx){
+                wx.navigateToMiniProgram({
+                    appId: 'wx938546d6526f42dc',
+                    path: '',
+                    extraData: {
+                        foo: 'Minesweeper'
+                    },
+                    envVersion: 'develop',
+                        success(res) {
+                        // 打开成功
+                    console.log("success: ", res);
+                    },
+                    fail(res){
+                        console.log("fail: ", res);
+                    },
+                })
+            }else
+                this.playTips("传言wind贪吃蛇中有个蛇之大陆..");
         }, this);
         var items = cc.find("items", this.node);
         for (var i = 0; i < 3; i++) {
@@ -68,5 +84,12 @@ cc.Class({
             GLB.iType = 3;
             cc.director.loadScene("Main");
         }
+    },
+
+    playTips(str){
+        var lab = this.tips.children[0];
+        lab.getComponent(cc.Label).string = str;
+        this.tips.opacity = 255;
+        this.tips.runAction(cc.fadeOut(2));
     },
 });

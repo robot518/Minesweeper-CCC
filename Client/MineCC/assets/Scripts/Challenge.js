@@ -67,6 +67,8 @@ cc.Class({
             }, cc.game);
         }
         WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
+        if (GLB.sName != "")
+            WS.sendMsg(GLB.GET_WORLD_MINE, GLB.sName, this);
     },
 
     initCanvas(){
@@ -105,15 +107,8 @@ cc.Class({
                 GLB.msgBox.active = true;
                 return;
             }
-            if (GLB.iWorldMine > 0){
-                if (GLB.sName != ""){
-                    WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName, -1);
-                }
-                GLB.iWorldMine--;
-                cc.director.loadScene("World");
-            }else{
-                this.playTips("完成中级挑战可进入");
-            }
+            GLB.iType = 4;
+            cc.director.loadScene("Main");
         }, this);
         for (var i = 0; i < 3; i++) {
             var node = cc.find("go/item" + (i+1).toString(), this.node);
@@ -303,6 +298,8 @@ cc.Class({
         GLB.sName = this.editName.string;
         GLB.tScore = [];
         GLB.tName = [];
+        GLB.iWorldMine = 0;
+        this.labWorldMine.string = GLB.iWorldMine;
     },
 
     playTips(str){
