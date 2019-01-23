@@ -138,11 +138,6 @@ cc.Class({
             self.playSound ("click");
             this.goResult.active = false;
         }, this);
-        cc.find("challenge", this.goResult).on("click", function (argument) {
-            self.playSound ("click");
-            if (GLB.iType == 0)
-                cc.director.loadScene("Challenge");
-        }, this);
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
             this.onStart();
@@ -376,8 +371,7 @@ cc.Class({
             start.active = true;
             type.active = true;
             this.labTime.node.active = true;
-            // back.active = true;
-            back.active = false;
+            back.active = true;
         }else if (GLB.iType == 1){
             this.ndBg.color = new cc.Color(68, 107, 107);
             diff.active = false;
@@ -474,7 +468,6 @@ cc.Class({
         }
         if (score == null)
             score = "无";
-        cc.find("challenge", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
