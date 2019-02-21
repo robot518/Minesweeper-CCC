@@ -31,8 +31,6 @@ cc.Class({
         labRank2No1: cc.Label,
         labRank3No1: cc.Label,
 
-        labWorldMine: cc.Label,
-
         editName: cc.EditBox,
         editPass: cc.EditBox,
     },
@@ -67,8 +65,6 @@ cc.Class({
             }, cc.game);
         }
         WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
-        if (GLB.sName != "")
-            WS.sendMsg(GLB.GET_WORLD_MINE, GLB.sName, this);
     },
 
     initCanvas(){
@@ -214,8 +210,6 @@ cc.Class({
         this.labScore2No1.string = str;
         this.labName3No1.string = str;
         this.labScore3No1.string = str;
-
-        this.labWorldMine.string = GLB.iWorldMine;
     },
 
     onResponse(cmd, msg){
@@ -225,7 +219,6 @@ cc.Class({
                 this.ndRegister.active = false;
                 this.initGLBData();
                 WS.sendMsg(GLB.GET_SCORE, GLB.sName, this);
-                WS.sendMsg(GLB.GET_WORLD_MINE, GLB.sName, this);
             } else
                 this.playTips(msg);
         }else if (cmd == GLB.GET_SCORE){
@@ -277,11 +270,6 @@ cc.Class({
                 labCost.node.color = color;
             };
             this.ndTips.active = false;
-        }else if(cmd == GLB.GET_WORLD_MINE){
-            if (msg == "null")
-                msg = 0;
-            GLB.iWorldMine = msg;
-            this.labWorldMine.string = msg;
         }
     },
 
@@ -299,7 +287,6 @@ cc.Class({
         GLB.tScore = [];
         GLB.tName = [];
         GLB.iWorldMine = 0;
-        this.labWorldMine.string = GLB.iWorldMine;
     },
 
     playTips(str){

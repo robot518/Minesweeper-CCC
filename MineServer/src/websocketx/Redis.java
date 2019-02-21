@@ -261,28 +261,4 @@ public class Redis {
             }
         }
     }
-
-    public String getWolrdMine(String sName){
-        Jedis jedis = null;
-        try {
-            jedis = getPool().getResource();
-            return jedis.hget(sKeyWorldMine, sName);
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
-        }
-    }
-
-    public void setWorldMine(String sName, String sNum){
-        Jedis jedis = null;
-        try {
-            jedis = getPool().getResource();
-            jedis.hincrBy(sKeyWorldMine, sName, Long.parseLong(sNum));
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
-        }
-    }
 }

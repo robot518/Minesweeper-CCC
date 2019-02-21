@@ -140,14 +140,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     sName = request.substring(iColon + 1);
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getStrScore(sName)));
                     break;
-                case "setWorldMine":
-                    String sNum = request.substring(i1+1);
-                    Redis.getInstance().setWorldMine(sName, sNum);
-                    break;
-                case "getWorldMine":
-                    sName = request.substring(iColon + 1);
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getWolrdMine(sName)));
-                    break;
                 case "getWorldStep":
                     if (request.substring(iColon + 1).length() == 1)
                         return;

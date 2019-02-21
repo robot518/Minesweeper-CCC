@@ -12,11 +12,9 @@ var _GLBConfig = {
     tPlaybackData: null,
     sName: "",
     msgBox: null, //断线重连
-    iWorldMine: 0, //mineworld入场券
     iWorldLv: 0, //挑战第几关
     
     //event
-    GETVERSION: "getVersion",
     REGISTER: "register",
     LOGIN: "login",
     GET_SCORE: "getScore",
@@ -25,7 +23,5 @@ var _GLBConfig = {
     SET_STEP: "setStep",
     WXLOGIN: "wxLogin",
     GET_WORLD_STEP: "getWorldStep",
-    GET_WORLD_MINE: "getWorldMine",
-    SET_WORLD_MINE: "setWorldMine",
 };
 module.exports = _GLBConfig;

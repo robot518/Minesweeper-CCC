@@ -9,11 +9,11 @@ var bError = false;
 var creatWS = function (argument) {
     ws = null;
     if (window.wx || cc.sys.os === cc.sys.OS_IOS)
-        ws = new WebSocket("wss://" + GLB.ip + "/websocket"); //wx/ios
+        ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //wx/ios
     else if (cc.sys.os === cc.sys.OS_ANDROID)
         ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
     else
-        ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地
+        ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //本地
     WS.ws = ws;
     ws.onopen = function (event) {
      console.log("Send Text WS was opened.");

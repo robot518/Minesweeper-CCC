@@ -239,11 +239,6 @@ cc.Class({
             } else
                 ndSound.color = cc.Color.GRAY;
         }, this);
-        cc.find("goRivive", this.node).on("click", function (argument) {
-            this.goRivive.active = false;
-            if (this.bannerAd != null)
-                this.bannerAd.hide();
-        }, this);
         cc.find("goRivive/rivive", this.node).on("click", function (argument) {
             if (self.videoAd != null){
                 self.videoAd.show()
@@ -255,22 +250,6 @@ cc.Class({
         }, self);
 
         // tipsbox
-        cc.find("back", this.tipsBox).on("click", function (argument) {
-            GLB.iType = 0;
-            this.start();
-            this.tipsBox.active = false;
-        }, this);
-        cc.find("beMine", this.tipsBox).on("click", function (argument) {
-            if (GLB.iWorldMine > 0){
-                if (GLB.sName != ""){
-                    WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName+"|"+-1);
-                }
-                GLB.iWorldMine--;
-                cc.director.loadScene("World");
-            }else{
-                this.playTips("变身卡不足，完成中高级挑战可获得");
-            }
-        }, this);
         cc.find("video", this.tipsBox).on("click", function (argument) {
             if (self.videoAd2 != null){
                 self.videoAd2.show()
@@ -456,16 +435,6 @@ cc.Class({
                 WS.sendMsg(GLB.SET_STEP, str);
             }
         }
-        var ndWorldMine = cc.find("labWorldMine", this.goResult);
-        if (this._iDiff != 0){
-            ndWorldMine.active = true;
-            var iMine = this._iDiff == 1 ? 1 : 3;
-            GLB.iMine+=iMine;
-            WS.sendMsg(GLB.SET_WORLD_MINE, GLB.sName+"|"+iMine);
-            ndWorldMine.getComponent(cc.Label).string = "+" + iMine;
-        }else{
-            ndWorldMine.active = false;
-        }
         if (score == null)
             score = "无";
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
@@ -476,7 +445,6 @@ cc.Class({
     showWinResult(){
         this.goResult.active = true;
         var sTitle = "成功";
-        cc.find("labWorldMine", this.goResult).active = false;
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -942,7 +910,7 @@ cc.Class({
                         self.tipsBox.active = true;
                     }
                 })
-                var repeat = cc.repeat(cc.sequence(cc.delayTime(1), showRedMine, cc.delayTime(1), showNormalMine), 3);
+                var repeat = cc.repeat(cc.sequence(cc.delayTime(0.2), showRedMine, cc.delayTime(0.5), showNormalMine), 3);
                 var seq = cc.sequence(repeat, endCb);
                 this.labLeftMine.node.runAction(seq);
             }
