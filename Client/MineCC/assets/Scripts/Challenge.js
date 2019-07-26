@@ -44,6 +44,7 @@ cc.Class({
     start () {
         this.initCanvas();
         this.initEvent();
+        this.initWXVideo();
         this.initShow();
         if (GLB.msgBox == null){
             var msgBox = cc.find("msgBox");
@@ -84,6 +85,7 @@ cc.Class({
     // update (dt) {},
 
     initEvent(){
+        var self = this;
         cc.find("scv/backScv", this.node).on("click", function (argument) {
             this.scv.active = false;
         }, this);
@@ -138,16 +140,15 @@ cc.Class({
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
-                if (WS.ws.readyState !== WebSocket.OPEN){
-                    GLB.msgBox.active = true;
-                    return;
+                if (self.videoAd != null){
+                    var name = event.node.parent.parent.name;
+                    GLB.iDiff = parseInt(name);
+                    self.videoAd.show()
+                    .catch(err => {
+                        self.videoAd.load()
+                        .then(() => self.videoAd.show())
+                    })
                 }
-                var name = event.node.parent.parent.name;
-                GLB.iDiff = parseInt(name);
-                var sName = GLB.tName[GLB.iDiff];
-                if (sName == null)
-                    return;
-                WS.sendMsg(GLB.GET_STEP, name+sName, this);
             }, this);
             //more
             cc.find("labType/more", node).on("click", function (event) {
@@ -190,6 +191,30 @@ cc.Class({
         this.ndRegister.on("click", function (argument) {
             this.ndRegister.active = false;
         }, this);
+    },
+
+    initWXVideo(){
+        if (!window.wx) return;
+        var self = this;
+        this.videoAd = wx.createRewardedVideoAd({
+            adUnitId: 'adunit-bfb85c76177f19b6'
+        });
+        this.videoAd.onClose(res => {
+            if (res && res.isEnded || res === undefined){
+                if (WS.ws.readyState !== WebSocket.OPEN){
+                    GLB.msgBox.active = true;
+                    return;
+                }
+                var sName = GLB.tName[GLB.iDiff];
+                if (sName == null) return;
+                WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
+            }else{
+
+            }
+        });
+        this.videoAd.onError(err => {
+          console.log(err)
+        });
     },
 
     initShow(){

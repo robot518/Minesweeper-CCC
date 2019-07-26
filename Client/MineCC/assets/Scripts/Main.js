@@ -16,7 +16,6 @@ cc.Class({
         midScv: cc.Node,
         bigScv: cc.Node,
         togs: cc.Node,
-        goRivive: cc.Node,
         goResult: cc.Node,
         labTime: cc.Label,
         labLeftMine: cc.Label,
@@ -115,7 +114,6 @@ cc.Class({
         this.midPreOff = cc.v2(-50, 300);
         this.bigPreOff = cc.v2(-50, 1790);
         this.bScale = false;
-        this._iLife = 1; 
         this._iTime = 0;
         this.bWorldWin = false;
 
@@ -239,15 +237,6 @@ cc.Class({
             } else
                 ndSound.color = cc.Color.GRAY;
         }, this);
-        cc.find("goRivive/rivive", this.node).on("click", function (argument) {
-            if (self.videoAd != null){
-                self.videoAd.show()
-                .catch(err => {
-                    self.videoAd.load()
-                    .then(() => self.videoAd.show())
-                })
-            }
-        }, self);
 
         // tipsbox
         cc.find("video", this.tipsBox).on("click", function (argument) {
@@ -301,21 +290,6 @@ cc.Class({
             this.videoAd2.onError(err => {
               console.log(err)
             });
-        }else if(GLB.iType == 0 || GLB.iType == 1){
-            this.videoAd = wx.createRewardedVideoAd({
-                adUnitId: 'adunit-bfb85c76177f19b6'
-            });
-            this.videoAd.onClose(res => {
-                if (res && res.isEnded || res === undefined){
-                    self._iLife--;
-                    self.onRivive();
-                }else{
-
-                }
-            });
-            this.videoAd.onError(err => {
-              console.log(err)
-            });
         }
     },
 
@@ -330,7 +304,6 @@ cc.Class({
 
     initShow(){
         this.goResult.active = false;
-        this.goRivive.active = false;
         this.midScv.active = false;
         this.bigScv.active = false;
         if (!window.wx)
@@ -535,7 +508,6 @@ cc.Class({
         if (GLB.iType == 0 && this.coPlayTime){
             this.labTime.unschedule(this.coPlayTime);
         }
-        this._iLife = 1;
         this.togs.active = false;
         this._bGameOver=false;
         this._iTime=0;
@@ -801,53 +773,7 @@ cc.Class({
         return this._bGameOver;
     },
 
-    onRivive(){
-        if (this._tileMap == null) return;
-        this._tileMap.showBackMine();
-         for (var i = 0; i < this._tMine.length; i++) {
-            this._tBtns[this._tMine[i]] = 1;
-        };
-        this._tileMap.showBtns(this._tBtns);
-        this._bGameOver = false;
-        if (GLB.iType == 0)
-            this.labTime.schedule(this.coPlayTime, 1);
-        else
-            this.bPlayTime = true;
-        this.goRivive.active = false;
-        if (this.bannerAd != null)
-            this.bannerAd.hide();
-    },
-
     playSound(sName){
-        if (window.wx && (sName == "bomb" || sName == "lose") && GLB.iType != 4 && GLB.iType != 3){
-            if (this._iLife > 0){
-                this.goRivive.active = true;
-                if (this.bannerAd != null)
-                    this.bannerAd.destory();
-                var systemInfo = wx.getSystemInfoSync();
-                this.bannerAd = wx.createBannerAd({
-                    adUnitId: 'adunit-24778ca4dc4e174a',
-                    style: {
-                        left: 0,
-                        top: systemInfo.windowHeight - 144,
-                        width: 720,
-                    }
-                });
-                var self = this;
-                this.bannerAd.onResize(res => {
-                    if (self.bannerAd)
-                        self.bannerAd.style.top = systemInfo.windowHeight - self.bannerAd.style.realHeight
-                })
-                this.bannerAd.show();
-                this.bannerAd.onError(err => {
-                  console.log(err);
-                  //无合适广告
-                  if (err.errCode == 1004){
-
-                  }
-                })
-            }
-        }
         if (sName == "win"){
             if (GLB.iType == 1)
                 this.showResult();

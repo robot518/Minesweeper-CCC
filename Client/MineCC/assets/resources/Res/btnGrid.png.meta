@@ -1,5 +1,5 @@
 {
-  "ver": "2.3.0",
+  "ver": "2.3.1",
   "uuid": "1fe4b98a-39ff-4d90-a63b-1d228c63b265",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -8,7 +8,7 @@
   "platformSettings": {},
   "subMetas": {
     "btnGrid": {
-      "ver": "1.0.3",
+      "ver": "1.0.4",
       "uuid": "bbf24d96-4588-432e-a3e7-7a24cc43bb40",
       "rawTextureUuid": "1fe4b98a-39ff-4d90-a63b-1d228c63b265",
       "trimType": "auto",
