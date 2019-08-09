@@ -23,18 +23,12 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Echoes uppercase content of text frames.
  */
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static long iCount = 0;
-    static HashMap<SocketAddress, ChannelHandlerContext> hCtx = new HashMap<SocketAddress, ChannelHandlerContext>();
-    static HashMap<SocketAddress, Integer> hHeartTime = new HashMap<SocketAddress, Integer>();
     long startTime = -1;
 
     @Override
@@ -46,9 +40,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         String sDate = new SimpleDateFormat("MMdd").format(new Date());
         SocketAddress addr = ctx.channel().remoteAddress();
         Redis.getInstance().setRecord(sDate, getStrAddress(addr), -1);
-        hCtx.put(addr, ctx);
-        hHeartTime.put(addr, 0);
-        runHeartBeat(addr);
     }
 
     @Override
@@ -58,27 +49,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         String sDate = new SimpleDateFormat("MMdd").format(new Date());
         SocketAddress addr = ctx.channel().remoteAddress();
         Redis.getInstance().setRecord(sDate, getStrAddress(addr), iDate);
-        hHeartTime.put(addr, -10);
-    }
-
-    void runHeartBeat(SocketAddress addr){
-        ScheduledExecutorService service = Executors
-                .newSingleThreadScheduledExecutor();
-        Runnable runnable = new Runnable() {
-            public void run() {
-                // task to run goes here
-                int iTime = hHeartTime.get(addr);
-                if (iTime < -5){
-                    hHeartTime.remove(addr);
-                    ChannelHandlerContext ctx = hCtx.remove(addr);
-                    ctx.close();
-                    service.shutdown();
-                }
-                hHeartTime.put(addr, --iTime);
-            }
-        };
-        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-        service.scheduleAtFixedRate(runnable, 30, 30, TimeUnit.SECONDS);
     }
 
     String getStrAddress(SocketAddress addr){
@@ -95,8 +65,8 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         if (frame instanceof TextWebSocketFrame) {
             // Send the uppercase string back.
             String request = ((TextWebSocketFrame) frame).text();
-            if (request.length() == 0){
-                hHeartTime.put(ctx.channel().remoteAddress(), 0);
+            if (request.equals("0") || request.length() == 0){
+                ctx.channel().writeAndFlush(new TextWebSocketFrame("0"));
                 return;
             }
             System.out.println(getStrDate()+ctx.channel().remoteAddress()+"\t"+request);
@@ -187,5 +157,12 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             String message = "unsupported frame type: " + frame.getClass().getName();
             throw new UnsupportedOperationException(message);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+//        cause.printStackTrace();
+        System.out.println(getStrDate()+ctx.channel().remoteAddress()+"\t"+cause);
+        ctx.close();
     }
 }
