@@ -149,6 +149,10 @@ export default class Challenge extends cc.Component {
                     GLB.msgBox.active = true;
                     return;
                 }
+                if (GLB.tScore[i] == 0){
+                    this.playTips("请先点击名字进行挑战！");
+                    return;
+                }
                 GLB.iDiff = i;
                 WS.sendMsg(GLB.GET_STEP, i+""+GLB.OpenID, this);
             }, this);
