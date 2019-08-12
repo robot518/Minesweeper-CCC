@@ -69,7 +69,8 @@ export default class Challenge extends cc.Component {
     @property(cc.Label)
     labRank3No1: cc.Label = null;
 
-    videoAd: any;
+    _videoAd: any;
+    _bannerAd: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -78,7 +79,6 @@ export default class Challenge extends cc.Component {
     start () {
         this.initCanvas();
         this.initEvent();
-        this.initWXVideo();
         this.initShow();
         if (GLB.msgBox == null){
             var msgBox = cc.find("msgBox");
@@ -119,10 +119,12 @@ export default class Challenge extends cc.Component {
         var self = this;
         cc.find("scv/backScv", this.node).on("click", function (argument) {
             this.scv.active = false;
+            if (this._bannerAd != null) this._bannerAd.hide();
         }, this);
         var btns = cc.find("btns", this.node);
         cc.find("back", btns).on("click", function (argument) {
             GLB.iType = 0;
+            if (this._videoAd != null) this._videoAd.offClose();
             cc.director.loadScene("Main");
         }, this);
         cc.find("reconnect", btns).on("click", function (argument) {
@@ -138,6 +140,7 @@ export default class Challenge extends cc.Component {
                 }
                 GLB.iType = 1;
                 GLB.iDiff = i;
+                if (this._videoAd != null) this._videoAd.offClose();
                 cc.director.loadScene("Main");
             }, this);
             //play-self
@@ -151,14 +154,8 @@ export default class Challenge extends cc.Component {
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
-                if (self.videoAd != null){
-                    GLB.iDiff = i;
-                    self.videoAd.show()
-                    .catch(err => {
-                        self.videoAd.load()
-                        .then(() => self.videoAd.show())
-                    })
-                }
+                GLB.iDiff = i;
+                this.onWxEvent("showVideo");
             }, this);
             //more
             cc.find("labType/more", node).on("click", function (event) {
@@ -176,6 +173,7 @@ export default class Challenge extends cc.Component {
                 var tTitle = ["初级", "中级", "高级"];
                 cc.find("labTitle", this.scv).getComponent(cc.Label).string = tTitle[i];
                 WS.sendMsg(GLB.GET_RANK, i+"", this);
+                if (this._bannerAd != null) this._bannerAd.show();
             }, this);
         };
 
@@ -199,31 +197,16 @@ export default class Challenge extends cc.Component {
                     },
                 })
             }, this);
+
+            let share = cc.find("share", btns);
+            share.active = true;
+            share.on("click", function (argument) {
+                this.onWxEvent("share");
+            }, this);
+
+            this.onWxEvent("initVideo");
+            this.onWxEvent("initBanner");
         }
-    }
-
-    initWXVideo(){
-        if (!window.wx) return;
-        var self = this;
-        let adUnitId = window.tt ? "1307gwbwf0q92pba53" : 'adunit-bfb85c76177f19b6';
-        this.videoAd = wx.createRewardedVideoAd({
-            adUnitId: adUnitId,
-        });
-        this.videoAd.onClose(res => {
-            if (res && res.isEnded || res === undefined){
-                if (WS.ws.readyState !== WebSocket.OPEN){
-                    WS.reconnect();
-                }
-                var sName = GLB.tName[GLB.iDiff];
-                if (sName == null) return;
-                WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
-            }else{
-
-            }
-        });
-        this.videoAd.onError(err => {
-          console.log(err)
-        });
     }
 
     initShow(){
@@ -267,6 +250,7 @@ export default class Challenge extends cc.Component {
             if (msg == "null") return;
             GLB.tPlaybackData = args;
             GLB.iType = 2;
+            if (this._videoAd != null) this._videoAd.offClose();
             cc.director.loadScene("Main");
         }else if(cmd == GLB.GET_RANK){
             var iCount = args.length;
@@ -322,6 +306,64 @@ export default class Challenge extends cc.Component {
         if (!CC_WECHATGAME) return;
         let self = this;
         switch(s){
+            case "initBanner":
+                if (this._bannerAd == null) {
+                    var systemInfo = wx.getSystemInfoSync();
+                    this._bannerAd = wx.createBannerAd({
+                        adUnitId: 'adunit-b277badf437cdf40',
+                        adIntervals: 30,
+                        style: {
+                            left: 0,
+                            top: systemInfo.windowHeight - 144,
+                            width: 720,
+                        }
+                    });
+                    this._bannerAd.onResize(res => {
+                        if (self._bannerAd != null)
+                            self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
+                    })
+                    this._bannerAd.hide();
+                    this._bannerAd.onError(err => {
+                        console.log(err);
+                        //无合适广告
+                        if (err.errCode == 1004){
+
+                        }
+                    })
+                }
+                break;
+            case "initVideo":
+                if (this._videoAd == null){
+                    let adUnitId = window.tt ? "1307gwbwf0q92pba53" : 'adunit-bfb85c76177f19b6';
+                    this._videoAd = wx.createRewardedVideoAd({
+                        adUnitId: adUnitId,
+                    });
+                    this._videoAd.onClose(res => {
+                        if (res && res.isEnded || res === undefined){
+                            if (WS.ws.readyState !== WebSocket.OPEN){
+                                WS.reconnect();
+                            }
+                            var sName = GLB.tName[GLB.iDiff];
+                            if (sName == null) return;
+                            WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
+                        }else{
+
+                        }
+                    });
+                    this._videoAd.onError(err => {
+                        console.log(err)
+                    });
+                }
+                break;
+            case "showVideo":
+                if (self._videoAd != null){
+                    self._videoAd.show()
+                    .catch(err => {
+                        self._videoAd.load()
+                        .then(() => self._videoAd.show())
+                    })
+                }
+                break;
             case "share":
                 // wx.shareAppMessage({
                 //     title: "扫雷大神集锦！",
@@ -330,91 +372,12 @@ export default class Challenge extends cc.Component {
                 //     imageUrl: "/resource/ttshare.jpg",
                 // });
                 wx.shareAppMessage({
-                    title: "扫雷大神集锦！",
+                    title: "我的排名！",
                     imageUrl: canvas.toTempFilePathSync({
                         destWidth: 500,
                         destHeight: 400
                     })
                 });
-                break;
-            case "auth":
-                wx.getSetting({
-                    success(res) {
-                        if (!res.authSetting['scope.userInfo']) {
-                            let size = cc.view.getFrameSize();
-                            let dSize = self.node.getComponent(cc.Canvas).designResolution;
-                            let pix = 1;
-                            if (size.width/size.height >= dSize.width/dSize.height){
-                                pix = dSize.height/size.height;
-                            }else pix = dSize.width/size.width;
-                            let width = self.ndBack.width/pix, height = self.ndBack.height/pix;
-                            // console.log(size, width, height, pix);
-                            self.UserInfoButton = wx.createUserInfoButton({
-                                type: 'text',
-                                text: '',
-                                // withCredentials: false,
-                                style: {
-                                    left: size.width/2-width/2,
-                                    top: size.height/2-self.ndBack.y*size.height/dSize.height-height/2,
-                                    width: width,
-                                    height: height,
-                                }
-                            })
-                            self.UserInfoButton.onTap((res) => {
-                                // console.log("Res = ", res);
-                                GLB.userInfo = res.userInfo;
-                                let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
-                                if (WS.sendMsg(GLB.WXLOGIN, str)){
-                                    self.UserInfoButton.hide();
-                                    self.playSound ("click");
-                                    cc.director.loadScene("Challenge");
-                                }
-                            })
-                        }else{
-                            wx.getUserInfo({
-                                success(res){
-                                    // console.log("Res = ", res);
-                                    GLB.userInfo = res.userInfo;
-                                    let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
-                                    WS.sendMsg(GLB.WXLOGIN, str);
-                                }
-                            })
-                        }
-                    }
-                })
-                break;
-            case "login":
-                wx.login({
-                    success (res) {
-                        if (res.code) {
-                            //发起网络请求
-                            console.log("code = ", res.code);
-                            wx.request({
-                                url: 'http://'+GLB.ip+":8080",
-                                data: {
-                                    code: res.code
-                                },
-                                success(response){
-                                    console.log("success response = ", response);
-                                    console.log("openid = ", response.data);
-                                    GLB.OpenID = response.data;
-                                    // cc.sys.localStorage.setItem("usrId", response.data);
-                                    // GLB.usrId = cc.sys.localStorage.getItem("usrId") || null;
-                                },
-                                fail(response){
-                                    console.log("fail response = ", response);
-                                }
-                            })
-                        } else {
-                            console.log('登录失败！' + res.errMsg)
-                        }
-                    }
-                })
-                // wx.checkSession({
-                //     fail () {
-                        
-                //     }
-                // })
                 break;
         }
     }

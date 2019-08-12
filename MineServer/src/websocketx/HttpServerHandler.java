@@ -29,7 +29,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
             int idx = uri.indexOf("code=");
             if (idx != -1) {
                 String code = uri.substring(idx+5);
-                String url = "https://api.weixin.qq.com/sns/jscode2session?appid=wxfbc58b2a422781e5&secret=e398010913c4c60568e4c91cff448fe8&js_code=" + code + "&grant_type=authorization_code";
+                String url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx4e23a5ec42c5a796&secret=bbf6afa03704649480dc1474c85883cd&js_code=" + code + "&grant_type=authorization_code";
                 String data = HttpUtils.get(url);
                 String s1 = "session_key", s2 = "openid";
                 int iSession_key = data.indexOf(s1);

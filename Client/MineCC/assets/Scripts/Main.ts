@@ -108,6 +108,7 @@ export default class Main extends cc.Component {
     _mouse: cc.Node;
     tPB: any[];
     UserInfoButton: any;
+    _bannerAd: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -117,8 +118,6 @@ export default class Main extends cc.Component {
         this.initCanvas();
         this.initParas();
         this.initEvent();
-        this.onWxEvent("auth");
-        this.onWxEvent("login");
         this.initShow();
         let self = this;
         this.labTime.scheduleOnce(function (argument) {
@@ -193,6 +192,7 @@ export default class Main extends cc.Component {
         var btns = cc.find("btns", this.node);
         cc.find("sure", this.goResult).on("click", function (argument) {
             self.playSound ("click");
+            if (this._bannerAd != null) this._bannerAd.hide();
             this.goResult.active = false;
         }, this);
         var normal = cc.find("normal", btns);
@@ -275,10 +275,14 @@ export default class Main extends cc.Component {
 
         if (CC_WECHATGAME){
             let share = cc.find("sub/share", btns);
+            share.active = true;
             share.on("click", function (argument) {
                 self.playSound ("click");
                 this.onWxEvent("share");
             }, this);
+
+            this.onWxEvent("initBanner");
+            this.onWxEvent("login");
         }
     }
 
@@ -352,6 +356,7 @@ export default class Main extends cc.Component {
     }
 
     showResult(){
+        if (this._bannerAd != null) this._bannerAd.show();
         this.goResult.active = true;
         var sTitle = "成功";
         var score = GLB.tScore[this._iDiff];
@@ -374,9 +379,10 @@ export default class Main extends cc.Component {
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
     }
 
-    showWinResult(){
+    showNormalResult(iType){
+        if (this._bannerAd != null) this._bannerAd.show();
         this.goResult.active = true;
-        var sTitle = "成功";
+        var sTitle = iType == 1 ? "成功" : "失败";
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
@@ -765,8 +771,9 @@ export default class Main extends cc.Component {
             if (GLB.iType == 1)
                 this.showResult();
             else if (GLB.iType == 0)
-                this.showWinResult();
-        }
+                this.showNormalResult(1);
+        }else if (sName == "bomb")
+            this.showNormalResult(0);
         if (this.bSound == false) return;
         let t = {bomb: this.bombClip, check: this.checkClip, click: this.clickClip, win: this.winClip, lose: this.loseClip};
         cc.audioEngine.play(t[sName], false, 1);
@@ -810,6 +817,32 @@ export default class Main extends cc.Component {
         if (!CC_WECHATGAME) return;
         let self = this;
         switch(s){
+            case "initBanner":
+                if (this._bannerAd == null){
+                    var systemInfo = wx.getSystemInfoSync();
+                    this._bannerAd = wx.createBannerAd({
+                        adUnitId: 'adunit-24778ca4dc4e174a',
+                        adIntervals: 30,
+                        style: {
+                            left: 0,
+                            top: systemInfo.windowHeight - 144,
+                            width: 720,
+                        }
+                    });
+                    this._bannerAd.onResize(res => {
+                        if (self._bannerAd != null)
+                            self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
+                    })
+                    this._bannerAd.hide();
+                    this._bannerAd.onError(err => {
+                        console.log(err);
+                        //无合适广告
+                        if (err.errCode == 1004){
+
+                        }
+                    })
+                }
+                break;
             case "share":
                 // wx.shareAppMessage({
                 //     title: "扫雷大神集锦！",
@@ -840,26 +873,30 @@ export default class Main extends cc.Component {
                             self.UserInfoButton = wx.createUserInfoButton({
                                 type: 'text',
                                 text: '',
-                                // withCredentials: false,
+                                withCredentials: GLB.withCredentials,
                                 style: {
-                                    left: size.width/2-width/2,
-                                    top: size.height/2-self.ndBack.y*size.height/dSize.height-height/2,
+                                    left: self.ndBack.x/pix,
+                                    top: size.height-self.ndBack.y/pix-height/2,
                                     width: width,
                                     height: height,
+                                    // backgroundColor: '#ff0000',
                                 }
                             })
                             self.UserInfoButton.onTap((res) => {
-                                // console.log("Res = ", res);
-                                GLB.userInfo = res.userInfo;
-                                let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
-                                if (WS.sendMsg(GLB.WXLOGIN, str)){
-                                    self.UserInfoButton.hide();
-                                    self.playSound ("click");
-                                    cc.director.loadScene("Challenge");
+                                console.log("Res = ", res);
+                                if (res.userInfo){
+                                    GLB.userInfo = res.userInfo;
+                                    let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
+                                    if (WS.sendMsg(GLB.WXLOGIN, str)){
+                                        self.UserInfoButton.hide();
+                                        self.playSound ("click");
+                                        cc.director.loadScene("Challenge");
+                                    }
                                 }
                             })
                         }else{
                             wx.getUserInfo({
+                                withCredentials: GLB.withCredentials,
                                 success(res){
                                     // console.log("Res = ", res);
                                     GLB.userInfo = res.userInfo;
@@ -872,34 +909,47 @@ export default class Main extends cc.Component {
                 })
                 break;
             case "login":
-                wx.login({
-                    success (res) {
-                        if (res.code) {
-                            //发起网络请求
-                            console.log("code = ", res.code);
-                            wx.request({
-                                url: 'https://'+GLB.ip,
-                                data: {
-                                    code: res.code
-                                },
-                                success(response){
-                                    console.log("success response = ", response);
-                                    console.log("openid = ", response.data);
-                                    GLB.OpenID = response.data;
-                                    // cc.sys.localStorage.setItem("usrId", response.data);
-                                    // GLB.usrId = cc.sys.localStorage.getItem("usrId") || null;
-                                },
-                                fail(response){
-                                    console.log("fail response = ", response);
-                                }
-                            })
-                        } else {
-                            console.log('登录失败！' + res.errMsg)
+                // cc.sys.localStorage.setItem("OpenID", null);
+                GLB.OpenID = cc.sys.localStorage.getItem("OpenID");
+                console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
+                if (GLB.OpenID){
+                    if (!GLB.userInfo) this.onWxEvent("auth");
+                }else {
+                    wx.login({
+                        success (res) {
+                            if (res.code) {
+                                //发起网络请求
+                                // console.log("code = ", res.code);
+                                wx.request({
+                                    // url: 'http://'+GLB.ip,
+                                    url: "https://websocket.windgzs.cn",
+                                    data: {
+                                        code: res.codes
+                                    },
+                                    success(response){
+                                        // console.log("success response = ", response);
+                                        console.log("OpenID = ", response.data);
+                                        GLB.OpenID = response.data;
+                                        cc.sys.localStorage.setItem("OpenID", response.data);
+                                        self.onWxEvent("auth");
+                                    },
+                                    fail(response){
+                                        console.log("fail response = ", response);
+                                    }
+                                })
+                            } else {
+                                console.log('登录失败！' + res.errMsg)
+                            }
                         }
-                    }
-                })
-                // wx.checkSession({
+                    })
+                }
+                // wx.checkSession({ //用于检测SessionKey是否过期
+                //     success () {
+                //         //session_key 未过期，并且在本生命周期一直有效
+                //         if (!GLB.userInfo) this.onWxEvent("auth");
+                //     },
                 //     fail () {
+                //         // session_key 已经失效，需要重新执行登录流程
                         
                 //     }
                 // })

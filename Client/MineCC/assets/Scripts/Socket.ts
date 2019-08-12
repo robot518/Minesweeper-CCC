@@ -35,12 +35,12 @@ var heartCheck = {
 }
 var creatWS = function () {
     ws = null;
-    if (window.wx || cc.sys.os === cc.sys.OS_IOS)
+    // if (window.wx || cc.sys.os === cc.sys.OS_IOS)
         ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //wx/ios
-    else if (cc.sys.os === cc.sys.OS_ANDROID)
-        ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
-    else
-        ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //本地
+    // else if (cc.sys.os === cc.sys.OS_ANDROID)
+        // ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
+    // else
+    //     ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //本地
     WS.ws = ws;
     ws.onopen = function (event) {
         console.log(GLB.getTime()+"Send Text WS was opened.");
@@ -77,7 +77,7 @@ WS.sendMsg = function (cmd: string, msg: string, obj) {
         }
         msg = msg || "";
         var str = cmd + ":" + msg.toString();
-        console.log(GLB.getTime()+"sendMsg = ", str);
+        // console.log(GLB.getTime()+"sendMsg = ", str);
         ws.send(str);
         if (obj != null){
             WS.obj = obj;

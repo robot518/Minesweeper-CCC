@@ -32,7 +32,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     long startTime = -1;
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         iCount++;
         if (startTime < 0) {
             startTime = System.currentTimeMillis();
@@ -43,7 +43,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         iCount--;
         Long iDate = (System.currentTimeMillis() - startTime) / 1000;
         String sDate = new SimpleDateFormat("MMdd").format(new Date());
@@ -61,7 +61,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof TextWebSocketFrame) {
             // Send the uppercase string back.
             String request = ((TextWebSocketFrame) frame).text();

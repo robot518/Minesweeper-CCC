@@ -1,7 +1,7 @@
 /* 存放全局变量 */
 var GLB = {
-    ip: "websocket.windgzs.cn",
-    // ip: "127.0.0.1",
+    // ip: "websocket.windgzs.cn",
+    ip: "47.107.178.120:8080",
     userInfo: null,
     isClickCd: false,
     iType: 0, //0经典，1挑战，2回放
@@ -11,6 +11,7 @@ var GLB = {
     tPlaybackData: null,
     msgBox: null, //断线重连
     OpenID: null, //微信用户唯一标识
+    withCredentials: false,
     
     //event
     GET_SCORE: "getScore",
