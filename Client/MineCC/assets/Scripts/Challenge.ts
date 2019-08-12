@@ -97,7 +97,7 @@ export default class Challenge extends cc.Component {
                 msgBox.active = false;
             }, cc.game);
         }
-        WS.sendMsg(GLB.GET_SCORE, GLB.OpenID, this);
+        WS.sendMsg(GLB.GET_SCORE, GLB.UserID, this);
     }
 
     initCanvas(){
@@ -243,7 +243,9 @@ export default class Challenge extends cc.Component {
                 this["labRank" + (i+1).toString()].string = this.getNewStr(subData[0], null);
                 this["labScore" + (i+1).toString()].string = this.getNewStr(subData[1], 1);
                 this["labRank" + (i+1).toString() + "No1"].string = this.getNewStr(subData[2], null);
-                this["labName" + (i+1).toString() + "No1"].string = this.getNewStr(this.getStrName(subData[3]), null);
+                let sName = subData[3];
+                if (sName.length > 10 && sName.indexOf("&") != -1) sName=sName.split("&")[1];
+                this["labName" + (i+1).toString() + "No1"].string = this.getNewStr(this.getStrName(sName), null);
                 this["labScore" + (i+1).toString() + "No1"].string = this.getNewStr(subData[4], 1);
             };
         }else if(cmd == GLB.GET_STEP){

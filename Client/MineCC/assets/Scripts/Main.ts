@@ -367,7 +367,7 @@ export default class Main extends cc.Component {
             if (strStepInfo != ""){
                 //因为redis zadd精度问题这里时间*100
                 var iTime = parseFloat(this._iTime.toFixed(2));
-                var str = this._iDiff.toString() + "|" + GLB.OpenID + "|" + (iTime*100) + "|"
+                var str = this._iDiff.toString() + "|" + GLB.UserID + "|" + (iTime*100) + "|"
                 + this.sPBMineNum + "|" + this.iPBNum + "|" + strStepInfo;
                 WS.sendMsg(GLB.SET_STEP, str);
             }
@@ -886,12 +886,13 @@ export default class Main extends cc.Component {
                                 console.log("Res = ", res);
                                 if (res.userInfo){
                                     GLB.userInfo = res.userInfo;
-                                    let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
-                                    if (WS.sendMsg(GLB.WXLOGIN, str)){
-                                        self.UserInfoButton.hide();
-                                        self.playSound ("click");
-                                        cc.director.loadScene("Challenge");
-                                    }
+                                    // let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
+                                    GLB.UserID = GLB.OpenID+"&"+res.userInfo.nickName+"&"+res.userInfo.avatarUrl;
+                                    // if (WS.sendMsg(GLB.WXLOGIN, str)){
+                                    self.UserInfoButton.hide();
+                                    self.playSound ("click");
+                                    cc.director.loadScene("Challenge");
+                                    // }
                                 }
                             })
                         }else{
@@ -900,8 +901,8 @@ export default class Main extends cc.Component {
                                 success(res){
                                     // console.log("Res = ", res);
                                     GLB.userInfo = res.userInfo;
-                                    let str = res.userInfo.nickName+"|"+res.userInfo.avatarUrl;
-                                    WS.sendMsg(GLB.WXLOGIN, str);
+                                    GLB.UserID = GLB.OpenID+"&"+res.userInfo.nickName+"&"+res.userInfo.avatarUrl;
+                                    // WS.sendMsg(GLB.WXLOGIN, str);
                                 }
                             })
                         }
