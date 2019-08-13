@@ -37,11 +37,8 @@
       <file leaf-file-name="WebSocketFrameHandler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1170">
-              <caret line="94" column="81" selection-start-line="94" selection-start-column="81" selection-end-line="94" selection-end-column="81" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="22" column="61" lean-forward="true" selection-start-line="22" selection-start-column="61" selection-end-line="22" selection-end-column="61" />
             </state>
           </provider>
         </entry>
@@ -49,8 +46,8 @@
       <file leaf-file-name="Redis.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/websocketx/Redis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="124">
-              <caret line="16" column="35" selection-start-line="16" selection-start-column="35" selection-end-line="16" selection-end-column="35" />
+            <state relative-caret-position="139">
+              <caret line="17" column="45" lean-forward="true" selection-start-line="17" selection-start-column="45" selection-end-line="17" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -76,8 +73,8 @@
       <file leaf-file-name="HttpServerHandler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/websocketx/HttpServerHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="32" column="50" lean-forward="true" selection-start-line="32" selection-start-column="50" selection-end-line="32" selection-end-column="50" />
+            <state relative-caret-position="283">
+              <caret line="35" column="105" selection-start-line="35" selection-start-column="87" selection-end-line="35" selection-end-column="105" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#709#710#0" expanded="true" />
@@ -153,11 +150,11 @@
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketServerIndexPage.java" />
         <option value="$PROJECT_DIR$/src/websocketx/Redis.java" />
         <option value="$PROJECT_DIR$/src/websocketx/HttpUtils.java" />
-        <option value="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" />
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketServer.java" />
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketServerInitializer.java" />
         <option value="$PROJECT_DIR$/src/websocketx/WebSocketIndexPageHandler.java" />
         <option value="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" />
+        <option value="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" />
       </list>
     </option>
   </component>
@@ -402,12 +399,12 @@
       <workItem from="1565601355902" duration="13000" />
       <workItem from="1565635117030" duration="3369000" />
       <workItem from="1565660891180" duration="16000" />
-      <workItem from="1565667357708" duration="2581000" />
+      <workItem from="1565667357708" duration="6661000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="298198000" />
+    <option name="totallyTimeSpent" value="302278000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -774,20 +771,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/websocketx/HttpUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1170">
-          <caret line="94" column="81" selection-start-line="94" selection-start-column="81" selection-end-line="94" selection-end-column="81" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="120">
+          <caret line="22" column="61" lean-forward="true" selection-start-line="22" selection-start-column="61" selection-end-line="22" selection-end-column="61" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/websocketx/Redis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
-          <caret line="16" column="35" selection-start-line="16" selection-start-column="35" selection-end-line="16" selection-end-column="35" />
+        <state relative-caret-position="139">
+          <caret line="17" column="45" lean-forward="true" selection-start-line="17" selection-start-column="45" selection-end-line="17" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -798,17 +799,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/websocketx/HttpUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/websocketx/HttpServerHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="32" column="50" lean-forward="true" selection-start-line="32" selection-start-column="50" selection-end-line="32" selection-end-column="50" />
+        <state relative-caret-position="283">
+          <caret line="35" column="105" selection-start-line="35" selection-start-column="87" selection-end-line="35" selection-end-column="105" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#709#710#0" expanded="true" />

@@ -261,7 +261,9 @@ export default class Main extends cc.Component {
         }, this);
         this.ndBack.on("click", function (argument) {
             self.playSound ("click");
-            cc.director.loadScene("Challenge");
+            if (window.tt && !GLB.userInfo){
+                this.onWxEvent("ttAuth");
+            }else cc.director.loadScene("Challenge");
         }, this);
         var ndSound = cc.find("sub/sound", btns);
         ndSound.on("click", function (argument) {
@@ -842,7 +844,7 @@ export default class Main extends cc.Component {
                             windowWidth,
                             windowHeight,
                         } = tt.getSystemInfoSync();
-                        var targetBannerAdWidth = 720;
+                        var targetBannerAdWidth = 200;
                         
                         // 创建一个居于屏幕底部正中的广告
                         let bannerAd = tt.createBannerAd({
@@ -858,7 +860,7 @@ export default class Main extends cc.Component {
                         // 尺寸调整时会触发回调
                         // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！
                         bannerAd.onResize(size => {
-                            console.log(size.width, size.height);
+                            // console.log(size.width, size.height);
                         
                             // 如果一开始设置的 banner 宽度超过了系统限制，可以在此处加以调整
                             if (targetBannerAdWidth != size.width) {
@@ -917,6 +919,8 @@ export default class Main extends cc.Component {
                 wx.getSetting({
                     success(res) {
                         if (!res.authSetting['scope.userInfo']) {
+                            if (window.tt) return;
+
                             let size = cc.view.getFrameSize();
                             let dSize = self.node.getComponent(cc.Canvas).designResolution;
                             let pix = 1;
@@ -954,9 +958,9 @@ export default class Main extends cc.Component {
                             wx.getUserInfo({
                                 withCredentials: GLB.withCredentials,
                                 success(res){
-                                    // console.log("Res = ", res);
+                                    // console.log("getUserInfo Res = ", res);
                                     GLB.userInfo = res.userInfo;
-                                    GLB.UserID = GLB.OpenID+"&"+res.userInfo.nickName+"&"+res.userInfo.avatarUrl;
+                                    GLB.UserID = GLB.OpenID+"&"+GLB.userInfo.nickName+"&"+GLB.userInfo.avatarUrl;
                                     // WS.sendMsg(GLB.WXLOGIN, str);
                                 }
                             })
@@ -965,9 +969,9 @@ export default class Main extends cc.Component {
                 })
                 break;
             case "login":
-                cc.sys.localStorage.setItem("OpenID", null);
+                // cc.sys.localStorage.setItem("OpenID", null);
                 GLB.OpenID = cc.sys.localStorage.getItem("OpenID");
-                console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
+                // console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
                 if (GLB.OpenID){
                     if (!GLB.userInfo) this.onWxEvent("auth");
                 }else {
@@ -1011,6 +1015,19 @@ export default class Main extends cc.Component {
                         
                 //     }
                 // })
+                break;
+            case "ttAuth":
+                tt.authorize({
+                    scope: "scope.userInfo",
+                    success(res){
+                        // console.log("res = ", res);
+                        self.onWxEvent("auth");
+                    },
+                    fail(res){
+                        // console.log("fail res = ", res);
+                        tt.openSetting();
+                    }
+                })
                 break;
         }
     }

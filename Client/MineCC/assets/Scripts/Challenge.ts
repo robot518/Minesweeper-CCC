@@ -71,6 +71,7 @@ export default class Challenge extends cc.Component {
 
     _videoAd: any;
     _bannerAd: any;
+    _bShowVideo: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -140,7 +141,7 @@ export default class Challenge extends cc.Component {
                 }
                 GLB.iType = 1;
                 GLB.iDiff = i;
-                if (this._videoAd != null) this._videoAd.offClose();
+                if (this._videoAd != null && !window.tt) this._videoAd.offClose();
                 cc.director.loadScene("Main");
             }, this);
             //play-self
@@ -154,12 +155,20 @@ export default class Challenge extends cc.Component {
                     return;
                 }
                 GLB.iDiff = i;
-                WS.sendMsg(GLB.GET_STEP, i+""+GLB.OpenID, this);
+                this._bShowVideo = false;
+                WS.sendMsg(GLB.GET_STEP, i+""+GLB.UserID, this);
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
+                if (WS.ws.readyState !== WebSocket.OPEN){
+                    WS.reconnect();
+                }
                 GLB.iDiff = i;
-                this.onWxEvent("showVideo");
+                this._bShowVideo = true;
+                // this.onWxEvent("showVideo");
+                var sName = GLB.tName[GLB.iDiff];
+                if (sName == null) return;
+                WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
             }, this);
             //more
             cc.find("labType/more", node).on("click", function (event) {
@@ -276,8 +285,12 @@ export default class Challenge extends cc.Component {
             if (msg == "null") return;
             GLB.tPlaybackData = args;
             GLB.iType = 2;
-            if (this._videoAd != null) this._videoAd.offClose();
-            cc.director.loadScene("Main");
+            if (this._bShowVideo){
+                this.onWxEvent("showVideo");
+            }else{
+                if (this._videoAd != null && !window.tt) this._videoAd.offClose();
+                cc.director.loadScene("Main");
+            }
         }else if(cmd == GLB.GET_RANK){
             var iCount = args.length;
             if (iCount == 0 || msg == ""){
@@ -339,7 +352,7 @@ export default class Challenge extends cc.Component {
                             windowWidth,
                             windowHeight,
                         } = tt.getSystemInfoSync();
-                        var targetBannerAdWidth = 720;
+                        var targetBannerAdWidth = 200;
                         
                         // 创建一个居于屏幕底部正中的广告
                         let bannerAd = tt.createBannerAd({
@@ -355,7 +368,7 @@ export default class Challenge extends cc.Component {
                         // 尺寸调整时会触发回调
                         // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！
                         bannerAd.onResize(size => {
-                            console.log(size.width, size.height);
+                            // console.log(size.width, size.height);
                         
                             // 如果一开始设置的 banner 宽度超过了系统限制，可以在此处加以调整
                             if (targetBannerAdWidth != size.width) {
@@ -399,12 +412,14 @@ export default class Challenge extends cc.Component {
                     });
                     this._videoAd.onClose(res => {
                         if (res && res.isEnded || res === undefined){
-                            if (WS.ws.readyState !== WebSocket.OPEN){
-                                WS.reconnect();
-                            }
-                            var sName = GLB.tName[GLB.iDiff];
-                            if (sName == null) return;
-                            WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
+                            // if (WS.ws.readyState !== WebSocket.OPEN){
+                            //     WS.reconnect();
+                            // }
+                            // var sName = GLB.tName[GLB.iDiff];
+                            // if (sName == null) return;
+                            // WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
+                            if (self._videoAd != null && !window.tt) self._videoAd.offClose();
+                            cc.director.loadScene("Main");
                         }else{
 
                         }
