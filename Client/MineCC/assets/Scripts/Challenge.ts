@@ -124,7 +124,7 @@ export default class Challenge extends cc.Component {
         var btns = cc.find("btns", this.node);
         cc.find("back", btns).on("click", function (argument) {
             GLB.iType = 0;
-            if (this._videoAd != null) this._videoAd.offClose();
+            if (this._videoAd != null && !window.tt) this._videoAd.offClose();
             cc.director.loadScene("Main");
         }, this);
         cc.find("reconnect", btns).on("click", function (argument) {
@@ -182,25 +182,27 @@ export default class Challenge extends cc.Component {
         };
 
         if (CC_WECHATGAME){
-            let snake = cc.find("snake", btns);
-            snake.active = true;
-            snake.on("click", function (argument) {
-                wx.navigateToMiniProgram({
-                    appId: 'wx938546d6526f42dc',
-                    path: '',
-                    extraData: {
-                        foo: 'Minesweeper'
-                    },
-                    envVersion: 'develop',
-                        success(res) {
-                        // 打开成功
-                    console.log("success: ", res);
-                    },
-                    fail(res){
-                        console.log("fail: ", res);
-                    },
-                })
-            }, this);
+            if (!window.tt){
+                let snake = cc.find("snake", btns);
+                snake.active = true;
+                snake.on("click", function (argument) {
+                    wx.navigateToMiniProgram({
+                        appId: 'wx938546d6526f42dc',
+                        path: '',
+                        extraData: {
+                            foo: 'Minesweeper'
+                        },
+                        envVersion: 'develop',
+                            success(res) {
+                            // 打开成功
+                        console.log("success: ", res);
+                        },
+                        fail(res){
+                            console.log("fail: ", res);
+                        },
+                    })
+                }, this);
+            }
 
             let share = cc.find("share", btns);
             share.active = true;
@@ -210,6 +212,24 @@ export default class Challenge extends cc.Component {
 
             this.onWxEvent("initVideo");
             this.onWxEvent("initBanner");
+
+            if (window.tt){
+                tt.onShareAppMessage(function (res){
+                    console.log(res.channel);
+                    // do something
+                    return {
+                        title: '扫雷大神集锦！',
+                        imageUrl: '/resource/ttshare.jpg',
+                        //   query: 'k1=v1&k2=v2',
+                        success() {
+                            console.log('分享成功')
+                        },
+                        fail(e) {
+                            console.log('分享失败', e)
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -314,20 +334,53 @@ export default class Challenge extends cc.Component {
         switch(s){
             case "initBanner":
                 if (this._bannerAd == null) {
-                    var systemInfo = wx.getSystemInfoSync();
-                    this._bannerAd = wx.createBannerAd({
-                        adUnitId: 'adunit-b277badf437cdf40',
-                        adIntervals: 30,
-                        style: {
-                            left: 0,
-                            top: systemInfo.windowHeight - 144,
-                            width: 720,
-                        }
-                    });
-                    this._bannerAd.onResize(res => {
-                        if (self._bannerAd != null)
-                            self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
-                    })
+                    if (window.tt){
+                        const {
+                            windowWidth,
+                            windowHeight,
+                        } = tt.getSystemInfoSync();
+                        var targetBannerAdWidth = 720;
+                        
+                        // 创建一个居于屏幕底部正中的广告
+                        let bannerAd = tt.createBannerAd({
+                            adUnitId: '3st1omgg27h1i5i53l',
+                            style: {
+                                width: targetBannerAdWidth,
+                                top: windowHeight - (targetBannerAdWidth / 16 * 9), // 根据系统约定尺寸计算出广告高度
+                            },
+                        });
+                        // 也可以手动修改属性以调整广告尺寸
+                        bannerAd.style.left = (windowWidth - targetBannerAdWidth) / 2;
+                        
+                        // 尺寸调整时会触发回调
+                        // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！
+                        bannerAd.onResize(size => {
+                            console.log(size.width, size.height);
+                        
+                            // 如果一开始设置的 banner 宽度超过了系统限制，可以在此处加以调整
+                            if (targetBannerAdWidth != size.width) {
+                                targetBannerAdWidth = size.width;
+                                bannerAd.style.top = windowHeight - (size.width / 16 * 9);
+                                bannerAd.style.left = (windowWidth - size.width) / 2;
+                            }
+                        });
+                        this._bannerAd = bannerAd;
+                    }else {
+                        var systemInfo = wx.getSystemInfoSync();
+                        this._bannerAd = wx.createBannerAd({
+                            adUnitId: "adunit-b277badf437cdf40",
+                            adIntervals: 30,
+                            style: {
+                                left: 0,
+                                top: systemInfo.windowHeight - 144,
+                                width: 720,
+                            }
+                        });
+                        this._bannerAd.onResize(res => {
+                            if (self._bannerAd != null)
+                                self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
+                        })
+                    }
                     this._bannerAd.hide();
                     this._bannerAd.onError(err => {
                         console.log(err);
@@ -371,19 +424,23 @@ export default class Challenge extends cc.Component {
                 }
                 break;
             case "share":
-                // wx.shareAppMessage({
-                //     title: "扫雷大神集锦！",
-                //     desc: "超变态的扫雷大神集锦，神一般的操作看个爽！",
-                //     templateId: "a5e39j0j0ebb4kmv77",
-                //     imageUrl: "/resource/ttshare.jpg",
-                // });
-                wx.shareAppMessage({
-                    title: "我的排名！",
-                    imageUrl: canvas.toTempFilePathSync({
-                        destWidth: 500,
-                        destHeight: 400
-                    })
-                });
+                if (window.tt){
+                    tt.shareAppMessage({
+                        channel: "article",
+                        title: "扫雷大神集锦！",
+                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
+                        // templateId: "a5e39j0j0ebb4kmv77",
+                        imageUrl: "/resource/ttshare.jpg",
+                    });
+                }else{
+                    wx.shareAppMessage({
+                        title: "扫雷大神集锦！",
+                        imageUrl: canvas.toTempFilePathSync({
+                            destWidth: 500,
+                            destHeight: 400
+                        })
+                    });
+                }
                 break;
         }
     }

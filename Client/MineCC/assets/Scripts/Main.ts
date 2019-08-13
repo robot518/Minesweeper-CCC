@@ -283,6 +283,24 @@ export default class Main extends cc.Component {
 
             this.onWxEvent("initBanner");
             this.onWxEvent("login");
+
+            if (window.tt){
+                tt.onShareAppMessage(function (res){
+                    console.log(res.channel);
+                    // do something
+                    return {
+                        title: '扫雷大神集锦！',
+                        imageUrl: '/resource/ttshare.jpg',
+                        //   query: 'k1=v1&k2=v2',
+                        success() {
+                            console.log('分享成功')
+                        },
+                        fail(e) {
+                            console.log('分享失败', e)
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -819,20 +837,53 @@ export default class Main extends cc.Component {
         switch(s){
             case "initBanner":
                 if (this._bannerAd == null){
-                    var systemInfo = wx.getSystemInfoSync();
-                    this._bannerAd = wx.createBannerAd({
-                        adUnitId: 'adunit-24778ca4dc4e174a',
-                        adIntervals: 30,
-                        style: {
-                            left: 0,
-                            top: systemInfo.windowHeight - 144,
-                            width: 720,
-                        }
-                    });
-                    this._bannerAd.onResize(res => {
-                        if (self._bannerAd != null)
-                            self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
-                    })
+                    if (window.tt){
+                        const {
+                            windowWidth,
+                            windowHeight,
+                        } = tt.getSystemInfoSync();
+                        var targetBannerAdWidth = 720;
+                        
+                        // 创建一个居于屏幕底部正中的广告
+                        let bannerAd = tt.createBannerAd({
+                            adUnitId: 'm2j65emdb9c1amndbh',
+                            style: {
+                                width: targetBannerAdWidth,
+                                top: windowHeight - (targetBannerAdWidth / 16 * 9), // 根据系统约定尺寸计算出广告高度
+                            },
+                        });
+                        // 也可以手动修改属性以调整广告尺寸
+                        bannerAd.style.left = (windowWidth - targetBannerAdWidth) / 2;
+                        
+                        // 尺寸调整时会触发回调
+                        // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！
+                        bannerAd.onResize(size => {
+                            console.log(size.width, size.height);
+                        
+                            // 如果一开始设置的 banner 宽度超过了系统限制，可以在此处加以调整
+                            if (targetBannerAdWidth != size.width) {
+                                targetBannerAdWidth = size.width;
+                                bannerAd.style.top = windowHeight - (size.width / 16 * 9);
+                                bannerAd.style.left = (windowWidth - size.width) / 2;
+                            }
+                        });
+                        this._bannerAd = bannerAd;
+                    }else {
+                        var systemInfo = wx.getSystemInfoSync();
+                        this._bannerAd = wx.createBannerAd({
+                            adUnitId: "adunit-24778ca4dc4e174a",
+                            adIntervals: 30,
+                            style: {
+                                left: 0,
+                                top: systemInfo.windowHeight - 144,
+                                width: 720,
+                            }
+                        });
+                        this._bannerAd.onResize(res => {
+                            if (self._bannerAd != null)
+                                self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
+                        })
+                    }
                     this._bannerAd.hide();
                     this._bannerAd.onError(err => {
                         console.log(err);
@@ -844,19 +895,23 @@ export default class Main extends cc.Component {
                 }
                 break;
             case "share":
-                // wx.shareAppMessage({
-                //     title: "扫雷大神集锦！",
-                //     desc: "超变态的扫雷大神集锦，神一般的操作看个爽！",
-                //     templateId: "a5e39j0j0ebb4kmv77",
-                //     imageUrl: "/resource/ttshare.jpg",
-                // });
-                wx.shareAppMessage({
-                    title: "扫雷大神集锦！",
-                    imageUrl: canvas.toTempFilePathSync({
-                        destWidth: 500,
-                        destHeight: 400
-                    })
-                });
+                if (window.tt){
+                    tt.shareAppMessage({
+                        channel: "article",
+                        title: "扫雷大神集锦！",
+                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
+                        // templateId: "a5e39j0j0ebb4kmv77",
+                        imageUrl: "/resource/ttshare.jpg",
+                    });
+                }else{
+                    wx.shareAppMessage({
+                        title: "扫雷大神集锦！",
+                        imageUrl: canvas.toTempFilePathSync({
+                            destWidth: 500,
+                            destHeight: 400
+                        })
+                    });
+                }
                 break;
             case "auth":
                 wx.getSetting({
@@ -910,7 +965,7 @@ export default class Main extends cc.Component {
                 })
                 break;
             case "login":
-                // cc.sys.localStorage.setItem("OpenID", null);
+                cc.sys.localStorage.setItem("OpenID", null);
                 GLB.OpenID = cc.sys.localStorage.getItem("OpenID");
                 console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
                 if (GLB.OpenID){
@@ -921,11 +976,13 @@ export default class Main extends cc.Component {
                             if (res.code) {
                                 //发起网络请求
                                 // console.log("code = ", res.code);
+                                let code = res.code;
+                                if (window.tt) code+="tttttt";
                                 wx.request({
                                     // url: 'http://'+GLB.ip,
                                     url: "https://websocket.windgzs.cn",
                                     data: {
-                                        code: res.codes
+                                        code: code
                                     },
                                     success(response){
                                         // console.log("success response = ", response);

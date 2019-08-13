@@ -24,18 +24,27 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
-//            Debug.println("req = ", req.toString());
+//            System.out.println("req = " + req.toString());
             String uri = req.uri();
             int idx = uri.indexOf("code=");
             if (idx != -1) {
                 String code = uri.substring(idx+5);
-                String url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx4e23a5ec42c5a796&secret=bbf6afa03704649480dc1474c85883cd&js_code=" + code + "&grant_type=authorization_code";
+                String url = "";
+                int idx2 = code.indexOf("tttttt");
+                if (idx2 != -1) {
+                    code = code.substring(0, idx2);
+                    url = "https://developer.toutiao.com/api/apps/jscode2session?appid=tt0c6f7ad293459222&secret=52002a2d13b23349c73e0fcdaeec358762eba4a3&code=" + code;
+                }else{
+                    url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx4e23a5ec42c5a796&secret=bbf6afa03704649480dc1474c85883cd&js_code=" + code + "&grant_type=authorization_code";
+                }
                 String data = HttpUtils.get(url);
-                String s1 = "session_key", s2 = "openid";
+                String s1 = "session_key", s2 = "\"openid";
                 int iSession_key = data.indexOf(s1);
                 if (iSession_key == -1) return;
                 int iOpenid = data.indexOf(s2);
-                String openid = data.substring(iOpenid+s2.length()+3, data.length()-2);
+                String openid = "";
+                if (idx2 != -1) openid = data.substring(iOpenid+s2.length()+3, iSession_key-3);
+                else openid = data.substring(iOpenid+s2.length()+3, data.length()-2);
 //                String usrId = data.substring(iSession_key+s1.length()+3, iSession_key+s1.length()+8)+openid.substring(0, 5);
 //                Debug.println(openid, usrId);
 
