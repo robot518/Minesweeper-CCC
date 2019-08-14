@@ -22,7 +22,6 @@ import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 
-import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,33 +29,16 @@ import java.util.Date;
  * Echoes uppercase content of text frames.
  */
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static long iCount = 0;
-    long startTime = -1;
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        iCount++;
-        if (startTime < 0) {
-            startTime = System.currentTimeMillis();
-        }
-        String sDate = new SimpleDateFormat("MMdd").format(new Date());
-        SocketAddress addr = ctx.channel().remoteAddress();
-        Redis.getInstance().setRecord(sDate, getStrAddress(addr), -1);
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        iCount--;
-        Long iDate = (System.currentTimeMillis() - startTime) / 1000;
-        String sDate = new SimpleDateFormat("MMdd").format(new Date());
-        SocketAddress addr = ctx.channel().remoteAddress();
-        Redis.getInstance().setRecord(sDate, getStrAddress(addr), iDate);
-    }
-
-    String getStrAddress(SocketAddress addr){
-        String sAddress = addr.toString();
-        return sAddress.substring(1, sAddress.indexOf(":"));
-    }
+//    @Override
+//    public void channelActive(ChannelHandlerContext ctx) {
+//
+//    }
+//
+//    @Override
+//    public void channelInactive(ChannelHandlerContext ctx) {
+//
+//    }
 
     String getStrDate(){
         return new SimpleDateFormat("HH:mm:ss").format(new Date());
@@ -77,24 +59,21 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             }
             System.out.println(getStrDate()+ctx.channel().remoteAddress()+"\t"+request);
             int iColon = request.indexOf(":");
-            if (iColon == -1)
-                return;
+            if (iColon == -1) return;
             String cmd = request.substring(0, iColon);
             String sIdx = "";
             String sName = "";
             String sPass = "";
+            String OpenID = "";
             String sResponse = "200"; //请求成功
             int i1 = request.indexOf("|", 1); //第一个"|"的位置；
-            if (i1 != -1)
-                sName = request.substring(iColon + 1, i1);
+            if (i1 != -1) sName = request.substring(iColon + 1, i1);
+            int idx1 = request.indexOf("&", 1); //第一个"|"的位置；
+            if (idx1 != -1) OpenID = request.substring(iColon + 1, idx1);
             switch (cmd) {
-                case "Records":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Records(request.substring(iColon+1), iCount)));
-                    break;
-                case "Users":
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + "=" + Redis.getInstance().Users()));
-                    break;
                 case "wxLogin":
+                    String userInfo = request.substring(idx1 + 1);
+                    Redis.getInstance().setUserInfo(OpenID, userInfo);
                     break;
                 case "register":
                     sPass = request.substring(i1 + 1);
@@ -117,21 +96,17 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getStrScore(sName)));
                     break;
                 case "getWorldStep":
-                    if (request.substring(iColon + 1).length() == 1)
-                        return;
+                    if (request.substring(iColon + 1).length() == 1) return;
                     sIdx = request.substring(iColon + 1, iColon + 2);
                     String sRank = request.substring(iColon + 2);
-                    if (sRank == "")
-                        return;
+                    if (sRank == "") return;
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + Redis.getInstance().getWorld(sIdx, sRank)));
                     break;
                 case "getStep":
-                    if (request.substring(iColon + 1).length() == 1)
-                        return;
+                    if (request.substring(iColon + 1).length() == 1) return;
                     sIdx = request.substring(iColon + 1, iColon + 2);
                     sName = request.substring(iColon + 2);
-                    if (sName == "")
-                        return;
+                    if (sName == "") return;
                     String sStep = Redis.getInstance().getStep(sIdx, sName);
                     if (sStep != null)
                         ctx.channel().writeAndFlush(new TextWebSocketFrame(cmd + ":" + sStep));
@@ -142,14 +117,11 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     break;
                 case "setStep":
                     i1 = request.indexOf("|", 1);
-                    if (i1 == -1)
-                        return;
+                    if (i1 == -1) return;
                     int i2 = request.indexOf("|", i1 + 1);
-                    if (i2 == -1)
-                        return;
+                    if (i2 == -1) return;
                     int i3 = request.indexOf("|", i2 + 1);
-                    if (i3 == -1)
-                        return;
+                    if (i3 == -1) return;
                     sIdx = request.substring(iColon + 1, iColon + 2);
                     sName = request.substring(i1 + 1, i2);
                     float iScore = Float.parseFloat(request.substring(i2 + 1, i3));

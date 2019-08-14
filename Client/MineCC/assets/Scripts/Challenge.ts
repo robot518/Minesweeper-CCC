@@ -98,7 +98,8 @@ export default class Challenge extends cc.Component {
                 msgBox.active = false;
             }, cc.game);
         }
-        WS.sendMsg(GLB.GET_SCORE, GLB.UserID, this);
+        WS.sendMsg(GLB.GET_SCORE, GLB.OpenID, this);
+        // WS.sendMsg(GLB.GET_SCORE, "ooo", this);
     }
 
     initCanvas(){
@@ -156,7 +157,7 @@ export default class Challenge extends cc.Component {
                 }
                 GLB.iDiff = i;
                 this._bShowVideo = false;
-                WS.sendMsg(GLB.GET_STEP, i+""+GLB.UserID, this);
+                WS.sendMsg(GLB.GET_STEP, i+""+GLB.OpenID, this);
             }, this);
             //no1-play
             cc.find("no1/play", node).on("click", function (event) {
@@ -165,7 +166,6 @@ export default class Challenge extends cc.Component {
                 }
                 GLB.iDiff = i;
                 this._bShowVideo = true;
-                // this.onWxEvent("showVideo");
                 var sName = GLB.tName[GLB.iDiff];
                 if (sName == null) return;
                 WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
@@ -269,15 +269,17 @@ export default class Challenge extends cc.Component {
             for (var i = 0; i < 3; i++) {
                 var cData = args[i] || "";
                 var subData = cData.split(",");
-                if (subData[1] != null)
-                    GLB.tScore[i] = subData[1]/100;
-                GLB.tName[i] = subData[3];
+                if (subData[1] != null) GLB.tScore[i] = subData[1]/100;
+                let sName = subData[3];
+                if (subData[3].length > 10 && subData[3].indexOf("&") != -1){
+                    let t = subData[3].split("&");
+                    GLB.tName[i] = t[0];
+                    sName = t[1];
+                }else GLB.tName[i] = subData[3];
                 this["labName" + (i+1).toString()].string = this.getNewStr(this.getStrName(GLB.userInfo.nickName), null);
                 this["labRank" + (i+1).toString()].string = this.getNewStr(subData[0], null);
                 this["labScore" + (i+1).toString()].string = this.getNewStr(subData[1], 1);
                 this["labRank" + (i+1).toString() + "No1"].string = this.getNewStr(subData[2], null);
-                let sName = subData[3];
-                if (sName.length > 10 && sName.indexOf("&") != -1) sName=sName.split("&")[1];
                 this["labName" + (i+1).toString() + "No1"].string = this.getNewStr(this.getStrName(sName), null);
                 this["labScore" + (i+1).toString() + "No1"].string = this.getNewStr(subData[4], 1);
             };
@@ -412,12 +414,6 @@ export default class Challenge extends cc.Component {
                     });
                     this._videoAd.onClose(res => {
                         if (res && res.isEnded || res === undefined){
-                            // if (WS.ws.readyState !== WebSocket.OPEN){
-                            //     WS.reconnect();
-                            // }
-                            // var sName = GLB.tName[GLB.iDiff];
-                            // if (sName == null) return;
-                            // WS.sendMsg(GLB.GET_STEP, GLB.iDiff+""+sName, self);
                             if (self._videoAd != null && !window.tt) self._videoAd.offClose();
                             cc.director.loadScene("Main");
                         }else{

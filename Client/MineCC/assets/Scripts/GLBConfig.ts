@@ -12,7 +12,6 @@ var GLB = {
     msgBox: null, //断线重连
     OpenID: null, //微信用户唯一标识
     withCredentials: false,
-    UserID: null, //OpenID+nickName+avatarUrl
     
     //event
     GET_SCORE: "getScore",

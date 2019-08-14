@@ -19,28 +19,30 @@ var heartCheck = {
     timeoutObj: null,
     serverTimeoutObj: null,
     start: function(){
-      var self = this;
-      this.timeoutObj && clearTimeout(this.timeoutObj);
-      this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj);
-      this.timeoutObj = setTimeout(function(){
-        //这里发送一个心跳，后端收到后，返回一个心跳消息，
-        //onmessage拿到返回的心跳就说明连接正常
-        ws.send("0");
-        self.serverTimeoutObj = setTimeout(function() {
-            console.log(GLB.getTime()+"heart-timeout");
-          ws.close();
-        }, self.timeout);
-      }, this.timeout)
+        var self = this;
+        this.timeoutObj && clearTimeout(this.timeoutObj);
+        this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj);
+        this.timeoutObj = setTimeout(function(){
+            //这里发送一个心跳，后端收到后，返回一个心跳消息，
+            //onmessage拿到返回的心跳就说明连接正常
+            ws.send("0");
+            self.serverTimeoutObj = setTimeout(function() {
+                console.log(GLB.getTime()+"heart-timeout");
+                ws.close();
+            }, self.timeout);
+        }, this.timeout)
     }
 }
 var creatWS = function () {
     ws = null;
-    // if (window.wx || cc.sys.os === cc.sys.OS_IOS)
+    if (CC_WECHATGAME || cc.sys.os === cc.sys.OS_IOS)
         ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //wx/ios
-    // else if (cc.sys.os === cc.sys.OS_ANDROID)
-        // ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
-    // else
-    //     ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //本地
+    else if (cc.sys.os === cc.sys.OS_ANDROID)
+        ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上
+    else{
+        // ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地测试
+        ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //本地
+    }
     WS.ws = ws;
     ws.onopen = function (event) {
         console.log(GLB.getTime()+"Send Text WS was opened.");
@@ -100,7 +102,7 @@ WS.reconnect = function () {
         bError = false;
         creatWS();
         lockReconnect = false;
-    }, 4000)
+    }, 1000)
 };
 WS.getStrPBMineNum = function (tMineNum) {
     var str = "";
