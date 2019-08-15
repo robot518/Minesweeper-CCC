@@ -12,6 +12,7 @@ var GLB = {
     msgBox: null, //断线重连
     OpenID: null, //微信用户唯一标识
     withCredentials: false,
+    bSpView: false, //刘海屏
     
     //event
     GET_SCORE: "getScore",

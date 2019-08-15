@@ -109,6 +109,7 @@ export default class Main extends cc.Component {
     tPB: any[];
     UserInfoButton: any;
     _bannerAd: any;
+    _interstitialAd: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -129,7 +130,16 @@ export default class Main extends cc.Component {
         var canvas = this.node.getComponent(cc.Canvas);
         var size = canvas.designResolution;
         var cSize = cc.view.getFrameSize();
-        if (cSize.width/cSize.height >= size.width/size.height){
+        if (cc.sys.os == cc.sys.OS_IOS){ //刘海屏判断
+            GLB.bSpView = (cSize.width == 414 && cSize.height == 896)||(cSize.width == 375 && cSize.height == 812);
+        }
+        // else{
+        //     if (cSize.height/cSize.width > 16/9) GLB.bSpView = true;
+        // }
+        if (GLB.bSpView){
+            canvas.fitWidth = true;
+            canvas.fitHeight = true;
+        }else if (cSize.width/cSize.height >= size.width/size.height){
             canvas.fitWidth = false;
             canvas.fitHeight = true;
         }else{
@@ -285,6 +295,7 @@ export default class Main extends cc.Component {
 
             this.onWxEvent("initBanner");
             this.onWxEvent("login");
+            this.onWxEvent("initInterstitial");
 
             if (window.tt){
                 tt.onShareAppMessage(function (res){
@@ -377,6 +388,9 @@ export default class Main extends cc.Component {
 
     showResult(){
         if (this._bannerAd != null) this._bannerAd.show();
+        if (this._interstitialAd != null) {
+            if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
+        }
         this.goResult.active = true;
         var sTitle = "成功";
         var score = GLB.tScore[this._iDiff];
@@ -401,6 +415,9 @@ export default class Main extends cc.Component {
 
     showNormalResult(iType){
         if (this._bannerAd != null) this._bannerAd.show();
+        if (this._interstitialAd != null) {
+            if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
+        }
         this.goResult.active = true;
         var sTitle = iType == 1 ? "成功" : "失败";
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
@@ -1027,6 +1044,22 @@ export default class Main extends cc.Component {
                         tt.openSetting();
                     }
                 })
+                break;
+            case "initInterstitial":
+                // 创建插屏广告实例，提前初始化
+                if (wx.createInterstitialAd){
+                    this._interstitialAd = wx.createInterstitialAd({
+                        adUnitId: 'adunit-a844f91ff64bfc4f'
+                    })
+                }
+                break;
+            case "showInterstitial":
+                // 在适合的场景显示插屏广告
+                if (this._interstitialAd) {
+                    this._interstitialAd.show().catch((err) => {
+                        console.error(err)
+                    })
+                }
                 break;
         }
     }

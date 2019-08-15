@@ -106,7 +106,10 @@ export default class Challenge extends cc.Component {
         var canvas = this.node.getComponent(cc.Canvas);
         var size = canvas.designResolution;
         var cSize = cc.view.getFrameSize();
-        if (cSize.width/cSize.height >= size.width/size.height){
+        if (GLB.bSpView){
+            canvas.fitWidth = true;
+            canvas.fitHeight = true;
+        }else if (cSize.width/cSize.height >= size.width/size.height){
             canvas.fitWidth = false;
             canvas.fitHeight = true;
         }else{
@@ -121,12 +124,12 @@ export default class Challenge extends cc.Component {
         var self = this;
         cc.find("scv/backScv", this.node).on("click", function (argument) {
             this.scv.active = false;
-            if (this._bannerAd != null) this._bannerAd.hide();
         }, this);
         var btns = cc.find("btns", this.node);
         cc.find("back", btns).on("click", function (argument) {
             GLB.iType = 0;
             if (this._videoAd != null && !window.tt) this._videoAd.offClose();
+            if (this._bannerAd != null) this._bannerAd.hide();
             cc.director.loadScene("Main");
         }, this);
         cc.find("reconnect", btns).on("click", function (argument) {
@@ -143,6 +146,7 @@ export default class Challenge extends cc.Component {
                 GLB.iType = 1;
                 GLB.iDiff = i;
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
+                if (this._bannerAd != null) this._bannerAd.hide();
                 cc.director.loadScene("Main");
             }, this);
             //play-self
@@ -186,7 +190,6 @@ export default class Challenge extends cc.Component {
                 var tTitle = ["初级", "中级", "高级"];
                 cc.find("labTitle", this.scv).getComponent(cc.Label).string = tTitle[i];
                 WS.sendMsg(GLB.GET_RANK, i+"", this);
-                if (this._bannerAd != null) this._bannerAd.show();
             }, this);
         };
 
@@ -291,6 +294,7 @@ export default class Challenge extends cc.Component {
                 this.onWxEvent("showVideo");
             }else{
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
+                if (this._bannerAd != null) this._bannerAd.hide();
                 cc.director.loadScene("Main");
             }
         }else if(cmd == GLB.GET_RANK){
@@ -396,7 +400,6 @@ export default class Challenge extends cc.Component {
                                 self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
                         })
                     }
-                    this._bannerAd.hide();
                     this._bannerAd.onError(err => {
                         console.log(err);
                         //无合适广告
@@ -404,6 +407,7 @@ export default class Challenge extends cc.Component {
 
                         }
                     })
+                    this._bannerAd.show();
                 }
                 break;
             case "initVideo":
@@ -415,6 +419,7 @@ export default class Challenge extends cc.Component {
                     this._videoAd.onClose(res => {
                         if (res && res.isEnded || res === undefined){
                             if (self._videoAd != null && !window.tt) self._videoAd.offClose();
+                            if (self._bannerAd != null) self._bannerAd.hide();
                             cc.director.loadScene("Main");
                         }else{
 
