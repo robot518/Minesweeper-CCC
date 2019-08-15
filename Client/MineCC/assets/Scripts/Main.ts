@@ -110,6 +110,7 @@ export default class Main extends cc.Component {
     UserInfoButton: any;
     _bannerAd: any;
     _interstitialAd: any;
+    _bForce: boolean = false;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -270,9 +271,10 @@ export default class Main extends cc.Component {
             this.onRedo(ndStop, ndPlay);
         }, this);
         this.ndBack.on("click", function (argument) {
-            self.playSound ("click");
+            this.playSound ("click");
             if (window.tt && !GLB.userInfo){
-                this.onWxEvent("ttAuth");
+                if (this._bForce && !GLB.OpenID) this.onWxEvent("login");
+                else this.onWxEvent("ttAuth");
             }else cc.director.loadScene("Challenge");
         }, this);
         var ndSound = cc.find("sub/sound", btns);
@@ -992,6 +994,7 @@ export default class Main extends cc.Component {
                     if (!GLB.userInfo) this.onWxEvent("auth");
                 }else {
                     wx.login({
+                        force: self._bForce,
                         success (res) {
                             if (res.code) {
                                 //发起网络请求
@@ -1015,7 +1018,10 @@ export default class Main extends cc.Component {
                                         console.log("fail response = ", response);
                                     }
                                 })
-                            } else {
+                            } else if (res.anonymousCode || res.isLogin == false){
+                                console.log("头条账号未登陆");
+                                self._bForce = true;
+                            }else{
                                 console.log('登录失败！' + res.errMsg)
                             }
                         }
