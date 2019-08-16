@@ -111,6 +111,8 @@ export default class Main extends cc.Component {
     _bannerAd: any;
     _interstitialAd: any;
     _bForce: boolean = false;
+    _recorder: any;
+    _videoPath: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -291,7 +293,7 @@ export default class Main extends cc.Component {
             let share = cc.find("sub/share", btns);
             share.active = true;
             share.on("click", function (argument) {
-                self.playSound ("click");
+                this.playSound ("click");
                 this.onWxEvent("share");
             }, this);
 
@@ -315,6 +317,13 @@ export default class Main extends cc.Component {
                         }
                     }
                 });
+
+                let shareVideo = cc.find("share", this.goResult);
+                shareVideo.active = true;
+                shareVideo.on("click", function (params) {
+                    this.playSound ("click");
+                    this.onWxEvent("shareVideo");
+                }, this);
             }
         }
     }
@@ -389,6 +398,7 @@ export default class Main extends cc.Component {
     }
 
     showResult(){
+        if (this._recorder != null) this._recorder.stop();
         if (this._bannerAd != null) this._bannerAd.show();
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
@@ -416,6 +426,7 @@ export default class Main extends cc.Component {
     }
 
     showNormalResult(iType){
+        if (this._recorder != null) this._recorder.stop();
         if (this._bannerAd != null) this._bannerAd.show();
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
@@ -455,6 +466,7 @@ export default class Main extends cc.Component {
         this.reset();
         this.initMines(); //2有特殊处理
         this.showFlags();
+        if (window.tt) this.onWxEvent("startVideo");
         if (GLB.iType == 2){
             this.initStartShow(parseInt(GLB.tPlaybackData[1]));
             this.tPBBtns.push(this._tBtns.slice(0));
@@ -1066,6 +1078,53 @@ export default class Main extends cc.Component {
                         console.error(err)
                     })
                 }
+                break;
+            case "shareVideo":
+                if (this._iTime < 3){
+                    this.playTips("录屏失败：录屏时长低于 3 秒");
+                }else if (self._videoPath){
+                    tt.shareAppMessage({
+                        channel: 'video',
+                        title: '超变态的扫雷操作',
+                        imageUrl: '',
+                        query: '',
+                        extra: {
+                          videoPath: 'ttfile://temp/test.mp4', // 可用录屏得到的视频地址
+                          videoTopics: ['扫雷']
+                        },
+                        success() {
+                          console.log('分享视频成功');
+                        },
+                        fail(e) {
+                          console.log('分享视频失败');
+                        }
+                    })
+                }
+                break;
+            case "startVideo":
+                this._recorder = tt.getGameRecorderManager();
+                this._recorder.onStart(res =>{
+                    console.log('录屏开始');
+                    self._videoPath = null;
+                    // do somethine;
+                })
+                this._recorder.start({
+                    duration: 300,
+                })
+                this._recorder.onStop((res)=>{
+                    self._recorder.clipVideo({
+                        path: res.videoPath,
+                        timeRange: [30, 0],
+                        success(res){
+                            // 由开始5秒 +最后10秒 拼接合成的视频
+                            console.log(res.videoPath);
+                            self._videoPath = res.videoPath;
+                        },
+                        fail(e) {
+                            console.error(e)
+                        }
+                    })
+                  })
                 break;
         }
     }
