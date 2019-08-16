@@ -61,8 +61,8 @@
       <file leaf-file-name="HttpServerHandler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/websocketx/HttpServerHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
-              <caret line="26" column="60" selection-start-line="26" selection-start-column="60" selection-end-line="26" selection-end-column="60" />
+            <state relative-caret-position="213">
+              <caret line="35" column="105" selection-start-line="35" selection-start-column="87" selection-end-line="35" selection-end-column="105" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#709#710#0" expanded="true" />
@@ -165,8 +165,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -396,11 +396,13 @@
       <workItem from="1565867167057" duration="364000" />
       <workItem from="1565868855862" duration="9000" />
       <workItem from="1565869029491" duration="10000" />
+      <workItem from="1565956681044" duration="556000" />
+      <workItem from="1565966518829" duration="358000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="314307000" />
+    <option name="totallyTimeSpent" value="315221000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -427,7 +429,7 @@
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32928476" />
       <window_info id="Capture Tool" order="6" />
       <window_info id="Designer" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3297568" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3390558" />
       <window_info anchor="right" id="Database" order="6" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -802,8 +804,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/websocketx/HttpServerHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="26" column="60" selection-start-line="26" selection-start-column="60" selection-end-line="26" selection-end-column="60" />
+        <state relative-caret-position="213">
+          <caret line="35" column="105" selection-start-line="35" selection-start-column="87" selection-end-line="35" selection-end-column="105" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#709#710#0" expanded="true" />

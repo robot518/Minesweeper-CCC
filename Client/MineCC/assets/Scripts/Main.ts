@@ -204,7 +204,7 @@ export default class Main extends cc.Component {
         var self = this;
         var btns = cc.find("btns", this.node);
         cc.find("sure", this.goResult).on("click", function (argument) {
-            self.playSound ("click");
+            self.playSound("click");
             if (this._bannerAd != null) this._bannerAd.hide();
             this.goResult.active = false;
         }, this);
@@ -273,7 +273,7 @@ export default class Main extends cc.Component {
             this.onRedo(ndStop, ndPlay);
         }, this);
         this.ndBack.on("click", function (argument) {
-            this.playSound ("click");
+            this.playSound("click");
             if (window.tt && !GLB.userInfo){
                 if (this._bForce && !GLB.OpenID) this.onWxEvent("login");
                 else this.onWxEvent("ttAuth");
@@ -284,7 +284,7 @@ export default class Main extends cc.Component {
             self.bSound = !self.bSound;
             if (self.bSound == true){
                 ndSound.color = cc.Color.WHITE;
-                self.playSound ("click");
+                self.playSound("click");
             } else
                 ndSound.color = cc.Color.GRAY;
         }, this);
@@ -293,7 +293,7 @@ export default class Main extends cc.Component {
             let share = cc.find("sub/share", btns);
             share.active = true;
             share.on("click", function (argument) {
-                this.playSound ("click");
+                this.playSound("click");
                 this.onWxEvent("share");
             }, this);
 
@@ -321,9 +321,11 @@ export default class Main extends cc.Component {
                 let shareVideo = cc.find("share", this.goResult);
                 shareVideo.active = true;
                 shareVideo.on("click", function (params) {
-                    this.playSound ("click");
+                    this.playSound("click");
                     this.onWxEvent("shareVideo");
                 }, this);
+
+                this.onWxEvent("initVideoRecord");
             }
         }
     }
@@ -808,7 +810,7 @@ export default class Main extends cc.Component {
             }
         }
         if (bWin == true) {
-            this.playSound ("win");
+            this.playSound("win");
             this.onEnd ();
         }
     }
@@ -927,25 +929,6 @@ export default class Main extends cc.Component {
                     })
                 }
                 break;
-            case "share":
-                if (window.tt){
-                    tt.shareAppMessage({
-                        channel: "article",
-                        title: "扫雷大神集锦！",
-                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
-                        // templateId: "a5e39j0j0ebb4kmv77",
-                        imageUrl: "/resource/ttshare.jpg",
-                    });
-                }else{
-                    wx.shareAppMessage({
-                        title: "扫雷大神集锦！",
-                        imageUrl: canvas.toTempFilePathSync({
-                            destWidth: 500,
-                            destHeight: 400
-                        })
-                    });
-                }
-                break;
             case "auth":
                 wx.getSetting({
                     success(res) {
@@ -979,7 +962,7 @@ export default class Main extends cc.Component {
                                     let str = GLB.OpenID+"&"+res.userInfo.nickName+"&"+res.userInfo.avatarUrl;
                                     if (WS.sendMsg(GLB.WXLOGIN, str)){
                                         self.UserInfoButton.hide();
-                                        self.playSound ("click");
+                                        self.playSound("click");
                                         cc.director.loadScene("Challenge");
                                     }
                                 }
@@ -1079,52 +1062,82 @@ export default class Main extends cc.Component {
                     })
                 }
                 break;
+            case "initVideoRecord":
+                if (this._recorder == null){
+                    this._recorder = tt.getGameRecorderManager();
+                    this._recorder.onStart(res =>{
+                        console.log('录屏开始');
+                        self._videoPath = null;
+                        // do somethine;
+                    })
+                    this._recorder.onStop((res)=>{
+                        console.log("onStop=", res);
+                        let time = this._iTime >= 30 ? 30 : this._iTime;
+                        self._recorder.clipVideo({
+                            path: res.videoPath,
+                            timeRange: [time, 0],
+                            success(res){
+                                // 由开始5秒 +最后10秒 拼接合成的视频
+                                console.log(res.videoPath);
+                                self._videoPath = res.videoPath;
+                            },
+                            fail(e) {
+                                console.error(e)
+                            }
+                        })
+                      })
+                }
+                break;
+            case "startVideo":
+                if (this._recorder) this._recorder.start({duration: 300,});
+                break;
             case "shareVideo":
                 if (this._iTime < 3){
                     this.playTips("录屏失败：录屏时长低于 3 秒");
                 }else if (self._videoPath){
                     tt.shareAppMessage({
                         channel: 'video',
-                        title: '超变态的扫雷操作',
-                        imageUrl: '',
-                        query: '',
+                        // title: '超变态的扫雷操作',
                         extra: {
-                          videoPath: 'ttfile://temp/test.mp4', // 可用录屏得到的视频地址
-                          videoTopics: ['扫雷']
+                          videoPath: self._videoPath, // 可用录屏得到的视频地址
+                        //   videoTopics: ['扫雷']
                         },
                         success() {
                           console.log('分享视频成功');
                         },
                         fail(e) {
-                          console.log('分享视频失败');
+                          console.log('分享视频失败', e);
                         }
                     })
+                    // tt.shareVideo({
+                    //     videoPath: self._videoPath,
+                    //     success(){
+                    //         // console.log('分享视频成功');
+                    //     },
+                    //     fail(e){
+                    //         // console.log('分享视频失败', e);
+                    //     }
+                    // })
                 }
-                break;
-            case "startVideo":
-                this._recorder = tt.getGameRecorderManager();
-                this._recorder.onStart(res =>{
-                    console.log('录屏开始');
-                    self._videoPath = null;
-                    // do somethine;
-                })
-                this._recorder.start({
-                    duration: 300,
-                })
-                this._recorder.onStop((res)=>{
-                    self._recorder.clipVideo({
-                        path: res.videoPath,
-                        timeRange: [30, 0],
-                        success(res){
-                            // 由开始5秒 +最后10秒 拼接合成的视频
-                            console.log(res.videoPath);
-                            self._videoPath = res.videoPath;
-                        },
-                        fail(e) {
-                            console.error(e)
-                        }
-                    })
-                  })
+                break;s
+            case "share":
+                if (window.tt){
+                    tt.shareAppMessage({
+                        channel: "article",
+                        title: "扫雷大神集锦！",
+                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
+                        // templateId: "a5e39j0j0ebb4kmv77",
+                        imageUrl: "/resource/ttshare.jpg",
+                    });
+                }else{
+                    wx.shareAppMessage({
+                        title: "扫雷大神集锦！",
+                        imageUrl: canvas.toTempFilePathSync({
+                            destWidth: 500,
+                            destHeight: 400
+                        })
+                    });
+                }
                 break;
         }
     }
