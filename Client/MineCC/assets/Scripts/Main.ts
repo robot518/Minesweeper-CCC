@@ -870,7 +870,7 @@ export default class Main extends cc.Component {
         if (!CC_WECHATGAME) return;
         let self = this;
         switch(s){
-            case "initBanner":
+            case "initBanner": //横屏广告
                 if (this._bannerAd == null){
                     if (window.tt){
                         const {
@@ -929,7 +929,7 @@ export default class Main extends cc.Component {
                     })
                 }
                 break;
-            case "auth":
+            case "auth": //授权/获取用户信息
                 wx.getSetting({
                     success(res) {
                         if (!res.authSetting['scope.userInfo']) {
@@ -981,7 +981,7 @@ export default class Main extends cc.Component {
                     }
                 })
                 break;
-            case "login":
+            case "login": //登陆
                 // cc.sys.localStorage.setItem("OpenID", null);
                 GLB.OpenID = cc.sys.localStorage.getItem("OpenID");
                 // console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
@@ -1033,7 +1033,7 @@ export default class Main extends cc.Component {
                 //     }
                 // })
                 break;
-            case "ttAuth":
+            case "ttAuth": //头条授权要做特殊处理
                 tt.authorize({
                     scope: "scope.userInfo",
                     success(res){
@@ -1046,7 +1046,7 @@ export default class Main extends cc.Component {
                     }
                 })
                 break;
-            case "initInterstitial":
+            case "initInterstitial": //插屏广告，头条系列没有
                 // 创建插屏广告实例，提前初始化
                 if (wx.createInterstitialAd){
                     this._interstitialAd = wx.createInterstitialAd({
@@ -1062,7 +1062,7 @@ export default class Main extends cc.Component {
                     })
                 }
                 break;
-            case "initVideoRecord":
+            case "initVideoRecord": //录屏功能，微信没有
                 if (this._recorder == null){
                     this._recorder = tt.getGameRecorderManager();
                     this._recorder.onStart(res =>{
@@ -1124,7 +1124,7 @@ export default class Main extends cc.Component {
                     // })
                 }
                 break;s
-            case "share":
+            case "share": //分享
                 if (window.tt){
                     tt.shareAppMessage({
                         // channel: "article",
