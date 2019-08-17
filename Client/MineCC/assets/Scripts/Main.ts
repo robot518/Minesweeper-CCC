@@ -1066,30 +1066,33 @@ export default class Main extends cc.Component {
                 if (this._recorder == null){
                     this._recorder = tt.getGameRecorderManager();
                     this._recorder.onStart(res =>{
-                        console.log('录屏开始');
+                        // console.log(GLB.getTime()+'录屏开始');
                         self._videoPath = null;
                         // do somethine;
                     })
                     this._recorder.onStop((res)=>{
-                        console.log("onStop=", res);
                         let time = this._iTime >= 30 ? 30 : this._iTime;
+                        if (time < 3) return;
+                        // console.log(GLB.getTime()+"onStop=", res, time);
                         self._recorder.clipVideo({
                             path: res.videoPath,
                             timeRange: [time, 0],
                             success(res){
-                                // 由开始5秒 +最后10秒 拼接合成的视频
-                                console.log(res.videoPath);
+                                // console.log(GLB.getTime()+res.videoPath);
                                 self._videoPath = res.videoPath;
                             },
                             fail(e) {
-                                console.error(e)
+                                console.error(e);
                             }
                         })
                       })
                 }
                 break;
             case "startVideo":
-                if (this._recorder) this._recorder.start({duration: 300,});
+                if (this._recorder) {
+                    this._recorder.stop();
+                    this._recorder.start({duration: 300,});
+                }
                 break;
             case "shareVideo":
                 if (this._iTime < 3){
@@ -1106,7 +1109,8 @@ export default class Main extends cc.Component {
                           console.log('分享视频成功');
                         },
                         fail(e) {
-                          console.log('分享视频失败', e);
+                          console.log('分享视频失败', e.errMsg);
+                          if (e.errMsg.indexOf("short") != -1) self.playTips("分享视频失败，视频时间过短");
                         }
                     })
                     // tt.shareVideo({
@@ -1123,7 +1127,7 @@ export default class Main extends cc.Component {
             case "share":
                 if (window.tt){
                     tt.shareAppMessage({
-                        channel: "article",
+                        // channel: "article",
                         title: "扫雷大神集锦！",
                         // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
                         // templateId: "a5e39j0j0ebb4kmv77",
