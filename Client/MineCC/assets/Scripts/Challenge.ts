@@ -129,7 +129,7 @@ export default class Challenge extends cc.Component {
         cc.find("back", btns).on("click", function (argument) {
             GLB.iType = 0;
             if (this._videoAd != null && !window.tt) this._videoAd.offClose();
-            if (this._bannerAd != null) this._bannerAd.hide();
+            this.onWxEvent("hideBanner");
             cc.director.loadScene("Main");
         }, this);
         cc.find("reconnect", btns).on("click", function (argument) {
@@ -146,7 +146,7 @@ export default class Challenge extends cc.Component {
                 GLB.iType = 1;
                 GLB.iDiff = i;
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
-                if (this._bannerAd != null) this._bannerAd.hide();
+                this.onWxEvent("hideBanner");
                 cc.director.loadScene("Main");
             }, this);
             //play-self
@@ -294,7 +294,7 @@ export default class Challenge extends cc.Component {
                 this.onWxEvent("showVideo");
             }else{
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
-                if (this._bannerAd != null) this._bannerAd.hide();
+                this.onWxEvent("hideBanner");
                 cc.director.loadScene("Main");
             }
         }else if(cmd == GLB.GET_RANK){
@@ -352,7 +352,7 @@ export default class Challenge extends cc.Component {
         let self = this;
         switch(s){
             case "initBanner":
-                if (this._bannerAd == null) {
+                if (this._bannerAd == null || window.tt) {
                     if (window.tt){
                         const {
                             windowWidth,
@@ -419,7 +419,7 @@ export default class Challenge extends cc.Component {
                     this._videoAd.onClose(res => {
                         if (res && res.isEnded || res === undefined){
                             if (self._videoAd != null && !window.tt) self._videoAd.offClose();
-                            if (self._bannerAd != null) self._bannerAd.hide();
+                            self.onWxEvent("hideBanner");
                             cc.director.loadScene("Main");
                         }else{
 
@@ -457,6 +457,10 @@ export default class Challenge extends cc.Component {
                         })
                     });
                 }
+                break;
+            case "hideBanner":
+                if (this._bannerAd != null) this._bannerAd.hide();
+                // if (this._bannerAd != null) this._bannerAd.destroy();
                 break;
         }
     }

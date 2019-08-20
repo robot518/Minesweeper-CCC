@@ -113,6 +113,8 @@ export default class Main extends cc.Component {
     _bForce: boolean = false;
     _recorder: any;
     _videoPath: any;
+    _bUpdateBanner: boolean = false;
+    _iBannerTime: number = 0;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -161,6 +163,16 @@ export default class Main extends cc.Component {
                 this.iPlaybackTime = this.getPlaybackTime(this.iPBidx);
             }
         }
+        // if (this._bUpdateBanner){
+        //     this._iBannerTime+=dt;
+        //     if (this._iBannerTime > 45 && this._bannerAd){
+        //         this._bannerAd.destroy();
+        //         this._bannerAd = null;
+        //         this.onWxEvent("initBanner");
+        //         this._iBannerTime = 0;
+        //         if (this.goResult.active == true && this._bannerAd) this._bannerAd.show();
+        //     }
+        // }
     }
 
     initParas(){
@@ -205,7 +217,7 @@ export default class Main extends cc.Component {
         var btns = cc.find("btns", this.node);
         cc.find("sure", this.goResult).on("click", function (argument) {
             self.playSound("click");
-            if (this._bannerAd != null) this._bannerAd.hide();
+            this.onWxEvent("hideBanner");
             this.goResult.active = false;
         }, this);
         var normal = cc.find("normal", btns);
@@ -401,7 +413,7 @@ export default class Main extends cc.Component {
 
     showResult(){
         if (this._recorder != null) this._recorder.stop();
-        if (this._bannerAd != null) this._bannerAd.show();
+        this.onWxEvent("showBanner");
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
@@ -429,7 +441,7 @@ export default class Main extends cc.Component {
 
     showNormalResult(iType){
         if (this._recorder != null) this._recorder.stop();
-        if (this._bannerAd != null) this._bannerAd.show();
+        this.onWxEvent("showBanner");
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
@@ -871,6 +883,10 @@ export default class Main extends cc.Component {
         let self = this;
         switch(s){
             case "initBanner": //横屏广告
+                //tt广告刷新处理
+                // if (window.tt) {
+                //     this._bannerAd = null;
+                // }
                 if (this._bannerAd == null){
                     if (window.tt){
                         const {
@@ -903,6 +919,7 @@ export default class Main extends cc.Component {
                             }
                         });
                         this._bannerAd = bannerAd;
+                        // this._bUpdateBanner = true;
                     }else {
                         var systemInfo = wx.getSystemInfoSync();
                         this._bannerAd = wx.createBannerAd({
@@ -1123,7 +1140,7 @@ export default class Main extends cc.Component {
                     //     }
                     // })
                 }
-                break;s
+                break;
             case "share": //分享
                 if (window.tt){
                     tt.shareAppMessage({
@@ -1142,6 +1159,15 @@ export default class Main extends cc.Component {
                         })
                     });
                 }
+                break;
+            case "showBanner":
+                // if (window.tt) this.onWxEvent("initBanner");
+                // else if (this._bannerAd != null) this._bannerAd.show();
+                if (this._bannerAd != null) this._bannerAd.show();
+                break;
+            case "hideBanner":
+                if (this._bannerAd != null) this._bannerAd.hide();
+                // if (this._bannerAd != null) this._bannerAd.destroy();
                 break;
         }
     }
