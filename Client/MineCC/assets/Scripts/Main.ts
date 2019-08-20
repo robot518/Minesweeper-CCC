@@ -1100,6 +1100,10 @@ export default class Main extends cc.Component {
                     this._recorder.onStop((res)=>{
                         // let time = this._iTime >= 30 ? 30 : this._iTime;
                         console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
+                        if (self._bGameOver == false) {
+                            self._recorder.start({duration: 300 });
+                            return;
+                        }
                         if (this._iTime < 3) return;
                         else if (this._iTime < 30){
                             // console.log(GLB.getTime()+res.videoPath);
@@ -1132,8 +1136,8 @@ export default class Main extends cc.Component {
                                     console.error(e);
                                 }
                             })
-                        // }
-                      })
+                        }
+                    })
                 }
                 break;
             case "stopVideo":
@@ -1148,10 +1152,13 @@ export default class Main extends cc.Component {
                 break;
             case "startVideo":
                 if (this._recorder) {
-                    this._recorder.stop();
-                    this.labLeftMine.scheduleOnce(function (params) {
-                        self._recorder.start({duration: 300 });
-                    }, 0.1)
+                    if (this._recorder._recording) this._recorder.stop();
+                    else this._recorder.start({duration: 300 });
+                    // this._recorder.stop();
+                    // this.labLeftMine.scheduleOnce(function (params) {
+                    //     self._recorder.start({duration: 300 });
+                    //     console.log(self._recorder);
+                    // }, 0.1)
                     // this._clipIndexList = [];
                     // this._recorder.recordClip({
                     //     timeRange: [0, 0],
