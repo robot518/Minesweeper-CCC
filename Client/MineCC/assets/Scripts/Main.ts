@@ -115,6 +115,7 @@ export default class Main extends cc.Component {
     _videoPath: any;
     _bUpdateBanner: boolean = false;
     _iBannerTime: number = 0;
+    _clipIndexList: any[];
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -396,7 +397,6 @@ export default class Main extends cc.Component {
     onPlaybackEvent(iType, idx){
         var iR = idx % this._iRow;
         var iL = Math.floor (idx / this._iRow);
-        this._tileMap.showMouse();
         this._tileMap.setMousePos(iR, iL);
         if (iType == 0){
             this.playSound("check");
@@ -412,11 +412,6 @@ export default class Main extends cc.Component {
     }
 
     showResult(){
-        if (this._recorder != null) this._recorder.stop();
-        this.onWxEvent("showBanner");
-        if (this._interstitialAd != null) {
-            if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
-        }
         this.goResult.active = true;
         var sTitle = "成功";
         var score = GLB.tScore[this._iDiff];
@@ -437,19 +432,24 @@ export default class Main extends cc.Component {
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
-    }
-
-    showNormalResult(iType){
-        if (this._recorder != null) this._recorder.stop();
+        this.onWxEvent("stopVideo");
         this.onWxEvent("showBanner");
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
+    }
+
+    showNormalResult(iType){
         this.goResult.active = true;
         var sTitle = iType == 1 ? "成功" : "失败";
         cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
+        this.onWxEvent("stopVideo");
+        this.onWxEvent("showBanner");
+        if (this._interstitialAd != null) {
+            if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
+        }
     }
 
     onScale(){
@@ -480,7 +480,10 @@ export default class Main extends cc.Component {
         this.reset();
         this.initMines(); //2有特殊处理
         this.showFlags();
-        if (window.tt) this.onWxEvent("startVideo");
+        if (window.tt) {
+            this.onWxEvent("startVideo");
+            if (GLB.iType != 2) this._tileMap.hideMouse();
+        }
         if (GLB.iType == 2){
             this.initStartShow(parseInt(GLB.tPlaybackData[1]));
             this.tPBBtns.push(this._tBtns.slice(0));
@@ -591,9 +594,9 @@ export default class Main extends cc.Component {
             } else if (this._iMode == 0){
                 if (this._tFlag[idx] == 0){
                     if (this._tNum[idx] == -1){ //地雷
-                        this.playSound("bomb");
                         this.onEnd();
                         this.showRedMine(idx);
+                        this.playSound("bomb");
                     }else if (this._tBtns[idx] == 1){ //格子
                         if (GLB.iType == 1){
                             var str = "0" + idx.toString() + "." + this.getITime();
@@ -607,6 +610,11 @@ export default class Main extends cc.Component {
                 }
             }else{
                 this.onFlagEvent(idx);
+            }
+            if (window.tt && GLB.iType != 2){
+                let iR = idx % this._iRow;
+                let iL = Math.floor (idx / this._iRow);
+                this._tileMap.setMousePos(iR, iL);
             }
         }
     }
@@ -800,9 +808,9 @@ export default class Main extends cc.Component {
                 if (this._tFlag[idx] == 0){
                     if (this._tNum[idx] == -1){
                         this._tBtns[idx] = 0;
-                        this.playSound("bomb");
                         this.onEnd();
                         this.showRedMine(idx);
+                        this.playSound("bomb");
                         return;
                     }
                     if (this._tBtns[idx] == 1) this.showGrids (idx);
@@ -822,8 +830,8 @@ export default class Main extends cc.Component {
             }
         }
         if (bWin == true) {
-            this.playSound("win");
             this.onEnd ();
+            this.playSound("win");
         }
     }
 
@@ -832,6 +840,10 @@ export default class Main extends cc.Component {
     }
 
     playSound(sName){
+        if (this.bSound){
+            let t = {bomb: this.bombClip, check: this.checkClip, click: this.clickClip, win: this.winClip, lose: this.loseClip};
+            cc.audioEngine.play(t[sName], false, 1);
+        }
         if (sName == "win"){
             if (GLB.iType == 1)
                 this.showResult();
@@ -839,9 +851,6 @@ export default class Main extends cc.Component {
                 this.showNormalResult(1);
         }else if (sName == "bomb")
             this.showNormalResult(0);
-        if (this.bSound == false) return;
-        let t = {bomb: this.bombClip, check: this.checkClip, click: this.clickClip, win: this.winClip, lose: this.loseClip};
-        cc.audioEngine.play(t[sName], false, 1);
     }
 
     playTips(str){
@@ -907,7 +916,7 @@ export default class Main extends cc.Component {
                         bannerAd.style.left = (windowWidth - targetBannerAdWidth) / 2;
                         
                         // 尺寸调整时会触发回调
-                        // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！
+                        // 注意：如果在回调里再次调整尺寸，要确保不要触发死循环！！！   
                         bannerAd.onResize(size => {
                             // console.log(size.width, size.height);
                         
@@ -936,14 +945,15 @@ export default class Main extends cc.Component {
                                 self._bannerAd.style.top = systemInfo.windowHeight - self._bannerAd.style.realHeight;
                         })
                     }
-                    this._bannerAd.hide();
                     this._bannerAd.onError(err => {
+                        console.log(GLB.getTime()+"bannerAd err");
                         console.log(err);
                         //无合适广告
                         if (err.errCode == 1004){
 
                         }
                     })
+                    this._bannerAd.hide();
                 }
                 break;
             case "auth": //授权/获取用户信息
@@ -1083,32 +1093,73 @@ export default class Main extends cc.Component {
                 if (this._recorder == null){
                     this._recorder = tt.getGameRecorderManager();
                     this._recorder.onStart(res =>{
-                        // console.log(GLB.getTime()+'录屏开始');
+                        console.log(GLB.getTime()+'录屏开始');
                         self._videoPath = null;
                         // do somethine;
                     })
                     this._recorder.onStop((res)=>{
-                        let time = this._iTime >= 30 ? 30 : this._iTime;
-                        if (time < 3) return;
-                        // console.log(GLB.getTime()+"onStop=", res, time);
-                        self._recorder.clipVideo({
-                            path: res.videoPath,
-                            timeRange: [time, 0],
-                            success(res){
-                                // console.log(GLB.getTime()+res.videoPath);
-                                self._videoPath = res.videoPath;
-                            },
-                            fail(e) {
-                                console.error(e);
-                            }
-                        })
+                        // let time = this._iTime >= 30 ? 30 : this._iTime;
+                        console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
+                        if (this._iTime < 3) return;
+                        else if (this._iTime < 30){
+                            // console.log(GLB.getTime()+res.videoPath);
+                            self._videoPath = res.videoPath;
+                        }else{
+                            // self._recorder.recordClip({
+                            // let time = this._iTime - 30;
+                            self._recorder.clipVideo({
+                                path: res.videoPath,
+                                timeRange: [30, 0],
+                                success(res2){
+                                    // self._recorder.clipVideo({
+                                    //     path: res.videoPath,
+                                    //     clipRange: self._clipIndexList.reverse();
+                                    //     // timeRange: [30, 0],
+                                    //     success(res){
+                                    //         console.log(GLB.getTime()+res.videoPath);
+                                    //         self._videoPath = res.videoPath;
+                                    //     },
+                                    //     fail(e) {
+                                    //         console.error(e);
+                                    //     }
+                                    // })
+                                    // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
+                                    // console.log(res2);
+                                    self._videoPath = res2.videoPath;
+                                },
+                                fail(e) {
+                                    console.log(GLB.getTime()+"fail");
+                                    console.error(e);
+                                }
+                            })
+                        // }
                       })
+                }
+                break;
+            case "stopVideo":
+                // console.log(GLB.getTime()+"stopVideo"+this._recorder);
+                if (this._recorder) {
+                    this.labLeftMine.scheduleOnce(function (params) {
+                        if (self._iTime < 3) return;
+                        console.log(GLB.getTime()+"stop");
+                        self._recorder.stop();
+                    }, 0.3);
                 }
                 break;
             case "startVideo":
                 if (this._recorder) {
                     this._recorder.stop();
-                    this._recorder.start({duration: 300,});
+                    this.labLeftMine.scheduleOnce(function (params) {
+                        self._recorder.start({duration: 300 });
+                    }, 0.1)
+                    // this._clipIndexList = [];
+                    // this._recorder.recordClip({
+                    //     timeRange: [0, 0],
+                    //     success(res){
+                    //         console.log(GLB.getTime()+"recordClip"+res);
+                    //         this._clipIndexList.push(res.index);
+                    //     }
+                    // })
                 }
                 break;
             case "shareVideo":
@@ -1126,7 +1177,7 @@ export default class Main extends cc.Component {
                           console.log('分享视频成功');
                         },
                         fail(e) {
-                          console.log('分享视频失败', e.errMsg);
+                          console.log('分享视频失败', e.errMsg, self._videoPath);
                           if (e.errMsg.indexOf("short") != -1) self.playTips("分享视频失败，视频时间过短");
                         }
                     })
@@ -1139,14 +1190,14 @@ export default class Main extends cc.Component {
                     //         // console.log('分享视频失败', e);
                     //     }
                     // })
-                }
+                }else console.log(GLB.getTime()+"self._videoPath = ", self._videoPath);
                 break;
             case "share": //分享
                 if (window.tt){
                     tt.shareAppMessage({
                         // channel: "article",
                         title: "扫雷大神集锦！",
-                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
+                        // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",s
                         // templateId: "a5e39j0j0ebb4kmv77",
                         imageUrl: "/resource/ttshare.jpg",
                     });
@@ -1161,13 +1212,27 @@ export default class Main extends cc.Component {
                 }
                 break;
             case "showBanner":
-                // if (window.tt) this.onWxEvent("initBanner");
-                // else if (this._bannerAd != null) this._bannerAd.show();
+                // console.log(GLB.getTime()+"1"+this._bannerAd);
+                // if (window.tt && this._bannerAd == null) this.onWxEvent("initBanner");
+                // console.log(GLB.getTime()+"2"+this._bannerAd);
                 if (this._bannerAd != null) this._bannerAd.show();
+                // if (this._bannerAd != null) {
+                //     if (window.tt) {
+                //         this._bannerAd.destroy();
+                //         this.labLeftMine.scheduleOnce(function (params) {
+                //             self.onWxEvent("initBanner");
+                //         }, 1);
+                //     }else this._bannerAd.show();
+                // }
                 break;
             case "hideBanner":
+                // if (this._bannerAd != null) {
+                //     if (window.tt){
+                //         this._bannerAd.destroy();
+                //         this._bannerAd = null;
+                //     }else this._bannerAd.hide();
+                // }
                 if (this._bannerAd != null) this._bannerAd.hide();
-                // if (this._bannerAd != null) this._bannerAd.destroy();
                 break;
         }
     }

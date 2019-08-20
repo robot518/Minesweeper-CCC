@@ -39,6 +39,11 @@ export default class MineMap extends cc.Component {
             this._iTime+=dt;
             if (this._iTime > 0.2){
                 this._delt.onFlagEvent(this.idx);
+                if (window.tt && GLB.iType != 2){
+                    let iR = this.idx % this._iRow;
+                    let iL = Math.floor (this.idx / this._iRow);
+                    this.setMousePos(iR, iL);
+                }
                 this._bTouch = false;
                 this._iTime = -1;
             }
@@ -96,15 +101,12 @@ export default class MineMap extends cc.Component {
     }
 
     setMousePos(iR, iL){
+        if (!this._mouse.active) this._mouse.active = true;
         var pos = cc.v2(iR*_dx, (this._iLine-iL-1)*_dx);
         this._mouse.setPosition(pos);
     }
 
     hideMouse(){
         this._mouse.active = false;
-    }
-
-    showMouse(){
-        this._mouse.active = true;
     }
 }

@@ -352,6 +352,7 @@ export default class Challenge extends cc.Component {
         let self = this;
         switch(s){
             case "initBanner":
+                // console.log(GLB.getTime()+"3"+this._bannerAd);
                 if (this._bannerAd == null || window.tt) {
                     if (window.tt){
                         const {
@@ -459,8 +460,10 @@ export default class Challenge extends cc.Component {
                 }
                 break;
             case "hideBanner":
-                if (this._bannerAd != null) this._bannerAd.hide();
-                // if (this._bannerAd != null) this._bannerAd.destroy();
+                if (this._bannerAd != null) {
+                    if (window.tt) this._bannerAd.destroy();
+                    else this._bannerAd.hide();
+                }
                 break;
         }
     }
