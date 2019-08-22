@@ -1095,48 +1095,46 @@ export default class Main extends cc.Component {
                     this._recorder.onStart(res =>{
                         console.log(GLB.getTime()+'录屏开始');
                         self._videoPath = null;
-                        // do somethine;
                     })
                     this._recorder.onStop((res)=>{
-                        // let time = this._iTime >= 30 ? 30 : this._iTime;
                         console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
                         if (self._bGameOver == false) {
                             self._recorder.start({duration: 300 });
                             return;
                         }
                         if (this._iTime < 3) return;
-                        else if (this._iTime < 30){
+                        // else if (this._iTime < 30){
                             // console.log(GLB.getTime()+res.videoPath);
                             self._videoPath = res.videoPath;
-                        }else{
-                            // self._recorder.recordClip({
-                            // let time = this._iTime - 30;
-                            self._recorder.clipVideo({
-                                path: res.videoPath,
-                                timeRange: [30, 0],
-                                success(res2){
-                                    // self._recorder.clipVideo({
-                                    //     path: res.videoPath,
-                                    //     clipRange: self._clipIndexList.reverse();
-                                    //     // timeRange: [30, 0],
-                                    //     success(res){
-                                    //         console.log(GLB.getTime()+res.videoPath);
-                                    //         self._videoPath = res.videoPath;
-                                    //     },
-                                    //     fail(e) {
-                                    //         console.error(e);
-                                    //     }
-                                    // })
-                                    // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
-                                    // console.log(res2);
-                                    self._videoPath = res2.videoPath;
-                                },
-                                fail(e) {
-                                    console.log(GLB.getTime()+"fail");
-                                    console.error(e);
-                                }
-                            })
-                        }
+                        // }else{
+                        //     // self._recorder.recordClip({
+                        //     // let time = this._iTime - 30;
+                        //     self._recorder.clipVideo({
+                        //         path: res.videoPath,
+                        //         timeRange: [30, 0],
+                        //         success(res2){
+                        //             // self._recorder.clipVideo({
+                        //             //     path: res.videoPath,
+                        //             //     clipRange: self._clipIndexList.reverse();
+                        //             //     // timeRange: [30, 0],
+                        //             //     success(res){
+                        //             //         console.log(GLB.getTime()+res.videoPath);
+                        //             //         self._videoPath = res.videoPath;
+                        //             //     },
+                        //             //     fail(e) {
+                        //             //         console.error(e);
+                        //             //     }
+                        //             // })
+                        //             // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
+                        //             // console.log(res2);
+                        //             self._videoPath = res2.videoPath;
+                        //         },
+                        //         fail(e) {
+                        //             console.log(GLB.getTime()+"fail");
+                        //             console.error(e);
+                        //         }
+                        //     })
+                        // }
                     })
                 }
                 break;
@@ -1197,7 +1195,8 @@ export default class Main extends cc.Component {
                     //         // console.log('分享视频失败', e);
                     //     }
                     // })
-                }else console.log(GLB.getTime()+"self._videoPath = ", self._videoPath);
+                }else if(this._iTime > 300) this.playTips("录屏失败：录屏时长低于 5 分钟");
+                else console.log(GLB.getTime()+"self._videoPath = ", self._videoPath);
                 break;
             case "share": //分享
                 if (window.tt){
