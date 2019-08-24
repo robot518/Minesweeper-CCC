@@ -443,7 +443,7 @@ export default class Challenge extends cc.Component {
             case "share":
                 if (window.tt){
                     tt.shareAppMessage({
-                        channel: "article",
+                        // channel: "article",
                         title: "扫雷大神集锦！",
                         // extra: "超变态的扫雷大神集锦，神一般的操作看个爽！",
                         // templateId: "a5e39j0j0ebb4kmv77",
