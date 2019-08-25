@@ -116,6 +116,7 @@ export default class Main extends cc.Component {
     _bUpdateBanner: boolean = false;
     _iBannerTime: number = 0;
     _clipIndexList: any[];
+    _videoShareBtn: any;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -219,6 +220,7 @@ export default class Main extends cc.Component {
         cc.find("sure", this.goResult).on("click", function (argument) {
             self.playSound("click");
             this.onWxEvent("hideBanner");
+            if (this._videoShareBtn != null) this._videoShareBtn.hide();
             this.goResult.active = false;
         }, this);
         var normal = cc.find("normal", btns);
@@ -309,7 +311,6 @@ export default class Main extends cc.Component {
                 this.playSound("click");
                 this.onWxEvent("share");
             }, this);
-
             this.onWxEvent("initBanner");
             this.onWxEvent("login");
             this.onWxEvent("initInterstitial");
@@ -330,15 +331,21 @@ export default class Main extends cc.Component {
                         }
                     }
                 });
-
                 let shareVideo = cc.find("share", this.goResult);
                 shareVideo.active = true;
                 shareVideo.on("click", function (params) {
                     this.playSound("click");
+                    // if (!window.tt){ //微信设备不支持处理
+                    //     let recorder = wx.getGameRecorder();
+                    //     if (!recorder.isFrameSupported()) this.playTips("设备不支持");
+                    //     return;
+                    // }
                     this.onWxEvent("shareVideo");
                 }, this);
 
                 this.onWxEvent("initVideoRecord");
+            }else {
+                // this.onWxEvent("initVideoShareBtn");
             }
         }
     }
@@ -437,6 +444,7 @@ export default class Main extends cc.Component {
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
+        if (this._videoShareBtn != null) this._videoShareBtn.show();
     }
 
     showNormalResult(iType){
@@ -450,6 +458,7 @@ export default class Main extends cc.Component {
         if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
+        if (this._videoShareBtn != null) this._videoShareBtn.show();
     }
 
     onScale(){
@@ -1005,6 +1014,18 @@ export default class Main extends cc.Component {
                                 }
                             })
                         }
+                        // if (window.tt) return;
+                        // if (!res.authSetting["scope.record"]){
+                        //     wx.authorize({
+                        //         scope: "scope.record",
+                        //         suceess(){
+                        //             console.log("record auth suceess");
+                        //         },
+                        //         fail(){
+                        //             console.log("record auth fail");
+                        //         },
+                        //     })
+                        // }
                     }
                 })
                 break;
@@ -1070,6 +1091,7 @@ export default class Main extends cc.Component {
                     fail(res){
                         // console.log("fail res = ", res);
                         tt.openSetting();
+                        // wx.openSetting
                     }
                 })
                 break;
@@ -1091,51 +1113,67 @@ export default class Main extends cc.Component {
                 break;
             case "initVideoRecord": //录屏功能，微信没有
                 if (this._recorder == null){
-                    this._recorder = tt.getGameRecorderManager();
-                    this._recorder.onStart(res =>{
-                        console.log(GLB.getTime()+'录屏开始');
-                        self._videoPath = null;
-                    })
-                    this._recorder.onStop((res)=>{
-                        console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
-                        if (self._bGameOver == false) {
-                            self._recorder.start({duration: 300 });
-                            return;
-                        }
-                        if (this._iTime < 3) return;
-                        // else if (this._iTime < 30){
-                            // console.log(GLB.getTime()+res.videoPath);
-                            self._videoPath = res.videoPath;
-                        // }else{
-                        //     // self._recorder.recordClip({
-                        //     // let time = this._iTime - 30;
-                        //     self._recorder.clipVideo({
-                        //         path: res.videoPath,
-                        //         timeRange: [30, 0],
-                        //         success(res2){
-                        //             // self._recorder.clipVideo({
-                        //             //     path: res.videoPath,
-                        //             //     clipRange: self._clipIndexList.reverse();
-                        //             //     // timeRange: [30, 0],
-                        //             //     success(res){
-                        //             //         console.log(GLB.getTime()+res.videoPath);
-                        //             //         self._videoPath = res.videoPath;
-                        //             //     },
-                        //             //     fail(e) {
-                        //             //         console.error(e);
-                        //             //     }
-                        //             // })
-                        //             // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
-                        //             // console.log(res2);
-                        //             self._videoPath = res2.videoPath;
-                        //         },
-                        //         fail(e) {
-                        //             console.log(GLB.getTime()+"fail");
-                        //             console.error(e);
-                        //         }
-                        //     })
-                        // }
-                    })
+                    if (window.tt){
+                        this._recorder = tt.getGameRecorderManager();
+                        this._recorder.onStart(res =>{
+                            console.log(GLB.getTime()+'录屏开始');
+                            self._videoPath = null;
+                        })
+                        this._recorder.onStop((res)=>{
+                            console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
+                            if (self._bGameOver == false) {
+                                self._recorder.start({duration: 300 });
+                                return;
+                            }
+                            if (this._iTime < 3) return;
+                            // else if (this._iTime < 30){
+                                // console.log(GLB.getTime()+res.videoPath);
+                                self._videoPath = res.videoPath;
+                            // }else{
+                            //     // self._recorder.recordClip({
+                            //     // let time = this._iTime - 30;
+                            //     self._recorder.clipVideo({
+                            //         path: res.videoPath,
+                            //         timeRange: [30, 0],
+                            //         success(res2){
+                            //             // self._recorder.clipVideo({
+                            //             //     path: res.videoPath,
+                            //             //     clipRange: self._clipIndexList.reverse();
+                            //             //     // timeRange: [30, 0],
+                            //             //     success(res){
+                            //             //         console.log(GLB.getTime()+res.videoPath);
+                            //             //         self._videoPath = res.videoPath;
+                            //             //     },
+                            //             //     fail(e) {
+                            //             //         console.error(e);
+                            //             //     }
+                            //             // })
+                            //             // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
+                            //             // console.log(res2);
+                            //             self._videoPath = res2.videoPath;
+                            //         },
+                            //         fail(e) {
+                            //             console.log(GLB.getTime()+"fail");
+                            //             console.error(e);
+                            //         }
+                            //     })
+                            // }
+                        })
+                    }else{
+                        this._recorder = wx.getGameRecorder();
+                        this._recorder.on("start", ()=>{
+                            console.log(GLB.getTime()+'录屏开始');
+                            self._videoPath = null;
+                        })
+                        this._recorder.on("stop", (res)=>{
+                            console.log(GLB.getTime()+"onStop=", res.tempFilePath, this._iTime);
+                            if (this._iTime < 3) return;
+                            self._videoPath = res.tempFilePath;
+                        })
+                        this._recorder.on("abord", ()=>{
+                            self._recorder.start({duration: 600000 }); //ms 及6分钟
+                        })
+                    }
                 }
                 break;
             case "stopVideo":
@@ -1150,21 +1188,14 @@ export default class Main extends cc.Component {
                 break;
             case "startVideo":
                 if (this._recorder) {
-                    if (this._recorder._recording) this._recorder.stop();
-                    else this._recorder.start({duration: 300 });
-                    // this._recorder.stop();
-                    // this.labLeftMine.scheduleOnce(function (params) {
-                    //     self._recorder.start({duration: 300 });
-                    //     console.log(self._recorder);
-                    // }, 0.1)
-                    // this._clipIndexList = [];
-                    // this._recorder.recordClip({
-                    //     timeRange: [0, 0],
-                    //     success(res){
-                    //         console.log(GLB.getTime()+"recordClip"+res);
-                    //         this._clipIndexList.push(res.index);
-                    //     }
-                    // })
+                    if (window.tt){
+                        if (this._recorder._recording) this._recorder.stop();
+                        else this._recorder.start({duration: 300 });
+                    }else{
+                        console.log(GLB.getTime()+"this._recorder=", this._recorder);
+                        if (this._recorder._recording) this._recorder.abord();
+                        else this._recorder.start({duration: 600000 });
+                    }
                 }
                 break;
             case "shareVideo":
@@ -1240,6 +1271,37 @@ export default class Main extends cc.Component {
                 // }
                 if (this._bannerAd != null) this._bannerAd.hide();
                 break;
+            // case "initVideoShareBtn":
+            //     if (!self._videoShareBtn) {
+            //         let size = cc.view.getFrameSize();
+            //         let dSize = self.node.getComponent(cc.Canvas).designResolution;
+            //         let pix = 1;
+            //         if (size.width/size.height >= dSize.width/dSize.height){
+            //             pix = dSize.height/size.height;
+            //         }else pix = dSize.width/size.width;
+            //         let videoShare = cc.find("share", this.goResult);
+            //         let width = videoShare.width/pix, height = videoShare.height/pix;
+            //         // console.log(size, width, height, pix);
+            //         self._videoShareBtn = wx.createGameRecorderShareButton({
+            //             share: {
+            //                 bgm: "",
+            //                 timeRange: [],
+            //             },
+            //             text: '',
+            //             style: {
+            //                 left: videoShare.x/pix,
+            //                 top: size.height-videoShare.y/pix-height/2,
+            //                 width: width,
+            //                 height: height,
+            //                 // backgroundColor: '#ff0000',
+            //             }
+            //         })
+            //         self._videoShareBtn.onTap((res) => {
+            //             console.log(GLB.getTime()+"shareVideo"+res);
+            //         })
+            //         self._videoShareBtn.hide();
+            //     }
+            //     break;
         }
     }
 }
