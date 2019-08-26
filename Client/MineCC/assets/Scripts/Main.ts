@@ -1122,42 +1122,17 @@ export default class Main extends cc.Component {
                         this._recorder.onStop((res)=>{
                             console.log(GLB.getTime()+"onStop=", res.videoPath, this._iTime);
                             if (self._bGameOver == false) {
-                                self._recorder.start({duration: 300 });
+                                this.labLeftMine.scheduleOnce(function (params) {
+                                    self._recorder.start({duration: 300 });
+                                }, 0.1)
                                 return;
                             }
                             if (this._iTime < 3) return;
-                            // else if (this._iTime < 30){
-                                // console.log(GLB.getTime()+res.videoPath);
-                                self._videoPath = res.videoPath;
-                            // }else{
-                            //     // self._recorder.recordClip({
-                            //     // let time = this._iTime - 30;
-                            //     self._recorder.clipVideo({
-                            //         path: res.videoPath,
-                            //         timeRange: [30, 0],
-                            //         success(res2){
-                            //             // self._recorder.clipVideo({
-                            //             //     path: res.videoPath,
-                            //             //     clipRange: self._clipIndexList.reverse();
-                            //             //     // timeRange: [30, 0],
-                            //             //     success(res){
-                            //             //         console.log(GLB.getTime()+res.videoPath);
-                            //             //         self._videoPath = res.videoPath;
-                            //             //     },
-                            //             //     fail(e) {
-                            //             //         console.error(e);
-                            //             //     }
-                            //             // })
-                            //             // console.log(GLB.getTime()+"res2.videoPath="+res2.videoPath);
-                            //             // console.log(res2);
-                            //             self._videoPath = res2.videoPath;
-                            //         },
-                            //         fail(e) {
-                            //             console.log(GLB.getTime()+"fail");
-                            //             console.error(e);
-                            //         }
-                            //     })
-                            // }
+                            self._videoPath = res.videoPath;
+                        })
+                        this._recorder.onError((res)=>{
+                            console.log(GLB.getTime()+"err"+res.errMsg);
+                            console.error(res);
                         })
                     }else{
                         this._recorder = wx.getGameRecorder();
@@ -1227,7 +1202,9 @@ export default class Main extends cc.Component {
                     //     }
                     // })
                 }else if(this._iTime > 300) this.playTips("录屏失败：录屏时长低于 5 分钟");
-                else console.log(GLB.getTime()+"self._videoPath = ", self._videoPath);
+                else {
+                    this.playTips("录屏失败：视频地址为空");
+                }
                 break;
             case "share": //分享
                 if (window.tt){
