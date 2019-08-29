@@ -291,7 +291,8 @@ export default class Challenge extends cc.Component {
             GLB.tPlaybackData = args;
             GLB.iType = 2;
             if (this._bShowVideo){
-                this.onWxEvent("showVideo");
+                if (CC_WECHATGAME) this.onWxEvent("showVideo");
+                else cc.director.loadScene("Main");
             }else{
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
                 this.onWxEvent("hideBanner");
