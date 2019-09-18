@@ -21,6 +21,7 @@ export default class MineMap extends cc.Component {
     _mouse: cc.Node;
     _delt: any;
     idx: number;
+    _preIdx: number;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -72,25 +73,35 @@ export default class MineMap extends cc.Component {
         this.node.on("touchstart", function (event) {
             if (this._bTouch == true || GLB.iType == 2)  return;
             this._bTouch = true;
-            var touchPos = event.touch.getLocation();
-            var nPos = this.node.convertToNodeSpace(touchPos);
+            let touchPos = event.touch.getLocation();
+            let nPos = this.node.convertToNodeSpace(touchPos);
             this._prePos = touchPos;
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = iR + iL * this._iRow;
-            if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1)
+            this._preIdx = this.idx;
+            if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1){
                 this._iTime = 0;
+                if (this._delt._tFlag[this.idx] == 0) this._delt.showPressedColor(this.idx);
+            }
         }, this)
         this.node.on("touchmove", function (event) {
+            let touchPos = event.touch.getLocation();
+            let nPos = this.node.convertToNodeSpace(touchPos);
+            let iR = Math.floor (nPos.x / _dx);
+            let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
+            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
+            this._preIdx = iR + iL * this._iRow;
+            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showHighlightedColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
-            var nPos = event.touch.getLocation();
-            if (Math.abs(nPos.x - this._prePos.x) > _iM || Math.abs(nPos.y - this._prePos.y) > _iM)
+            if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM)
                 this._iTime = -1;
         }, this)
         this.node.on("touchend", function (event) {
+            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
-            var nPos = event.touch.getLocation();
-            if (Math.abs(nPos.x - this._prePos.x) > _iM || Math.abs(nPos.y - this._prePos.y) > _iM){
+            let touchPos = event.touch.getLocation();
+            if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM){
                 this._prePos = null;
             } else{
                 this._delt.onClick(this.idx);
@@ -98,6 +109,9 @@ export default class MineMap extends cc.Component {
             this._bTouch = false;
             this._iTime = -1;
         }, this)
+        // this.node.on("touchcancel", function (event) {
+        //     this._delt.showNormalColor(this.idx);
+        // }, this)
     }
 
     setMousePos(iR, iL){

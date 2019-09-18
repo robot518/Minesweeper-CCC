@@ -2,7 +2,7 @@ const {ccclass, property} = cc._decorator;
 
 import {GLB} from "./GLBConfig";
 import {WS} from "./Socket";
-//gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-greenflag
+//gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-15-鼠标悬停时的按钮以及按下时的按钮
 
 @ccclass
 export default class Main extends cc.Component {
@@ -400,7 +400,6 @@ export default class Main extends cc.Component {
     }
 
     //iType 0正常翻，1插旗，2点数字
-    //world 0/2点到雷胜利, 1点到雷死亡
     onPlaybackEvent(iType, idx){
         var iR = idx % this._iRow;
         var iL = Math.floor (idx / this._iRow);
@@ -590,6 +589,27 @@ export default class Main extends cc.Component {
         let row = idx % this._iRow;
         let line = Math.floor(idx/this._iRow);
         this._layerBtn.setTileGIDAt(13, row, line);
+    }
+
+    showNormalColor(idx){
+        let row = idx % this._iRow;
+        let line = Math.floor(idx/this._iRow);
+        cc.log("normal idx = ", idx);
+        this._layerBtn.setTileGIDAt(1, row, line);
+    }
+
+    showHighlightedColor(idx){
+        let row = idx % this._iRow;
+        let line = Math.floor(idx/this._iRow);
+        cc.log("highlight idx = ", idx);
+        this._layerBtn.setTileGIDAt(14, row, line);
+    }
+
+    showPressedColor(idx){
+        let row = idx % this._iRow;
+        let line = Math.floor(idx/this._iRow);
+        cc.log("pressed idx = ", idx);
+        this._layerBtn.setTileGIDAt(15, row, line);
     }
 
     onClick(idx){
