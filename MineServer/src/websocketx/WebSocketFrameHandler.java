@@ -127,7 +127,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     float iScore = Float.parseFloat(request.substring(i2 + 1, i3));
                     sStep = request.substring(i3 + 1);
                     Redis redis = Redis.getInstance();
-                    redis.addScore(sIdx, sName, iScore);
+                    redis.addScore(sIdx, redis.getNameFromOpenID(sName), iScore);
                     redis.addStep(sIdx, sName, sStep);
                     break;
             }

@@ -1,6 +1,8 @@
 package websocketx;
 
 import redis.clients.jedis.*;
+import sun.security.ssl.Debug;
+
 import java.util.Set;
 
 public class Redis {
@@ -189,17 +191,54 @@ public class Redis {
         }
     }
 
+    public String getNameFromOpenID(String OpenID){
+        Jedis jedis = null;
+        try {
+            jedis = getPool().getResource();
+            String userInfo = jedis.hget(USERINFO, OpenID);
+            if (userInfo != null && userInfo.length()>0){
+                OpenID = userInfo.split("&")[0];
+            }
+            return OpenID;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public String getStrRank(String sIdx){
         Jedis jedis = null;
         try {
             jedis = getPool().getResource();
+            //修复排行榜异常数据
+//            String str = jedis.zrange(sKeyScore + sIdx, 0, 9).toString();
+//            System.out.println("str = " + str);
+//            if (str.length() == 2)
+//                return "";
+//            str = str.replace("[", "")
+//                    .replace("]", "")
+//                    .replace(" ", "");
+//            String[] ss = str.split(",");
+//            for (int i = 0; i < ss.length; i++){
+//                String OpenID = ss[i];
+//                String userInfo = jedis.hget(USERINFO, OpenID);
+//                if (userInfo != null && userInfo.length()>0){
+//                    Double iScore = jedis.zscore(sKeyScore + sIdx, OpenID);
+//                    jedis.zrem(sKeyScore+sIdx, OpenID);
+//                    OpenID = userInfo.split("&")[0];
+//                    jedis.zadd(sKeyScore + sIdx, iScore, OpenID);
+//                }
+//            }
+//            String str2 = jedis.zrange(sKeyScore + sIdx, 0, 9).toString();
+//            System.out.println("str2 = " + str2);
+
             Set<Tuple> stItems = jedis.zrangeWithScores(sKeyScore + sIdx, 0, 9);
             String str = stItems.toString();
-            if (str.length() == 2)
-                return "";
-            str = str.replace("], [", "|");
-            str = str.replace("[", "");
-            str = str.replace("]", "");
+            if (str.length() == 2) return "";
+            str = str.replace("], [", "|")
+                .replace("[", "")
+                .replace("]", "");
             return str;
         } finally {
             if (jedis != null) {
