@@ -193,7 +193,7 @@ export default class Challenge extends cc.Component {
             }, this);
         };
 
-        if (CC_WECHATGAME){
+        if (cc.sys.platform === cc.sys.WECHAT_GAME){
             if (!window.tt){
                 let snake = cc.find("snake", btns);
                 snake.active = true;
@@ -291,7 +291,7 @@ export default class Challenge extends cc.Component {
             GLB.tPlaybackData = args;
             GLB.iType = 2;
             if (this._bShowVideo){
-                if (CC_WECHATGAME) this.onWxEvent("showVideo");
+                if (cc.sys.platform === cc.sys.WECHAT_GAME) this.onWxEvent("showVideo");
                 else cc.director.loadScene("Main");
             }else{
                 if (this._videoAd != null && !window.tt) this._videoAd.offClose();
@@ -349,7 +349,7 @@ export default class Challenge extends cc.Component {
     }
 
     onWxEvent(s){
-        if (!CC_WECHATGAME) return;
+        if (cc.sys.platform !== cc.sys.WECHAT_GAME) return;
         let self = this;
         switch(s){
             case "initBanner":

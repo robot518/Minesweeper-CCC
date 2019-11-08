@@ -35,7 +35,7 @@ var heartCheck = {
 }
 var creatWS = function () {
     ws = null;
-    if (CC_WECHATGAME || cc.sys.os === cc.sys.OS_IOS)
+    if (cc.sys.platform === cc.sys.WECHAT_GAME || cc.sys.os === cc.sys.OS_IOS)
         ws = new WebSocket("wss://websocket.windgzs.cn/websocket"); //wx/ios
     else if (cc.sys.os === cc.sys.OS_ANDROID)
         ws = new WebSocket("ws://47.107.178.120:8080/websocket"); //anroid其中安卓ssl连不上

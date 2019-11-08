@@ -74,7 +74,7 @@ export default class MineMap extends cc.Component {
             if (this._bTouch == true || GLB.iType == 2)  return;
             this._bTouch = true;
             let touchPos = event.touch.getLocation();
-            let nPos = this.node.convertToNodeSpace(touchPos);
+            let nPos = this.node.convertToNodeSpaceAR(touchPos);
             this._prePos = touchPos;
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
@@ -87,7 +87,7 @@ export default class MineMap extends cc.Component {
         }, this)
         this.node.on("touchmove", function (event) {
             let touchPos = event.touch.getLocation();
-            let nPos = this.node.convertToNodeSpace(touchPos);
+            let nPos = this.node.convertToNodeSpaceAR(touchPos);
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);

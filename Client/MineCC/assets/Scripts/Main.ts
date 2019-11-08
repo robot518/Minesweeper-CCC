@@ -304,7 +304,7 @@ export default class Main extends cc.Component {
                 ndSound.color = cc.Color.GRAY;
         }, this);
 
-        if (CC_WECHATGAME){
+        if (cc.sys.platform === cc.sys.WECHAT_GAME){
             let share = cc.find("sub/share", btns);
             share.active = true;
             share.on("click", function (argument) {
@@ -405,7 +405,7 @@ export default class Main extends cc.Component {
         var iL = Math.floor (idx / this._iRow);
         this._tileMap.setMousePos(iR, iL);
         if (iType == 0){
-            this.playSound("check");
+            // this.playSound("check");
             this.showGrids(idx);
             this.showBtns();
             this.showWin();
@@ -545,6 +545,7 @@ export default class Main extends cc.Component {
                 this._layerBtn.setTileGIDAt(4+this._tNum[i], row, line);
             }
         }
+        this._layerBtn._cullingDirty = true;
     }
 
     showEndBtns(){
@@ -559,6 +560,7 @@ export default class Main extends cc.Component {
                 this._layerBtn.setTileGIDAt(4+this._tNum[i], row, line);
             }
         }
+        this._layerBtn._cullingDirty = true;
     }
 
     onFlagEvent(idx){
@@ -575,6 +577,7 @@ export default class Main extends cc.Component {
             var str = "1" + idx.toString() + "." + this.getITime();
             this.tPB.push(str);
         }
+        this._layerFlag._cullingDirty = true;
     }
 
     showFlags(){
@@ -583,6 +586,7 @@ export default class Main extends cc.Component {
             let line = Math.floor(i/this._iRow);
             this._layerFlag.setTileGIDAt(4-this._tFlag[i], row, line);
         }
+        this._layerFlag._cullingDirty = true;
     }
 
     showRedMine(idx){
@@ -594,21 +598,21 @@ export default class Main extends cc.Component {
     showNormalColor(idx){
         let row = idx % this._iRow;
         let line = Math.floor(idx/this._iRow);
-        cc.log("normal idx = ", idx);
+        // cc.log("normal idx = ", idx);
         this._layerBtn.setTileGIDAt(1, row, line);
     }
 
     showHighlightedColor(idx){
         let row = idx % this._iRow;
         let line = Math.floor(idx/this._iRow);
-        cc.log("highlight idx = ", idx);
+        // cc.log("highlight idx = ", idx);
         this._layerBtn.setTileGIDAt(14, row, line);
     }
 
     showPressedColor(idx){
         let row = idx % this._iRow;
         let line = Math.floor(idx/this._iRow);
-        cc.log("pressed idx = ", idx);
+        // cc.log("pressed idx = ", idx);
         this._layerBtn.setTileGIDAt(15, row, line);
     }
 
@@ -631,7 +635,7 @@ export default class Main extends cc.Component {
                             var str = "0" + idx.toString() + "." + this.getITime();
                             this.tPB.push(str);
                         }
-                        this.playSound("check");
+                        // this.playSound("check");
                         this.showGrids(idx);
                         this.showBtns();
                         this.showWin();
@@ -775,7 +779,7 @@ export default class Main extends cc.Component {
     }
 
     initStartShow(iNum){
-        this.playSound("check");
+        // this.playSound("check");
         this.showGrids(iNum);
         this.showBtns();
         if (this._iDiff != 0){
@@ -829,7 +833,6 @@ export default class Main extends cc.Component {
         }
         //判断地雷是否均被标记
         if (this._tNum[idxNum] != iShowNum) return;
-        this.playSound("check");
         //展开地图
         for (let x = row-1; x < row+2; x++) for (let y = line-1; y < line+2; y++) {
             if (x >= 0 && y >= 0 && x < _iRow && y < this._iLine){
@@ -861,6 +864,8 @@ export default class Main extends cc.Component {
         if (bWin == true) {
             this.onEnd ();
             this.playSound("win");
+        }else{
+            this.playSound("check");
         }
     }
 
@@ -917,7 +922,7 @@ export default class Main extends cc.Component {
     }
 
     onWxEvent(s){
-        if (!CC_WECHATGAME) return;
+        if (cc.sys.platform !== cc.sys.WECHAT_GAME) return;
         let self = this;
         switch(s){
             case "initBanner": //横屏广告
