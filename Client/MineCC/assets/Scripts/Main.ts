@@ -4,6 +4,7 @@ import {GLB} from "./GLBConfig";
 import {WS} from "./Socket";
 //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-15-鼠标悬停时的按钮以及按下时的按钮
 
+//文字内容
 let GuidStepInfo = ["点击【开始】进行游戏", 
                     "【2】意味着该格子相邻的格子共有2个地雷", 
                     "点击空格翻开格子", 
@@ -14,7 +15,9 @@ let GuidStepInfo = ["点击【开始】进行游戏",
                     "当数字相邻的旗帜总和=数字时，点击数字可翻开相邻未插上旗帜的格子",
                     "翻开所有非地雷的格子获得胜利！"
                 ];
+//遮罩的位置，即要展示的内容的坐标位置
 let GuideStepPos = [cc.v2(-255, -573), cc.v2(-140, 280), cc.v2(-210, 280), cc.v2(-255, -573), cc.v2(-210, 280), cc.v2(-245, 600), cc.v2(-210, 210), cc.v2(-140, 210), cc.v2(0, 0)];
+//遮罩的大小，即要展示的内容的长宽大小
 let GuideStepSize = [cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(0, 0)];
 
 @ccclass
@@ -133,8 +136,8 @@ export default class Main extends cc.Component {
     _iBannerTime: number = 0;
     _clipIndexList: any[];
     _videoShareBtn: any;
-    _bGuide: boolean = false;
-    _iGuide: number = 0;
+    _bGuide: boolean = false; //是否要进行引导
+    _iGuide: number = 0; //引导步骤的索引
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -231,7 +234,7 @@ export default class Main extends cc.Component {
     initEvent(){
         var self = this;
         let guide = cc.find("guide", this.node);
-        // cc.sys.localStorage.removeItem('guide');
+        cc.sys.localStorage.removeItem('guide');
         cc.find("cancel", guide).on("click", function (argument) {
             this.playSound("click");
             guide.active = false;
@@ -425,6 +428,7 @@ export default class Main extends cc.Component {
         }, 0.01)
     }
 
+    //引导界面的处理
     showGuideStep(){
         this.ndGuideStep.active = true;
         this.ndGuideStep.getChildByName("lab").getComponent(cc.Label).string = GuidStepInfo[this._iGuide];
@@ -682,6 +686,7 @@ export default class Main extends cc.Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("normal idx = ", idx);
         this._layerBtn.setTileGIDAt(1, row, line);
+        this._layerBtn._cullingDirty = true;
     }
 
     showHighlightedColor(idx){
@@ -689,6 +694,7 @@ export default class Main extends cc.Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("highlight idx = ", idx);
         this._layerBtn.setTileGIDAt(14, row, line);
+        this._layerBtn._cullingDirty = true;
     }
 
     showPressedColor(idx){
@@ -696,6 +702,7 @@ export default class Main extends cc.Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("pressed idx = ", idx);
         this._layerBtn.setTileGIDAt(15, row, line);
+        this._layerBtn._cullingDirty = true;
     }
 
     onClick(idx){
