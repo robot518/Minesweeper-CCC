@@ -4,8 +4,24 @@ import {GLB} from "./GLBConfig";
 import {WS} from "./Socket";
 //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-15-鼠标悬停时的按钮以及按下时的按钮
 
+let GuidStepInfo = ["点击【开始】进行游戏", 
+                    "【2】意味着该格子相邻的格子共有2个地雷", 
+                    "点击空格翻开格子", 
+                    "翻到地雷游戏结束，点击【开始】重新进行游戏", 
+                    "长按格子0.2秒插旗，插旗的格子无法翻开，长按插旗的格子可收回旗帜", 
+                    "【9】表示当前还剩下9个旗帜，旗帜的数量=地雷的数量",
+                    "在剩下的1个(地雷)格子上也插上旗帜",
+                    "当数字相邻的旗帜总和=数字时，点击数字可翻开相邻未插上旗帜的格子",
+                    "翻开所有非地雷的格子获得胜利！"
+                ];
+let GuideStepPos = [cc.v2(-255, -573), cc.v2(-140, 280), cc.v2(-210, 280), cc.v2(-255, -573), cc.v2(-210, 280), cc.v2(-245, 600), cc.v2(-210, 210), cc.v2(-140, 210), cc.v2(0, 0)];
+let GuideStepSize = [cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(0, 0)];
+
 @ccclass
 export default class Main extends cc.Component {
+
+    @property(cc.Node)
+    ndGuideStep: cc.Node = null;
 
     @property(cc.Node)
     ndBg: cc.Node = null;
@@ -117,6 +133,8 @@ export default class Main extends cc.Component {
     _iBannerTime: number = 0;
     _clipIndexList: any[];
     _videoShareBtn: any;
+    _bGuide: boolean = false;
+    _iGuide: number = 0;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -127,10 +145,6 @@ export default class Main extends cc.Component {
         this.initParas();
         this.initEvent();
         this.initShow();
-        let self = this;
-        this.labTime.scheduleOnce(function (argument) {
-            self.onStart();
-        }, 0.01)
     }
 
     initCanvas(){
@@ -216,6 +230,24 @@ export default class Main extends cc.Component {
 
     initEvent(){
         var self = this;
+        let guide = cc.find("guide", this.node);
+        // cc.sys.localStorage.removeItem('guide');
+        cc.find("cancel", guide).on("click", function (argument) {
+            this.playSound("click");
+            guide.active = false;
+            cc.sys.localStorage.setItem('guide', true);
+            this.onStart();
+        }, this);
+        cc.find("sure", guide).on("click", function (argument) {
+            this.playSound("click");
+            guide.active = false;
+            this._bGuide = true;
+            this.showGuide(false);
+            this.showGuideStep();
+        }, this);
+        cc.find("goTop/mine/lab", this.node).on("click", function (argument) {
+            if (this._bGuide && this._iGuide == 6) this.showGuideStep();
+        }, this);
         var btns = cc.find("btns", this.node);
         cc.find("sure", this.goResult).on("click", function (argument) {
             self.playSound("click");
@@ -226,6 +258,11 @@ export default class Main extends cc.Component {
         var normal = cc.find("normal", btns);
         cc.find("start", normal).on("click", function (argument) {
             this.onStart();
+            if (this._bGuide){
+                if (this._iGuide == 1 || this._iGuide == 4){
+                    this.showGuideStep();
+                }
+            }
         }, this);
         cc.find("scale", normal).on("click", function (argument) {
             this.onScale();
@@ -367,6 +404,11 @@ export default class Main extends cc.Component {
             type.active = true;
             this.labTime.node.active = true;
             back.active = true;
+            let bGuided = cc.sys.localStorage.getItem("guide")
+            if (!bGuided) {
+                cc.find("guide", this.node).active = true;
+                return;
+            }
         }else if (GLB.iType == 1){
             this.ndBg.color = new cc.Color(68, 107, 107);
             diff.active = false;
@@ -377,6 +419,34 @@ export default class Main extends cc.Component {
             type.active = false;
             cc.find("scale", normal).active = false;
         }
+        let self = this;
+        this.labTime.scheduleOnce(function (argument) {
+            self.onStart();
+        }, 0.01)
+    }
+
+    showGuideStep(){
+        this.ndGuideStep.active = true;
+        this.ndGuideStep.getChildByName("lab").getComponent(cc.Label).string = GuidStepInfo[this._iGuide];
+        let mask = this.ndGuideStep.getChildByName("mask");
+        let spt = mask.getChildByName("spt");
+        mask.setContentSize(GuideStepSize[this._iGuide]);
+        mask.setPosition(GuideStepPos[this._iGuide]);
+        spt.setPosition(cc.v2(-GuideStepPos[this._iGuide].x, -GuideStepPos[this._iGuide].y));
+        this._iGuide++;
+        if (this._iGuide == 9){
+            let self = this;
+            this.labTime.scheduleOnce(function (argument) {
+                self.ndGuideStep.active = false;
+            }, 3)
+        }
+    }
+
+    showGuide(b){
+        let normal = cc.find("btns/normal", this.node);
+        cc.find("diff", normal).active = b;
+        cc.find("type", normal).active = b;
+        cc.find("btns/sub/back", this.node).active = b;
     }
 
     onRedo(ndStop, ndPlay){
@@ -454,7 +524,14 @@ export default class Main extends cc.Component {
         cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
         this.onWxEvent("stopVideo");
         this.onWxEvent("showBanner");
-        if (this._interstitialAd != null) {
+        if (this._bGuide){
+            if (iType == 1){
+                this._bGuide = false;
+                cc.sys.localStorage.setItem('guide', true);
+                this.showGuide(true);
+                if (this._interstitialAd != null) this.onWxEvent("showInterstitial");
+            }
+        }else if (this._interstitialAd != null) {
             if (Math.random() > 0.66) this.onWxEvent("showInterstitial");
         }
         if (this._videoShareBtn != null) this._videoShareBtn.show();
@@ -578,6 +655,11 @@ export default class Main extends cc.Component {
             this.tPB.push(str);
         }
         this._layerFlag._cullingDirty = true;
+        if (this._bGuide){
+            if (this._iGuide == 5 || this._iGuide == 7){
+                this.showGuideStep();
+            }
+        }
     }
 
     showFlags(){
@@ -630,6 +712,10 @@ export default class Main extends cc.Component {
                         this.onEnd();
                         this.showRedMine(idx);
                         this.playSound("bomb");
+                        if (this._bGuide) {
+                            this._iGuide = 3;
+                            this.showGuideStep();
+                        }
                     }else if (this._tBtns[idx] == 1){ //格子
                         if (GLB.iType == 1){
                             var str = "0" + idx.toString() + "." + this.getITime();
@@ -720,11 +806,20 @@ export default class Main extends cc.Component {
         if (GLB.iType == 2){
             tMineNum = WS.getTPBMineNum();
         }else{
-            for (var i = 0; i < this._iMineCount; i++) {
-                var iRandom = Math.floor(Math.random() * (tNum.length - 1));
-                let iNum = tNum.splice(iRandom, 1)[0];
-                tMineNum[iNum] = 1;
-            };
+            if (this._bGuide){
+                for (let i = 0; i < this._iRow; i++){
+                    if (i == 2) tMineNum[0] = 1;
+                    else if (i == 6) tMineNum[this._iRow*(this._iLine-1)] = 1;
+                    else tMineNum[this._iLine*i+1] = 1;
+                }
+                tMineNum[43] = 1;
+            }else{
+                for (var i = 0; i < this._iMineCount; i++) {
+                    var iRandom = Math.floor(Math.random() * (tNum.length - 1));
+                    let iNum = tNum.splice(iRandom, 1)[0];
+                    tMineNum[iNum] = 1;
+                };
+            }
             if (GLB.iType == 1) this.sPBMineNum = WS.getStrPBMineNum(tMineNum);
         }
         for (var k = 0; k < this._iTotal; k++) {
@@ -819,6 +914,10 @@ export default class Main extends cc.Component {
     }
 
     onClickNum(idxNum){
+        if (this._bGuide && this._iGuide == 2){
+            this.showGuideStep();
+            return;
+        }
         let _iRow = this._iRow;
         let iMine = parseInt(idxNum);
         let line = Math.floor (iMine / _iRow);
@@ -851,6 +950,9 @@ export default class Main extends cc.Component {
         }
         this.showBtns();
         this.showWin();
+        if (this._bGuide && this._iGuide == 8){
+            this.showGuideStep();
+        }
     }
 
     showWin(){

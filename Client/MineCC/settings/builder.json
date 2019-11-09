@@ -2,6 +2,7 @@
   "android-instant": {
     "REMOTE_SERVER_ROOT": "",
     "host": "",
+    "packageName": "com.wind.mine",
     "pathPattern": "",
     "recordPath": "",
     "scheme": "https",
@@ -45,5 +46,15 @@
     "subContext": ""
   },
   "xxteaKey": "490131b8-e198-40",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "android": {
+    "packageName": "com.wind.mine"
+  },
+  "ios": {
+    "packageName": "com.wind.mine"
+  },
+  "mac": {
+    "packageName": "com.wind.mine"
+  },
+  "win32": {}
 }
