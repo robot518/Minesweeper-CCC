@@ -234,7 +234,7 @@ export default class Main extends cc.Component {
     initEvent(){
         var self = this;
         let guide = cc.find("guide", this.node);
-        cc.sys.localStorage.removeItem('guide');
+        // cc.sys.localStorage.removeItem('guide');
         cc.find("cancel", guide).on("click", function (argument) {
             this.playSound("click");
             guide.active = false;
