@@ -21,7 +21,7 @@
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
-  "md5Cache": false,
+  "md5Cache": true,
   "mergeStartScene": false,
   "optimizeHotUpdate": false,
   "orientation": {
@@ -36,7 +36,7 @@
     "orientation": "portrait"
   },
   "startScene": "91a9c2e4-577e-40f9-8273-d3d62b2527f4",
-  "title": "mine",
+  "title": "RobotMineSweeper",
   "webOrientation": "auto",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
@@ -48,13 +48,30 @@
   "xxteaKey": "490131b8-e198-40",
   "zipCompressJs": true,
   "android": {
-    "packageName": "com.wind.mine"
+    "packageName": "com.wind.mine",
+    "REMOTE_SERVER_ROOT": ""
   },
   "ios": {
-    "packageName": "com.wind.mine"
+    "packageName": "com.wind.mine",
+    "REMOTE_SERVER_ROOT": "",
+    "ios_enable_jit": true
   },
   "mac": {
-    "packageName": "com.wind.mine"
+    "packageName": "com.wind.mine",
+    "REMOTE_SERVER_ROOT": "",
+    "width": 1280,
+    "height": 720
   },
-  "win32": {}
+  "win32": {
+    "REMOTE_SERVER_ROOT": "",
+    "width": 1280,
+    "height": 720
+  },
+  "mainCompressionType": "default",
+  "mainIsRemote": false,
+  "nativeMd5Cache": true,
+  "agreements": {
+    "20200831115453": false,
+    "20220901093311": false
+  }
 }

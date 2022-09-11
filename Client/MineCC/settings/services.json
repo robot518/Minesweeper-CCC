@@ -97,7 +97,20 @@
 		}
 	],
 	"game": {
-		"name": "UNKNOW GAME",
-		"appid": "UNKNOW"
-	}
+		"name": "MineCC",
+		"appid": "627980882",
+		"cid": 0
+	},
+	"needExecNative": true,
+	"configs": [
+		{
+			"appid": "627980882",
+			"services": [
+				{
+					"service_id": "235",
+					"enable": false
+				}
+			]
+		}
+	]
 }

@@ -155,11 +155,16 @@ export default class Main extends cc.Component {
         var size = canvas.designResolution;
         var cSize = cc.view.getFrameSize();
         if (cc.sys.os == cc.sys.OS_IOS){ //刘海屏判断
-            GLB.bSpView = (cSize.width == 414 && cSize.height == 896)||(cSize.width == 375 && cSize.height == 812);
+            GLB.bSpView = (cSize.width == 414 && cSize.height == 896)||(cSize.width == 375 && cSize.height == 812)||
+            (cSize.width == 390 && cSize.height == 844)||(cSize.width == 428 && cSize.height == 926);
         }
-        // else{
-        //     if (cSize.height/cSize.width > 16/9) GLB.bSpView = true;
-        // }
+        else if((cc.sys.os == cc.sys.OS_ANDROID)){
+            // if (cSize.height/cSize.width > 16/9) GLB.bSpView = true;
+            GLB.bSpView = (cSize.width == 363 && cSize.height == 797);
+        }
+        // cc.find("goTop/lab", this.node).getComponent(cc.Label).string = cSize.width+"|"+cSize.height;
+        // cc.log("initCanvas=",cSize.width,cSize.height);
+        // console.log("111",cSize.width,cSize.height);
         if (GLB.bSpView){
             canvas.fitWidth = true;
             canvas.fitHeight = true;
