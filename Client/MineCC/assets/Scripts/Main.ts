@@ -1180,12 +1180,12 @@ export default class Main extends cc.Component {
                         success (res) {
                             if (res.code) {
                                 //发起网络请求
-                                // console.log("code = ", res.code);
+                                console.log("code = ", res.code);
                                 let code = res.code;
                                 if (window.tt) code+="tttttt";
                                 wx.request({
                                     // url: 'http://'+GLB.ip,
-                                    url: "https://websocket.windgzs.cn",
+                                    url: "https://www.robot518.com",
                                     data: {
                                         code: code
                                     },

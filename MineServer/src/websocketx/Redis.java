@@ -1,8 +1,10 @@
 package websocketx;
 
 import redis.clients.jedis.*;
-import sun.security.ssl.Debug;
+//import sun.security.ssl.Debug;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Redis {
@@ -234,7 +236,11 @@ public class Redis {
 //            System.out.println("str2 = " + str2);
 
             Set<Tuple> stItems = jedis.zrangeWithScores(sKeyScore + sIdx, 0, 9);
-            String str = stItems.toString();
+            Set<Tuple> newStItems = new HashSet<Tuple>();
+            for(Tuple item:stItems){
+                newStItems.add(new Tuple(this.getNameFromOpenID(item.getElement()),item.getScore()));
+            }
+            String str = newStItems.toString();
             if (str.length() == 2) return "";
             str = str.replace("], [", "|")
                 .replace("[", "")

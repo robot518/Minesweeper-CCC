@@ -41,7 +41,8 @@ var creatWS = function () {
         ws = new WebSocket("ws://101.132.117.122:8080/websocket"); //anroid其中安卓ssl连不上
     else{
         // ws = new WebSocket("ws://127.0.0.1:8080/websocket"); //本地测试
-        ws = new WebSocket("wss://www.robot518.com/websocket"); //本地
+        ws = new WebSocket("wss://www.robot518.com/websocket");
+        // ws = new WebSocket("wss://minesweeper.robot518.com/websocket"); //本地
         // ws = new WebSocket("ws://101.132.117.122:8080/websocket"); //本地 
     }
     WS.ws = ws;

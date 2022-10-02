@@ -10,7 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45f464fd-49a1-413d-9a33-afec7aea2114" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/settings/project.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/settings/project.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MineServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MineServer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketx/HttpUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/HttpUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketx/Redis.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/Redis.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,31 +172,20 @@
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)"
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.WebSocketServer (1)">
-    <configuration name="WebSocketServer (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager">
+    <configuration name="WebSocketServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="websocketx.WebSocketServer" />
       <module name="MineServer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="websocketx.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="WebSocketServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="io.netty.example.http.websocketx.server.WebSocketServer" />
-      <module name="MineServer" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="io.netty.example.http.websocketx.server.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -228,13 +226,9 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <list>
-      <item itemvalue="Application.WebSocketServer" />
-      <item itemvalue="Application.WebSocketServer (1)" />
-    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.WebSocketServer (1)" />
+        <item itemvalue="Application.WebSocketServer" />
         <item itemvalue="Application.WebSocketServer" />
         <item itemvalue="Application.WebSocketServer" />
       </list>
@@ -336,7 +330,10 @@
       <workItem from="1568857650424" duration="90000" />
       <workItem from="1570558458359" duration="6412000" />
       <workItem from="1570639228043" duration="36000" />
-      <workItem from="1662907653717" duration="1542000" />
+      <workItem from="1662907653717" duration="2444000" />
+      <workItem from="1664458003200" duration="287000" />
+      <workItem from="1664458360055" duration="6000" />
+      <workItem from="1664693244535" duration="14121000" />
     </task>
     <servers />
   </component>
