@@ -10,16 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45f464fd-49a1-413d-9a33-afec7aea2114" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/MineCC/settings/project.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/settings/project.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MineServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MineServer.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/websocketx/HttpUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/HttpUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/websocketx/Redis.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/Redis.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/WebSocketFrameHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,8 +72,18 @@
       <dir>/Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/src.zip!/java</dir>
     </dirStrings>
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="false" />
+    <option name="myAllFileTypesSelected" value="true" />
+    <option name="mySelectedFileTypes">
+      <set />
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -117,6 +121,13 @@
   </component>
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="false" />
+    <option name="myAllFileTypesSelected" value="true" />
+    <option name="mySelectedFileTypes">
+      <set />
+    </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="307" />
@@ -165,19 +176,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/steve/Documents/GitHub/Minesweeper-CCC/MineServer",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.go.format.on.save.advertiser.fired&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/steve/Documents/GitHub/Minesweeper-CCC/MineServer&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="WebSocketServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="websocketx.WebSocketServer" />
@@ -333,7 +348,9 @@
       <workItem from="1662907653717" duration="2444000" />
       <workItem from="1664458003200" duration="287000" />
       <workItem from="1664458360055" duration="6000" />
-      <workItem from="1664693244535" duration="14121000" />
+      <workItem from="1664693244535" duration="14613000" />
+      <workItem from="1664774989660" duration="572000" />
+      <workItem from="1664802761146" duration="2721000" />
     </task>
     <servers />
   </component>
@@ -396,6 +413,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">

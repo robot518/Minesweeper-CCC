@@ -180,11 +180,11 @@ public class Redis {
                     if (userInfo != null && userInfo.length()>0){
                         OpenID += "&"+userInfo;
                     }
-                    str += OpenID+","+lScore.toString();
+                    str += getNameFromOpenID(OpenID)+","+lScore.toString();
                 }
                 if (i != 2) str += "|";
             }
-//            System.out.println(str);
+            System.out.println("getStrScore="+str);
             return str;
         } finally {
             if (jedis != null) {
@@ -198,9 +198,11 @@ public class Redis {
         try {
             jedis = getPool().getResource();
             String userInfo = jedis.hget(USERINFO, OpenID);
+            System.out.println("getNameFromOpenID="+userInfo);
             if (userInfo != null && userInfo.length()>0){
                 OpenID = userInfo.split("&")[0];
             }
+            System.out.println("getNameFromOpenID OpenID="+OpenID);
             return OpenID;
         } finally {
             if (jedis != null) {
@@ -238,13 +240,15 @@ public class Redis {
             Set<Tuple> stItems = jedis.zrangeWithScores(sKeyScore + sIdx, 0, 9);
             Set<Tuple> newStItems = new HashSet<Tuple>();
             for(Tuple item:stItems){
-                newStItems.add(new Tuple(this.getNameFromOpenID(item.getElement()),item.getScore()));
+                newStItems.add(new Tuple(getNameFromOpenID(item.getElement()),item.getScore()));
             }
             String str = newStItems.toString();
             if (str.length() == 2) return "";
             str = str.replace("], [", "|")
                 .replace("[", "")
                 .replace("]", "");
+
+            System.out.println("getStrRank="+str);
             return str;
         } finally {
             if (jedis != null) {
