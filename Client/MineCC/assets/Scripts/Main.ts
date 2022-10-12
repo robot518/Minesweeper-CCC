@@ -754,6 +754,9 @@ export default class Main extends cc.Component {
         if (GLB.iType == 0 && this.coPlayTime){
             this.labTime.unschedule(this.coPlayTime);
         }
+        if (GLB.iType == 1){
+            this.tPB = [];
+        }
         this.togs.active = false;
         this._bGameOver=false;
         this._iTime=0;
