@@ -10,9 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45f464fd-49a1-413d-9a33-afec7aea2114" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/MineServer_jar/MineServer.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/websocketx/Redis.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/Redis.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -350,7 +349,8 @@
       <workItem from="1664458360055" duration="6000" />
       <workItem from="1664693244535" duration="14613000" />
       <workItem from="1664774989660" duration="572000" />
-      <workItem from="1664802761146" duration="2721000" />
+      <workItem from="1664802761146" duration="3625000" />
+      <workItem from="1665581728387" duration="759000" />
     </task>
     <servers />
   </component>

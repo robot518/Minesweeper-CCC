@@ -6,6 +6,7 @@ import redis.clients.jedis.*;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Redis {
     private JedisPool pool;
@@ -198,11 +199,11 @@ public class Redis {
         try {
             jedis = getPool().getResource();
             String userInfo = jedis.hget(USERINFO, OpenID);
-            System.out.println("getNameFromOpenID="+userInfo);
+//            System.out.println("getNameFromOpenID="+userInfo);
             if (userInfo != null && userInfo.length()>0){
                 OpenID = userInfo.split("&")[0];
             }
-            System.out.println("getNameFromOpenID OpenID="+OpenID);
+//            System.out.println("getNameFromOpenID OpenID="+OpenID);
             return OpenID;
         } finally {
             if (jedis != null) {
@@ -238,7 +239,7 @@ public class Redis {
 //            System.out.println("str2 = " + str2);
 
             Set<Tuple> stItems = jedis.zrangeWithScores(sKeyScore + sIdx, 0, 9);
-            Set<Tuple> newStItems = new HashSet<Tuple>();
+            Set<Tuple> newStItems = new TreeSet<>();
             for(Tuple item:stItems){
                 newStItems.add(new Tuple(getNameFromOpenID(item.getElement()),item.getScore()));
             }
