@@ -1172,7 +1172,7 @@ export default class Main extends cc.Component {
                 })
                 break;
             case "login": //登陆
-                cc.sys.localStorage.setItem("OpenID", null);
+                //cc.sys.localStorage.setItem("OpenID", null);
                 GLB.OpenID = cc.sys.localStorage.getItem("OpenID");
                 // console.log("OpenID2 = ", GLB.OpenID, GLB.userInfo);
                 // if (GLB.OpenID == "oYllV4_KcX4CyEPVpDJ4Kvs2KUko") {
