@@ -1,0 +1,70 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "b47e9f64-130c-4ad5-9e19-c7d8918089d9",
+  "files": [
+    ".jpg",
+    ".json"
+  ],
+  "subMetas": {
+    "ttshare": {
+      "ver": "1.0.6",
+      "uuid": "8adbeec2-82f8-4de2-a805-bf378549af6b",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "b47e9f64-130c-4ad5-9e19-c7d8918089d9",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 500,
+      "height": 400,
+      "rawWidth": 500,
+      "rawHeight": 400,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {},
+      "imported": false,
+      "files": [],
+      "userData": {},
+      "displayName": "",
+      "id": "",
+      "name": ""
+    },
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "b47e9f64-130c-4ad5-9e19-c7d8918089d9@6c48a",
+      "displayName": "ttshare",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "b47e9f64-130c-4ad5-9e19-c7d8918089d9",
+        "visible": true
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "texture",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": false,
+    "redirect": "b47e9f64-130c-4ad5-9e19-c7d8918089d9@6c48a"
+  }
+}

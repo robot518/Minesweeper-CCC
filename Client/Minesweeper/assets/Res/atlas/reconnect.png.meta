@@ -1,0 +1,70 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "6a403d51-e666-499b-b39f-54d0f02b7520",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "reconnect": {
+      "ver": "1.0.6",
+      "uuid": "2cff2c5a-5e4d-4421-a0cc-0fffb2035bb5",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "6a403d51-e666-499b-b39f-54d0f02b7520",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": 0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 71,
+      "height": 71,
+      "rawWidth": 80,
+      "rawHeight": 80,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {},
+      "imported": false,
+      "files": [],
+      "userData": {},
+      "displayName": "",
+      "id": "",
+      "name": ""
+    },
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "6a403d51-e666-499b-b39f-54d0f02b7520@6c48a",
+      "displayName": "reconnect",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "6a403d51-e666-499b-b39f-54d0f02b7520",
+        "visible": true
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "texture",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": true,
+    "redirect": "6a403d51-e666-499b-b39f-54d0f02b7520@6c48a"
+  }
+}

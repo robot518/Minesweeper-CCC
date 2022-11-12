@@ -1,0 +1,70 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "4388d05a-a297-4c8b-b3d7-8ee24bff0b18",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "switch": {
+      "ver": "1.0.6",
+      "uuid": "08cf1c4e-2051-427f-a00f-2c7b17e1cf00",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "4388d05a-a297-4c8b-b3d7-8ee24bff0b18",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": 0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 71,
+      "height": 71,
+      "rawWidth": 80,
+      "rawHeight": 80,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {},
+      "imported": false,
+      "files": [],
+      "userData": {},
+      "displayName": "",
+      "id": "",
+      "name": ""
+    },
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "4388d05a-a297-4c8b-b3d7-8ee24bff0b18@6c48a",
+      "displayName": "switch",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "4388d05a-a297-4c8b-b3d7-8ee24bff0b18",
+        "visible": true
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "texture",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": true,
+    "redirect": "4388d05a-a297-4c8b-b3d7-8ee24bff0b18@6c48a"
+  }
+}

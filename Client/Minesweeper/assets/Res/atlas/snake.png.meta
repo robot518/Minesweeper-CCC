@@ -1,0 +1,70 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "476697ba-7876-4353-a4b3-35524f69d542",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "snake": {
+      "ver": "1.0.6",
+      "uuid": "b83d5bb7-a7b7-4834-94dd-fdd928160d9d",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "476697ba-7876-4353-a4b3-35524f69d542",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 80,
+      "height": 80,
+      "rawWidth": 80,
+      "rawHeight": 80,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {},
+      "imported": false,
+      "files": [],
+      "userData": {},
+      "displayName": "",
+      "id": "",
+      "name": ""
+    },
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "476697ba-7876-4353-a4b3-35524f69d542@6c48a",
+      "displayName": "snake",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "476697ba-7876-4353-a4b3-35524f69d542",
+        "visible": true
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "texture",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": false,
+    "redirect": "476697ba-7876-4353-a4b3-35524f69d542@6c48a"
+  }
+}
