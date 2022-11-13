@@ -1,6 +1,8 @@
-import { _decorator, Component, Node, Label, EditBox, game, Toggle, director,TiledMap } from 'cc';
+import { _decorator, Component, Node, Label, AudioClip, Size,Vec2, Toggle, director,TiledMap } from 'cc';
 import {GLB} from "./GLBConfig";
 import {WS} from "./Socket";
+
+const {ccclass, property} = _decorator;
 //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-15-鼠标悬停时的按钮以及按下时的按钮
 
 //文字内容
@@ -15,81 +17,81 @@ let GuidStepInfo = ["点击【开始】进行游戏",
                     "翻开所有非地雷的格子获得胜利！"
                 ];
 //遮罩的位置，即要展示的内容的坐标位置
-let GuideStepPos = [cc.v2(-255, -573), cc.v2(-140, 280), cc.v2(-210, 280), cc.v2(-255, -573), cc.v2(-210, 280), cc.v2(-245, 600), cc.v2(-210, 210), cc.v2(-140, 210), cc.v2(0, 0)];
+let GuideStepPos = [new Vec2(-255, -573), new Vec2(-140, 280), new Vec2(-210, 280), new Vec2(-255, -573), new Vec2(-210, 280), new Vec2(-245, 600), new Vec2(-210, 210), new Vec2(-140, 210), new Vec2(0, 0)];
 //遮罩的大小，即要展示的内容的长宽大小
-let GuideStepSize = [cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(130, 80), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(70, 70), cc.size(0, 0)];
+let GuideStepSize = [new Size(130, 80), new Size(70, 70), new Size(70, 70), new Size(130, 80), new Size(70, 70), new Size(70, 70), new Size(70, 70), new Size(70, 70), new Size(0, 0)];
 
-const {ccclass, property} = _decorator;
+var i = 1;
 
 @ccclass("Main")
 export class Main extends Component {
 
-    @property(cc.Node)
-    ndGuideStep: cc.Node = null;
+    @property(Node)
+    ndGuideStep: Node = null;
 
-    @property(cc.Node)
-    ndBg: cc.Node = null;
+    @property(Node)
+    ndBg: Node = null;
 
-    @property(cc.Node)
-    tips: cc.Node = null;
+    @property(Node)
+    tips: Node = null;
 
-    @property(cc.Node)
-    mineMap: cc.Node = null;
+    @property(Node)
+    mineMap: Node = null;
 
-    @property(cc.Node)
-    midMineMap: cc.Node = null;
+    @property(Node)
+    midMineMap: Node = null;
 
-    @property(cc.Node)
-    bigMineMap: cc.Node = null;
+    @property(Node)
+    bigMineMap: Node = null;
 
-    @property(cc.Node)
-    midScv: cc.Node = null;
+    @property(Node)
+    midScv: Node = null;
 
-    @property(cc.Node)
-    bigScv: cc.Node = null;
+    @property(Node)
+    bigScv: Node = null;
 
-    @property(cc.Node)
-    togs: cc.Node = null;
+    @property(Node)
+    togs: Node = null;
 
-    @property(cc.Node)
-    goResult: cc.Node = null;
+    @property(Node)
+    goResult: Node = null;
 
-    @property(cc.Node)
-    ndBack: cc.Node = null;
+    @property(Node)
+    ndBack: Node = null;
 
-    @property(cc.Label)
-    labTime: cc.Label = null;
+    @property(Label)
+    labTime: Label = null;
 
-    @property(cc.Label)
-    labLeftMine: cc.Label = null;
+    @property(Label)
+    labLeftMine: Label = null;
 
-    @property(cc.Label)
-    labType: cc.Label = null;
-
-    @property({
-        type: cc.AudioClip
-    })
-    bombClip: cc.AudioClip = null;
+    @property(Label)
+    labType: Label = null;
 
     @property({
-        type: cc.AudioClip
+        type: AudioClip
     })
-    checkClip: cc.AudioClip = null;
+    bombClip: AudioClip = null;
 
     @property({
-        type: cc.AudioClip
+        type: AudioClip
     })
-    clickClip: cc.AudioClip = null;
+    checkClip: AudioClip = null;
 
     @property({
-        type: cc.AudioClip
+        type: AudioClip
     })
-    winClip: cc.AudioClip = null;
+    clickClip: AudioClip = null;
 
     @property({
-        type: cc.AudioClip
+        type: AudioClip
     })
-    loseClip: cc.AudioClip = null;
+    winClip: AudioClip = null;
+
+    @property({
+        type: AudioClip
+    })
+    loseClip: AudioClip = null;
     
     bPlayTime: boolean;
     bPlayback: boolean;
@@ -105,8 +107,8 @@ export class Main extends Component {
     _dx: number;
     _iShowX: number;
     _iShowY: number;
-    midPreOff: cc.Vec2;
-    bigPreOff: cc.Vec2;
+    midPreOff: any;
+    bigPreOff: any;
     bScale: boolean;
     tPBBtns: any[];
     tPBFlags: any[];
@@ -115,7 +117,7 @@ export class Main extends Component {
     _tFlag: any;
     sPBMineNum: string;
     iPBNum: string;
-    offPos: cc.Vec2;
+    offPos: any;
     _iRow: number;
     _iLine: number;
     coPlayTime: any;
@@ -125,7 +127,7 @@ export class Main extends Component {
     _tNum: any[];
     _layerBtn: any;
     _layerFlag: any;
-    _mouse: cc.Node;
+    _mouse: Node;
     tPB: any[];
     UserInfoButton: any;
     _bannerAd: any;
@@ -163,7 +165,7 @@ export class Main extends Component {
         //     // if (cSize.height/cSize.width > 16/9) GLB.bSpView = true;
         //     GLB.bSpView = (cSize.width == 363 && cSize.height == 797);
         // }
-        // // cc.find("goTop/lab", this.node).getComponent(cc.Label).string = cSize.width+"|"+cSize.height;
+        // // cc.find("goTop/lab", this.node).getComponent(Label).string = cSize.width+"|"+cSize.height;
         // // cc.log("initCanvas=",cSize.width,cSize.height);
         // // console.log("111",cSize.width,cSize.height);
         // if (GLB.bSpView){
@@ -219,8 +221,8 @@ export class Main extends Component {
         this._iShowX = 9;
         this._iShowY = 12;
         this.bPlayTime = false;
-        this.midPreOff = cc.v2(-50, 300);
-        this.bigPreOff = cc.v2(-50, 1790);
+        this.midPreOff = new Vec2(-50, 300);
+        this.bigPreOff = new Vec2(-50, 1790);
         this.bScale = false;
         this._iTime = 0;
 
@@ -239,8 +241,14 @@ export class Main extends Component {
 
     initEvent(){
         var self = this;
+        // let test = cc.find("test", this.node);
+        // test.on("click", function (argument) {
+        //     console.log("i=",i);
+        //     this._layerBtn.setTileGIDAt(i+1, 0, 0);
+        //     i++;
+        //     this._layerBtn.markForUpdateRenderData(true)
+        // }, this);
         let guide = cc.find("guide", this.node);
-        // cc.sys.localStorage.removeItem('guide');
         cc.find("cancel", guide).on("click", function (argument) {
             this.playSound("click");
             guide.active = false;
@@ -350,7 +358,7 @@ export class Main extends Component {
                 ndSound.color = cc.Color.GRAY;
         }, this);
 
-        if (cc.sys.platform === cc.sys.WECHAT_GAME){
+        if (cc.sys.platform === cc.sys.Platform.WECHAT_GAME){
             let share = cc.find("sub/share", btns);
             share.active = true;
             share.on("click", function (argument) {
@@ -437,12 +445,12 @@ export class Main extends Component {
     //引导界面的处理
     showGuideStep(){
         this.ndGuideStep.active = true;
-        this.ndGuideStep.getChildByName("lab").getComponent(cc.Label).string = GuidStepInfo[this._iGuide];
+        this.ndGuideStep.getChildByName("lab").getComponent(Label).string = GuidStepInfo[this._iGuide];
         let mask = this.ndGuideStep.getChildByName("mask");
         let spt = mask.getChildByName("spt");
         mask.setContentSize(GuideStepSize[this._iGuide]);
         mask.setPosition(GuideStepPos[this._iGuide]);
-        spt.setPosition(cc.v2(-GuideStepPos[this._iGuide].x, -GuideStepPos[this._iGuide].y));
+        spt.setPosition(new Vec2(-GuideStepPos[this._iGuide].x, -GuideStepPos[this._iGuide].y));
         this._iGuide++;
         if (this._iGuide == 9){
             let self = this;
@@ -515,9 +523,9 @@ export class Main extends Component {
         }
         if (score == null)
             score = "无";
-        cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
-        cc.find("preCost", this.goResult).getComponent(cc.Label).string = score.toString();
-        cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
+        cc.find("labResult", this.goResult).getComponent(Label).string = sTitle;
+        cc.find("preCost", this.goResult).getComponent(Label).string = score.toString();
+        cc.find("cost", this.goResult).getComponent(Label).string = this._iTime.toFixed(2).toString();
         this.onWxEvent("stopVideo");
         this.onWxEvent("showBanner");
         if (this._interstitialAd != null) {
@@ -529,9 +537,9 @@ export class Main extends Component {
     showNormalResult(iType){
         this.goResult.active = true;
         var sTitle = iType == 1 ? "成功" : "失败";
-        cc.find("labResult", this.goResult).getComponent(cc.Label).string = sTitle;
+        cc.find("labResult", this.goResult).getComponent(Label).string = sTitle;
         cc.find("preCost", this.goResult).active = false;
-        cc.find("cost", this.goResult).getComponent(cc.Label).string = this._iTime.toFixed(2).toString();
+        cc.find("cost", this.goResult).getComponent(Label).string = this._iTime.toFixed(2).toString();
         this.onWxEvent("stopVideo");
         this.onWxEvent("showBanner");
         if (this._bGuide){
@@ -554,7 +562,7 @@ export class Main extends Component {
         var pos = this._iDiff == 1 ? this.midPreOff : this.bigPreOff;
         if (this.bScale == false){
             var posTemp = scv.getScrollOffset();
-            this.offPos = cc.v2(Math.abs(posTemp.x), Math.abs(posTemp.y));
+            this.offPos = new Vec2(Math.abs(posTemp.x), Math.abs(posTemp.y));
             scv.scrollToOffset(pos);
             map.scaleX = this._iShowX/this._iRow;
             map.scaleY = this._iShowY/this._iLine;
@@ -632,7 +640,7 @@ export class Main extends Component {
                 this._layerBtn.setTileGIDAt(4+this._tNum[i], row, line);
             }
         }
-        this._layerBtn._cullingDirty = true;
+        this._layerBtn.markForUpdateRenderData(true)
     }
 
     showEndBtns(){
@@ -647,7 +655,7 @@ export class Main extends Component {
                 this._layerBtn.setTileGIDAt(4+this._tNum[i], row, line);
             }
         }
-        this._layerBtn._cullingDirty = true;
+        this._layerBtn.markForUpdateRenderData(true)
     }
 
     onFlagEvent(idx){
@@ -664,7 +672,7 @@ export class Main extends Component {
             var str = "1" + idx.toString() + "." + this.getITime();
             this.tPB.push(str);
         }
-        this._layerFlag._cullingDirty = true;
+        this._layerFlag.markForUpdateRenderData(true)
         if (this._bGuide){
             if (this._iGuide == 5 || this._iGuide == 7){
                 this.showGuideStep();
@@ -678,7 +686,7 @@ export class Main extends Component {
             let line = Math.floor(i/this._iRow);
             this._layerFlag.setTileGIDAt(4-this._tFlag[i], row, line);
         }
-        this._layerFlag._cullingDirty = true;
+        this._layerFlag.markForUpdateRenderData(true)
     }
 
     showRedMine(idx){
@@ -692,7 +700,7 @@ export class Main extends Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("normal idx = ", idx);
         this._layerBtn.setTileGIDAt(1, row, line);
-        this._layerBtn._cullingDirty = true;
+        this._layerBtn.markForUpdateRenderData(true)
     }
 
     showHighlightedColor(idx){
@@ -700,7 +708,7 @@ export class Main extends Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("highlight idx = ", idx);
         this._layerBtn.setTileGIDAt(14, row, line);
-        this._layerBtn._cullingDirty = true;
+        this._layerBtn.markForUpdateRenderData(true)
     }
 
     showPressedColor(idx){
@@ -708,7 +716,7 @@ export class Main extends Component {
         let line = Math.floor(idx/this._iRow);
         // cc.log("pressed idx = ", idx);
         this._layerBtn.setTileGIDAt(15, row, line);
-        this._layerBtn._cullingDirty = true;
+        this._layerBtn.markForUpdateRenderData(true)
     }
 
     onClick(idx){
@@ -904,8 +912,8 @@ export class Main extends Component {
                 iL = iLLimit;
             var scv = this._iDiff == 1 ? this.midScv.getComponent(cc.ScrollView) : this.bigScv.getComponent(cc.ScrollView);
             if (this.bScale == false)
-                scv.scrollToOffset(cc.v2(this._dx * iR, this._dx * iL), 0);
-            this.offPos = cc.v2(this._dx * iR, this._dx * iL);
+                scv.scrollToOffset(new Vec2(this._dx * iR, this._dx * iL), 0);
+            this.offPos = new Vec2(this._dx * iR, this._dx * iL);
         }
         this.showWin();
     }
@@ -1007,7 +1015,7 @@ export class Main extends Component {
 
     playTips(str){
         var lab = this.tips.children[0];
-        lab.getComponent(cc.Label).string = str;
+        lab.getComponent(Label).string = str;
         this.tips.opacity = 255;
         this.tips.runAction(cc.fadeOut(3));
     }
@@ -1040,7 +1048,7 @@ export class Main extends Component {
     }
 
     onWxEvent(s){
-        if (cc.sys.platform !== cc.sys.WECHAT_GAME) return;
+        if (cc.sys.platform !== cc.sys.Platform.WECHAT_GAME) return;
         let self = this;
         switch(s){
             case "initBanner": //横屏广告

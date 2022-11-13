@@ -153,5 +153,5 @@ WS.getStrPBStepInfo = function (tPB) {
     }
     return str;
 };
-creatWS();
+// creatWS();
 export {WS};

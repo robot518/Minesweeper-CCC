@@ -1,12 +1,14 @@
-const {ccclass, property} = cc._decorator;
+import { _decorator, Component, Node,UITransform} from 'cc';
 
 import {GLB} from "./GLBConfig";
 
 var _dx = 70;
 var _iM = 20;
 
-@ccclass
-export default class MineMap extends cc.Component {
+const {ccclass, property} = _decorator;
+
+@ccclass("MineMap")
+export class MineMap extends Component {
     
     @property({
         visible: true
@@ -18,7 +20,7 @@ export default class MineMap extends cc.Component {
     _iRow: number;
     _iLine: number;
     _iTotal: number;
-    _mouse: cc.Node;
+    _mouse: Node;
     _delt: any;
     idx: number;
     _preIdx: number;
@@ -70,24 +72,29 @@ export default class MineMap extends cc.Component {
     //tilemap中左下为(0, 0), tile坐标左上为0,0
     //正常坐标转换成tilemap坐标
     initEvent(){
-        this.node.on("touchstart", function (event) {
+        this.node.on(Node.EventType.TOUCH_START, function (event) {
             if (this._bTouch == true || GLB.iType == 2)  return;
             this._bTouch = true;
             let touchPos = event.touch.getLocation();
-            let nPos = this.node.convertToNodeSpaceAR(touchPos);
+            console.log("touchPos=",touchPos);
+            let nPos = this.node.getComponent(UITransform).convertToNodeSpaceAR(cc.v3(touchPos.x,touchPos.y,0));
+            
+            // nPos = cc.v2(nPos.x-5,nPos.y-15);
+            console.log("nPos = ",nPos);
             this._prePos = touchPos;
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = iR + iL * this._iRow;
+            console.log(iR,iL,this.idx);
             this._preIdx = this.idx;
             if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1){
                 this._iTime = 0;
                 if (this._delt._tFlag[this.idx] == 0) this._delt.showPressedColor(this.idx);
             }
         }, this)
-        this.node.on("touchmove", function (event) {
+        this.node.on(Node.EventType.TOUCH_MOVE, function (event) {
             let touchPos = event.touch.getLocation();
-            let nPos = this.node.convertToNodeSpaceAR(touchPos);
+            let nPos = this.node.getComponent(UITransform).convertToNodeSpaceAR(cc.v3(touchPos.x,touchPos.y,0));
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
@@ -97,7 +104,7 @@ export default class MineMap extends cc.Component {
             if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM)
                 this._iTime = -1;
         }, this)
-        this.node.on("touchend", function (event) {
+        this.node.on(Node.EventType.TOUCH_END, function (event) {
             if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
             let touchPos = event.touch.getLocation();
@@ -109,9 +116,9 @@ export default class MineMap extends cc.Component {
             this._bTouch = false;
             this._iTime = -1;
         }, this)
-        // this.node.on("touchcancel", function (event) {
-        //     this._delt.showNormalColor(this.idx);
-        // }, this)
+        this.node.on(Node.EventType.TOUCH_CANCEL, function (event) {
+            this._delt.showNormalColor(this.idx);
+        }, this)
     }
 
     setMousePos(iR, iL){
