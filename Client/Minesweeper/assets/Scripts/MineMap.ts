@@ -13,6 +13,7 @@ export class MineMap extends Component {
     @property({
         visible: true
     })
+
     _iDiff: number = 0;
 
     _iTime: number;
@@ -75,16 +76,14 @@ export class MineMap extends Component {
         this.node.on(Node.EventType.TOUCH_START, function (event) {
             if (this._bTouch == true || GLB.iType == 2)  return;
             this._bTouch = true;
-            let touchPos = event.touch.getLocation();
-            console.log("touchPos=",touchPos);
+            let touchPos = event.touch.getUILocation();
             let nPos = this.node.getComponent(UITransform).convertToNodeSpaceAR(cc.v3(touchPos.x,touchPos.y,0));
-            
-            // nPos = cc.v2(nPos.x-5,nPos.y-15);
-            console.log("nPos = ",nPos);
             this._prePos = touchPos;
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = iR + iL * this._iRow;
+            console.log("touchPos=",touchPos.x,touchPos.y);
+            console.log("nPos = ",nPos.x,nPos.y);
             console.log(iR,iL,this.idx);
             this._preIdx = this.idx;
             if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1){
@@ -93,7 +92,7 @@ export class MineMap extends Component {
             }
         }, this)
         this.node.on(Node.EventType.TOUCH_MOVE, function (event) {
-            let touchPos = event.touch.getLocation();
+            let touchPos = event.touch.getUILocation();
             let nPos = this.node.getComponent(UITransform).convertToNodeSpaceAR(cc.v3(touchPos.x,touchPos.y,0));
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
@@ -107,7 +106,7 @@ export class MineMap extends Component {
         this.node.on(Node.EventType.TOUCH_END, function (event) {
             if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
-            let touchPos = event.touch.getLocation();
+            let touchPos = event.touch.getUILocation();
             if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM){
                 this._prePos = null;
             } else{

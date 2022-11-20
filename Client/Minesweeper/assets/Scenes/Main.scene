@@ -141,7 +141,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -10,
-      "y": 10,
+      "y": -10,
       "z": 10
     },
     "_lrot": {
@@ -634,7 +634,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -315,
-      "y": -315,
+      "y": -313,
       "z": 0
     },
     "_lrot": {
@@ -1080,7 +1080,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "misScv",
+    "_name": "midScv",
     "_objFlags": 0,
     "_parent": {
       "__id__": 7
@@ -1205,8 +1205,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -10,
-      "y": 125,
+      "x": 0,
+      "y": 720,
       "z": 0
     },
     "_lrot": {
@@ -1355,8 +1355,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "4d8mKjTs9GsY2kUhI2x9it"
   },
@@ -1443,8 +1443,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "c8hF8jk25AwIM9qXvwxIU6"
   },
@@ -1531,8 +1531,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "91A0RnzsZBzpQ8gtxjTPgW"
   },
@@ -2015,8 +2015,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -10,
-      "y": 125,
+      "x": 0,
+      "y": 1250,
       "z": 0
     },
     "_lrot": {
@@ -2165,8 +2165,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "b9FH54ympNNrNMiFNZLTZj"
   },
@@ -2253,8 +2253,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "f13+S4lRRHpYJGSlcpxPJk"
   },
@@ -2341,8 +2341,8 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_id": "51jDoMyv5HDLW1qIaVBtvt"
   },
@@ -2519,7 +2519,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_iDiff": 2,
+    "_iDiff": 0,
     "_id": "dc/61JFTVFKoICzZ6Rzwei"
   },
   {
