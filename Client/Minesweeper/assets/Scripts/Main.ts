@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, AudioClip, Size,Vec2, Toggle, director,TiledMap } from 'cc';
+import { _decorator, Component, Node, Label, AudioClip, Size,Vec2,Vec3, Toggle, director,TiledMap } from 'cc';
 import {GLB} from "./GLBConfig";
 import {WS} from "./Socket";
 
@@ -113,7 +113,7 @@ export class Main extends Component {
     tPBBtns: any[];
     tPBFlags: any[];
     _tileMap: any;
-    _tBtns: any;
+    _tBtns: any; //值的意义showEndBtns
     _tFlag: any;
     sPBMineNum: string;
     iPBNum: string;
@@ -564,14 +564,12 @@ export class Main extends Component {
             var posTemp = scv.getScrollOffset();
             this.offPos = new Vec2(Math.abs(posTemp.x), Math.abs(posTemp.y));
             scv.scrollToOffset(pos);
-            map.scaleX = this._iShowX/this._iRow;
-            map.scaleY = this._iShowY/this._iLine;
+            map.scale = new Vec3(this._iShowX/this._iRow,this._iShowY/this._iLine,1);
             this.bScale = true;
             scv.horizontal = false;
             scv.vertical = false;
         }else {
-            map.scaleX = 1;
-            map.scaleY = 1;
+            map.scale = new Vec3(1,1,1);
             this.bScale = false;
             scv.horizontal = true;
             scv.vertical = true;

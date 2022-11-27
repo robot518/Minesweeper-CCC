@@ -88,7 +88,7 @@ export class MineMap extends Component {
             this._preIdx = this.idx;
             if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1){
                 this._iTime = 0;
-                if (this._delt._tFlag[this.idx] == 0) this._delt.showPressedColor(this.idx);
+                //if (this._delt._tFlag[this.idx] == 0) this._delt.showPressedColor(this.idx);
             }
         }, this)
         this.node.on(Node.EventType.TOUCH_MOVE, function (event) {
@@ -96,15 +96,15 @@ export class MineMap extends Component {
             let nPos = this.node.getComponent(UITransform).convertToNodeSpaceAR(cc.v3(touchPos.x,touchPos.y,0));
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
-            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
+            //if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
             this._preIdx = iR + iL * this._iRow;
-            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showHighlightedColor(this._preIdx);
+            //if (this._delt._tBtns[this._preIdx] == 1) this._delt.showHighlightedColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
             if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM)
                 this._iTime = -1;
         }, this)
         this.node.on(Node.EventType.TOUCH_END, function (event) {
-            if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
+            //if (this._delt._tBtns[this._preIdx] == 1) this._delt.showNormalColor(this._preIdx);
             if (this._bTouch == false || GLB.iType == 2)  return;
             let touchPos = event.touch.getUILocation();
             if (Math.abs(touchPos.x - this._prePos.x) > _iM || Math.abs(touchPos.y - this._prePos.y) > _iM){
@@ -116,7 +116,7 @@ export class MineMap extends Component {
             this._iTime = -1;
         }, this)
         this.node.on(Node.EventType.TOUCH_CANCEL, function (event) {
-            this._delt.showNormalColor(this.idx);
+            //this._delt.showNormalColor(this.idx);
         }, this)
     }
 
