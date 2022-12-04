@@ -1,7 +1,7 @@
 const {ccclass, property} = cc._decorator;
 
-import {GLB} from "./GLBConfig";
-import {WS} from "./Socket";
+import {GLB} from "../Common/GLBConfig";
+import {WS} from "../Net/Socket";
 
 @ccclass
 export default class Challenge extends cc.Component {

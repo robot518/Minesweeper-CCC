@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Label, AudioClip, Size,Vec2,Vec3, Toggle, director,TiledMap } from 'cc';
-import {GLB} from "./GLBConfig";
-import {WS} from "./Socket";
+import {GLB} from "../Common/GLBConfig";
+import {WS} from "../Net/Socket";
 
 const {ccclass, property} = _decorator;
 //gid 1-btn 2-mine 3-flag 4-null 5-12-num 13-redmine 14-15-鼠标悬停时的按钮以及按下时的按钮

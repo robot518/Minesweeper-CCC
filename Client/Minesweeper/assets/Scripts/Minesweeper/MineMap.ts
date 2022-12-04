@@ -1,6 +1,6 @@
 import { _decorator, Component, Node,UITransform} from 'cc';
 
-import {GLB} from "./GLBConfig";
+import {GLB} from "../Common/GLBConfig";
 
 var _dx = 70;
 var _iM = 20;
@@ -82,9 +82,9 @@ export class MineMap extends Component {
             let iR = Math.floor (nPos.x / _dx);
             let iL = this._iLine - 1 - Math.floor (nPos.y / _dx);
             this.idx = iR + iL * this._iRow;
-            console.log("touchPos=",touchPos.x,touchPos.y);
-            console.log("nPos = ",nPos.x,nPos.y);
-            console.log(iR,iL,this.idx);
+            // console.log("touchPos=",touchPos.x,touchPos.y);
+            // console.log("nPos = ",nPos.x,nPos.y);
+            // console.log(iR,iL,this.idx);
             this._preIdx = this.idx;
             if (this._delt.getBGameOver() == false && this._delt._tBtns[this.idx] == 1){
                 this._iTime = 0;

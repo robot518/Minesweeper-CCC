@@ -1,4 +1,4 @@
-import {GLB} from "./GLBConfig";
+import {GLB} from "../Common/GLBConfig";
 
 var ws = null;
 var WS = {
