@@ -291,7 +291,7 @@
         "__id__": 8
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 26
@@ -594,12 +594,7 @@
     "character": {
       "__id__": 28
     },
-    "speed": {
-      "__type__": "cc.Vec3",
-      "x": 0.1,
-      "y": 0,
-      "z": 0.1
-    },
+    "maxSpeed": 5,
     "_id": "13FONpuPhE47T0f2oq6+cZ"
   },
   {
@@ -650,7 +645,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 31
@@ -1283,7 +1278,7 @@
     "_enabled": true,
     "__prefab": null,
     "player": {
-      "__id__": 10
+      "__id__": 27
     },
     "_id": "51r5N76r1Ca7Fb8AIUAw4H"
   },
