@@ -71,7 +71,7 @@ export class Joystick extends Component {
         this.joyStickBtn.setPosition(curPos);
         let tempPos = cc.v3(curPos.x,curPos.y,curPos.z);
         let dir = tempPos.normalize();
-        this.player.changeSpeed(cc.v3(dir.x,0,dir.y));
+        // this.player.changeSpeed(cc.v3(dir.x,0,dir.y));
     }
      
     onTouchEnd(event) {
