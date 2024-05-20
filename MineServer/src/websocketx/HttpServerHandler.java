@@ -1,5 +1,6 @@
 package websocketx;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -8,6 +9,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 //import sun.security.ssl.Debug;
+
+import java.util.List;
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -22,13 +26,30 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        if (msg instanceof HttpRequest) {
-            HttpRequest req = (HttpRequest) msg;
-//            System.out.println("req = " + req.toString());
-            String uri = req.uri();
-            int idx = uri.indexOf("code=");
-            if (idx != -1) {
-                String code = uri.substring(idx+5);
+//         if (msg instanceof HttpRequest) {
+//             HttpRequest req = (HttpRequest) msg;
+// //            System.out.println("req = " + req.toString());
+//             String uri = req.uri();
+//             int idx = uri.indexOf("code=");
+//             if (idx != -1) {
+//                 String code = uri.substring(idx+5);
+        HttpRequest request = (HttpRequest) msg;
+
+        // 确保是POST请求
+        if (HttpMethod.POST.equals(request.method())) {
+            // 读取请求体
+            if (msg instanceof HttpContent) {
+                HttpContent content = (HttpContent) msg;
+                ByteBuf buf = content.content();
+                String requestBody = buf.toString(CharsetUtil.UTF_8);
+
+                // 解析表单数据
+                QueryStringDecoder decoder = new QueryStringDecoder(requestBody, false);
+                Map<String, List<String>> parameters = decoder.parameters();
+
+                // 获取code字段
+                String code = parameters.get("code").get(0);
+                System.out.println("Code: " + code);
                 String url = "";
                 int idx2 = code.indexOf("tttttt");
                 if (idx2 != -1) {
@@ -48,7 +69,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 //                String usrId = data.substring(iSession_key+s1.length()+3, iSession_key+s1.length()+8)+openid.substring(0, 5);
 //                Debug.println(openid, usrId);
 
-                boolean keepAlive = HttpUtil.isKeepAlive(req);
+                boolean keepAlive = HttpUtil.isKeepAlive(request);
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, msg.decoderResult().isSuccess()? OK : BAD_REQUEST,
                         Unpooled.copiedBuffer(openid, CharsetUtil.UTF_8));
                 response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");

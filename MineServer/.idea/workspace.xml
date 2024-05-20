@@ -10,7 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45f464fd-49a1-413d-9a33-afec7aea2114" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scenes/Main.fire" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Challenge.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Challenge.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/MineCC/assets/Scripts/Socket.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MineServer_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MineServer_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/commons_pool2_2_6_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/commons_pool2_2_6_0.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MineServer/websocketx/HttpServerHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MineServer/websocketx/HttpServerHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketx/HttpServerHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,6 +134,9 @@
       <set />
     </option>
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="307" />
     <option name="width" value="1440" />
@@ -173,23 +184,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.go.format.on.save.advertiser.fired&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/steve/Documents/GitHub/Minesweeper-CCC/MineServer&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.WebSocketServer.executor": "Run",
+    "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "go.import.settings.migrated": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/steve/Desktop/remote/Minesweeper-CCC/MineServer",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="WebSocketServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="websocketx.WebSocketServer" />
@@ -245,6 +261,14 @@
         <item itemvalue="Application.WebSocketServer" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.15989.150" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-IU-241.15989.150" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -352,6 +376,7 @@
       <workItem from="1666450701634" duration="237000" />
       <workItem from="1666452486511" duration="1406000" />
       <workItem from="1670165607690" duration="379000" />
+      <workItem from="1716223576366" duration="1301000" />
     </task>
     <servers />
   </component>
